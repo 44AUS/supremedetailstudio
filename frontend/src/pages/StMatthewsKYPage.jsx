@@ -12,7 +12,7 @@ import Map from '../components/Map';
 import StMatthewsHero from '../components/Heroes/StMatthewsKYHero';
 import CertifiedInstaller from '../components/BenefitsAndImportance/CertifiedInstaller';
 import Onyx from '../assets/images/ceramic-coatings/onyx-coating.jpg';
-import OnyxAplicator from '../assets/images/ceramic-coatings/onyx-coating-applicator.jpg';
+import OnyxAplicator from '../assets/images/ceramic-coatings/onyx-coating-show.jpg';
 import Connecting from '../components/BenefitsAndImportance/Connecting';
 import CeramicTabs from '../components/CeramicCoating/CeramicCoatingTabs';
 import Services from '../components/Services/Services';
