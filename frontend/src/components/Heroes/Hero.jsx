@@ -1,79 +1,79 @@
 import React from 'react'
 import { Title, Text, Container, createStyles } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import {Button} from "@nextui-org/button";
 import BMWInterior from '../../assets/images/details/bmw-steering-wheel.jpg';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
     position: 'relative',
-    paddingTop: '180px',
-    paddingBottom: '180px',
+    paddingTop: '160px',
+    paddingBottom: '160px',
     backgroundImage: `url(${BMWInterior})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundAttachment: 'fixed',
-    minHeight: '85vh',
+    minHeight: '90vh',
     display: 'flex',
     alignItems: 'center',
     [theme.fn.smallerThan('md')]: {
-      paddingTop: '120px',
-      paddingBottom: '120px',
-      minHeight: '70vh',
+      paddingTop: '100px',
+      paddingBottom: '100px',
+      minHeight: '80vh',
       backgroundAttachment: 'scroll',
     },
   },
   inner: {
     position: 'relative',
     zIndex: 11,
-    maxWidth: '900px',
+    maxWidth: '850px',
     [theme.fn.smallerThan('md')]: {
-      paddingLeft: '15px',
-      paddingRight: '15px',
+      paddingLeft: '20px',
+      paddingRight: '20px',
       textAlign: 'center',
     },
   },
   title: {
-    fontFamily: 'SceneProBold',
-    fontSize: '60px',
-    letterSpacing: '2px',
+    fontFamily: 'SceneProUltBlkIt, sans-serif',
+    fontSize: '58px',
+    letterSpacing: '1px',
     color: '#FFF',
-    marginBottom: '24px',
+    marginBottom: '28px',
     textAlign: 'left',
     lineHeight: 1.1,
-    textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+    textShadow: '2px 4px 8px rgba(0,0,0,0.6)',
     [theme.fn.smallerThan('md')]: {
       fontSize: '32px',
       textAlign: 'center',
     },
   },
   smallTitle: {
-    fontFamily: 'SceneProMedium',
-    fontSize: '16px',
-    letterSpacing: '4px',
+    fontFamily: 'SceneProBold, sans-serif',
+    fontSize: '14px',
+    letterSpacing: '5px',
     color: '#e80200',
-    marginBottom: '16px',
+    marginBottom: '20px',
     textAlign: 'left',
     textTransform: 'uppercase',
     [theme.fn.smallerThan('md')]: {
-      fontSize: '14px',
+      fontSize: '12px',
       textAlign: 'center',
+      letterSpacing: '3px',
     },
   },
   description: {
-    fontFamily: 'SceneProRg',
+    fontFamily: 'SceneProRg, sans-serif',
     color: 'rgba(255, 255, 255, 0.9)',
-    fontSize: '18px',
+    fontSize: '17px',
     textAlign: 'left',
-    lineHeight: 1.7,
-    maxWidth: '800px',
+    lineHeight: 1.8,
+    maxWidth: '750px',
     [theme.fn.smallerThan('md')]: {
-      fontSize: '16px',
+      fontSize: '15px',
       textAlign: 'center',
     },
   },
   overlay: {
-    backgroundImage: 'linear-gradient(to top, rgba(0, 0, 0, 0) 70%, rgba(0, 0, 0, 0.7)), linear-gradient(270deg, rgba(0, 0, 0, 0) 40%, rgba(0, 0, 0, 0.85)), linear-gradient(rgba(0, 0, 0, 0) 60%, #000)',
+    backgroundImage: 'linear-gradient(to right, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.2) 100%), linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, transparent 30%)',
     position: 'absolute',
     height: '100%',
     top: '0%',
@@ -84,19 +84,77 @@ const useStyles = createStyles((theme) => ({
   buttonContainer: {
     marginTop: '40px',
     display: 'flex',
-    gap: '16px',
+    gap: '20px',
     flexWrap: 'wrap',
     [theme.fn.smallerThan('md')]: {
       justifyContent: 'center',
+      gap: '16px',
+    },
+  },
+  primaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#e80200',
+    color: '#fff',
+    fontFamily: 'SceneProBold, sans-serif',
+    fontSize: '14px',
+    letterSpacing: '3px',
+    textTransform: 'uppercase',
+    padding: '18px 40px',
+    textDecoration: 'none',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: '0 4px 20px rgba(232, 2, 0, 0.4)',
+    '&:hover': {
+      backgroundColor: '#ff1a1a',
+      transform: 'translateY(-3px)',
+      boxShadow: '0 8px 30px rgba(232, 2, 0, 0.6)',
+    },
+    [theme.fn.smallerThan('md')]: {
+      padding: '16px 32px',
+      fontSize: '13px',
+    },
+  },
+  secondaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    color: '#fff',
+    fontFamily: 'SceneProBold, sans-serif',
+    fontSize: '14px',
+    letterSpacing: '3px',
+    textTransform: 'uppercase',
+    padding: '16px 38px',
+    textDecoration: 'none',
+    border: '2px solid rgba(255, 255, 255, 0.8)',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    backdropFilter: 'blur(4px)',
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderColor: '#fff',
+      transform: 'translateY(-3px)',
+      boxShadow: '0 8px 30px rgba(255, 255, 255, 0.2)',
+    },
+    [theme.fn.smallerThan('md')]: {
+      padding: '14px 30px',
+      fontSize: '13px',
     },
   },
   link: {
     color: '#e80200',
-    textDecoration: 'underline',
+    textDecoration: 'none',
     fontWeight: 600,
+    borderBottom: '1px solid transparent',
     transition: 'all 0.3s ease',
     '&:hover': {
-      color: '#ff1a1a',
+      color: '#ff4444',
+      borderBottom: '1px solid #ff4444',
     },
   },
 }));
@@ -126,50 +184,17 @@ const Hero = () => {
             <Link to="/services/ceramic-coatings" className={classes.link}>Ceramic Coating</Link>,{' '}
             <Link to="/services/window-tinting" className={classes.link}>Window Tinting</Link>,{' '}
             <Link to="/services/paint-correction" className={classes.link}>Paint Correction</Link>,{' '}
-            <Link to="/services/vinyl-wrap-chrome-deletion" className={classes.link}>Vinyl Wrap & Chrome Deletion</Link>,{' '}
-            <Link to="/services/additional-services" className={classes.link}>and much more</Link>. 
-            Our certified professional detailers are committed to delivering superior care, we guarantee your vehicle will leave with a showroom quality finish.
+            and{' '}
+            <Link to="/services/additional-services" className={classes.link}>much more</Link>. 
+            Our certified professional detailers guarantee your vehicle will leave with a showroom quality finish.
           </Text>
        
           <div className={classes.buttonContainer}>
-            <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw" target="_blank" style={{ textDecoration: 'none' }}>
-              <Button 
-                radius="none" 
-                size="lg" 
-                style={{ 
-                  backgroundColor: '#e80200',
-                  fontFamily: 'SceneProBold',
-                  letterSpacing: '3px',
-                  textTransform: 'uppercase',
-                  padding: '0 40px',
-                  height: '52px',
-                  fontSize: '14px',
-                  transition: 'all 0.3s ease',
-                  boxShadow: '0 4px 15px rgba(232, 2, 0, 0.3)'
-                }}
-              >
-                Book Appointment
-              </Button>
+            <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw" target="_blank" className={classes.primaryButton}>
+              Book Appointment
             </Link>
-            <Link to="tel:(502) 417-0690" style={{ textDecoration: 'none' }}>
-              <Button 
-                radius="none" 
-                size="lg" 
-                style={{ 
-                  backgroundColor: 'transparent',
-                  border: '2px solid #e80200',
-                  color: '#fff',
-                  fontFamily: 'SceneProBold',
-                  letterSpacing: '3px',
-                  textTransform: 'uppercase',
-                  padding: '0 40px',
-                  height: '52px',
-                  fontSize: '14px',
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                Call (502) 417-0690
-              </Button>
+            <Link to="tel:5024170690" className={classes.secondaryButton}>
+              Call (502) 417-0690
             </Link>
           </div>
         </div>
