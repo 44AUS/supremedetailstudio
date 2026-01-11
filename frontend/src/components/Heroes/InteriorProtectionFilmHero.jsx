@@ -2,6 +2,7 @@ import React from 'react'
 import { Parallax } from 'react-scroll-parallax';
 import { Title, Text, Container, Button, Overlay, createStyles } from '@mantine/core';
 import { Link } from 'react-router-dom';
+import InteriorProtectionFilm from '../../assets/images/details/bmw-dashboard.jpg';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {

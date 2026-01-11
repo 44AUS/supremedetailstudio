@@ -3,7 +3,7 @@ import { Parallax } from 'react-scroll-parallax';
 import { Title, Image, Text, Container, createStyles } from '@mantine/core';
 import {Button, ButtonGroup} from "@nextui-org/button";
 import { Link } from 'react-router-dom';
-// import WindowTinting from '../../assets/images/details/commercial-window-tinting.webp';
+import WindowTinting from '../../assets/images/tint/commercial-window-tinting.webp';
 import GeoShield from '../../assets/images/partners/Geoshield_Logo_White_Subtext.png';
 
 const useStyles = createStyles((theme) => ({
