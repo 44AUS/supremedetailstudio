@@ -151,7 +151,7 @@ const AboutPage = () => {
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
     </Helmet>
-    <MariettaKYHero />
+    <LouisvilleKYHero />
     <Container size="xl">
       <div className={classes.wrapper}>
         <SimpleGrid
