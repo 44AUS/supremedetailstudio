@@ -124,7 +124,7 @@ const VehicleWindowTintingHero = () => {
       <Image src={GeoShield} alt="GeoShield" className={classes.partnerLogo} />
       </div>
         <Title className={classes.title}>
-          PROFESSIONAL VEHICLE WINDOW TINT FILM INSTALLATION IN LOUISVILLE, KY
+          PROFESSIONAL VEHICLE WINDOW TINT FILM INSTALLATION IN MARIETTA, GA
         </Title>
 
         <Container>

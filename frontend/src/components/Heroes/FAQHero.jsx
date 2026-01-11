@@ -122,11 +122,11 @@ const FAQHero = () => {
       <div className={classes.inner}>
 
       <Title className={classes.smallTitle}>
-      BEST AUTO DETAILING IN LOUISVILLE, KY
+      BEST AUTO DETAILING IN MARIETTA, GA
         </Title>
 
         <Title className={classes.title}>
-          HIGH END PROFESSIONAL DETAILING SERVICES IN LOUISVILLE, KY
+          HIGH END PROFESSIONAL DETAILING SERVICES IN MARIETTA, GA
         </Title>
 
         <Container>

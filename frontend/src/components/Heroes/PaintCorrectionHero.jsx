@@ -124,7 +124,7 @@ const PaintCorrectionHero = () => {
         </Title>
 
         <Title className={classes.title}>
-          PROFESSIONAL PAINT CORRECTION SERVICES IN LOUISVILLE, KY
+          PROFESSIONAL PAINT CORRECTION SERVICES IN MARIETTA, GA
         </Title>
 
         <Container>

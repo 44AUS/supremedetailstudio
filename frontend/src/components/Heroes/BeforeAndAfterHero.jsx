@@ -121,7 +121,7 @@ const BeforeAndAfterHero = () => {
       <div className={classes.inner}>
 
       <Title className={classes.smallTitle}>
-      BEST AUTO DETAILING IN LOUISVILLE, KY
+      BEST AUTO DETAILING IN MARIETTA, GA
         </Title>
         
         <Title className={classes.title}>

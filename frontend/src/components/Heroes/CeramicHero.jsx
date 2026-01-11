@@ -125,7 +125,7 @@ const CeramicHero = () => {
       </div>
 
         <Title className={classes.title}>
-          THE BEST CERAMIC COATINGS IN LOUISVILLE, KY
+          THE BEST CERAMIC COATINGS IN MARIETTA, GA
         </Title>
 
         <Container>

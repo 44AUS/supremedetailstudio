@@ -124,7 +124,7 @@ const WindshieldProtectionFilmHero = () => {
       <Image src={Madico} alt="Madico" className={classes.partnerLogo} />
       </div>
         <Title className={classes.title}>
-          PROFESSIONAL WINDSHIELD PROTECTION FILM INSTALLATION IN LOUISVILLE, KY
+          PROFESSIONAL WINDSHIELD PROTECTION FILM INSTALLATION IN MARIETTA, GA
         </Title>
 
         <Container>

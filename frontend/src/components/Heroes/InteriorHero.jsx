@@ -97,7 +97,7 @@ const InteriorHero = () => {
 
       <div className={classes.inner}>
         <Title className={classes.title}>
-          PROFESSIONAL INTERIOR DETAILING SERVICES IN LOUISVILLE, KY
+          PROFESSIONAL INTERIOR DETAILING SERVICES IN MARIETTA, GA
         </Title>
 
         <Container>

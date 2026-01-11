@@ -124,7 +124,7 @@ const WindowTintingHero = () => {
       <Image src={GeoShield} alt="GeoShield" className={classes.partnerLogo} />
       </div>
         <Title className={classes.title}>
-          TOP WINDOW TINT SPECIALISTS IN LOUISVILLE, KY
+          TOP WINDOW TINT SPECIALISTS IN MARIETTA, GA
         </Title>
 
         <Container>

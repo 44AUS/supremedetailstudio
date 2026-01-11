@@ -124,7 +124,7 @@ const GalleryHero = () => {
         </Title>
 
         <Title className={classes.title}>
-          CERAMIC COATINGS AND AUTO DETAILING IN LOUISVILLE, KY
+          CERAMIC COATINGS AND AUTO DETAILING IN MARIETTA, GA
         </Title>
 
         <Container>

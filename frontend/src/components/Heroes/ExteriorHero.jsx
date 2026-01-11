@@ -97,7 +97,7 @@ const ExteriorHero = () => {
 
       <div className={classes.inner}>
         <Title className={classes.title}>
-          PROFESSIONAL EXTERIOR DETAILING SERVICES IN LOUISVILLE, KY
+          PROFESSIONAL EXTERIOR DETAILING SERVICES IN MARIETTA, GA
         </Title>
 
         <Container>

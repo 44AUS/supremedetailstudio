@@ -98,7 +98,7 @@ const FullDetailHero = () => {
 
       <div className={classes.inner}>
         <Title className={classes.title}>
-          PROFESSIONAL FULL DETAILING SERVICES IN LOUISVILLE, KY
+          PROFESSIONAL FULL DETAILING SERVICES IN MARIETTA, GA
         </Title>
 
         <Container>

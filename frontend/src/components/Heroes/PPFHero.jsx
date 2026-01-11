@@ -126,7 +126,7 @@ const PPFHero = () => {
       </div>
 
         <Title className={classes.title}>
-          LOUISVILLE, KY’S TOP-TIER STEK PAINT PROTECTION FILM APPLICATION SHOP
+          MARIETTA, GA’S TOP-TIER STEK PAINT PROTECTION FILM APPLICATION SHOP
         </Title>
 
         <Container>

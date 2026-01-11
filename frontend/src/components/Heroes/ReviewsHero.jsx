@@ -121,7 +121,7 @@ const ReviewsHero = () => {
       <div className={classes.inner}>
 
       <Title className={classes.smallTitle}>
-      THE BEST AUTO DETAILING IN LOUISVILLE, KY
+      THE BEST AUTO DETAILING IN MARIETTA, GA
         </Title>
 
         <Title className={classes.title}>

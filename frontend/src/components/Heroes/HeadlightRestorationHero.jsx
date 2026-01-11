@@ -98,11 +98,11 @@ const HeadlightRestorationHero = () => {
       <div className={classes.inner}>
 
       <Title className={classes.smallTitle}>
-      LOUISVILLE, KY BEST HEADLIGHT RESTORATION
+      MARIETTA, GA BEST HEADLIGHT RESTORATION
         </Title>
 
         <Title className={classes.title}>
-          PROFESSIONAL HEADLIGHT RESTORATION SERVICES IN LOUISVILLE, KY
+          PROFESSIONAL HEADLIGHT RESTORATION SERVICES IN MARIETTA, GA
         </Title>
 
         <Container>

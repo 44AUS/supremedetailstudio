@@ -122,11 +122,11 @@ const AboutHero = () => {
       <div className={classes.inner}>
 
       <Title className={classes.smallTitle}>
-      LOUISVILLE, KY'S #1 TOP RATED DETAIL SHOP
+      MARIETTA, GA'S #1 TOP RATED DETAIL SHOP
       </Title>
 
         <Title className={classes.title}>
-        REPUTABLE CAR DETAILER IN LOUISVILLE, KY
+        REPUTABLE CAR DETAILER IN MARIETTA, GA
         </Title>
 
         {/* <Container>

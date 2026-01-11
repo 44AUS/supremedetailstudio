@@ -122,11 +122,11 @@ const AddOnHero = () => {
       <div className={classes.inner}>
 
       <Title className={classes.smallTitle}>
-      THE BEST AUTO DETAILING IN LOUISVILLE, KY
+      THE BEST AUTO DETAILING IN MARIETTA, GA
         </Title>
 
         <Title className={classes.title}>
-          ADDITIONAL SERVICES FOR AUTO DETAILING IN LOUISVILLE, KY
+          ADDITIONAL SERVICES FOR AUTO DETAILING IN MARIETTA, GA
         </Title>
 
         <Container>

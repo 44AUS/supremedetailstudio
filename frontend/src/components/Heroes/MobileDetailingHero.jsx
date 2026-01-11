@@ -126,7 +126,7 @@ const MobileDetailingHero = () => {
         </Title>
 
         <Title className={classes.title}>
-          PROFESSIONAL MOBILE DETAILING SERVICES IN LOUISVILLE, KY
+          PROFESSIONAL MOBILE DETAILING SERVICES IN MARIETTA, GA
         </Title>
 
         <Container>

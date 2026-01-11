@@ -72,7 +72,7 @@ const InteriorProtectionFilmHero = () => {
 
       <div className={classes.inner}>
         <Title className={classes.title}>
-          PROFESSIONAL INTERIOR PROTECTION FILM INSTALLATION IN LOUISVILLE, KY
+          PROFESSIONAL INTERIOR PROTECTION FILM INSTALLATION IN MARIETTA, GA
         </Title>
 
         <Container>

@@ -124,7 +124,7 @@ const ResidentialWindowTintingHero = () => {
       <Image src={GeoShield} alt="GeoShield" className={classes.partnerLogo} />
       </div>
         <Title className={classes.title}>
-          OFFICE AND COMMERCIAL WINDOW TINTING FOR LOUISVILLE, KY BUSINESSES
+          OFFICE AND COMMERCIAL WINDOW TINTING FOR MARIETTA, GA BUSINESSES
         </Title>
 
         <Container>
