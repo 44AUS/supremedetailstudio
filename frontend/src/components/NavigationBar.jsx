@@ -28,6 +28,30 @@ export default function NavBar() {
 
   const closeMenu = () => setIsMenuOpen(false);
 
+  const navLinkStyle = {
+    color: '#fff',
+    fontFamily: 'SceneProRg, sans-serif',
+    fontSize: '13px',
+    letterSpacing: '3px',
+    textTransform: 'uppercase',
+    padding: '12px 16px',
+    textDecoration: 'none',
+    transition: 'color 0.3s ease',
+  };
+
+  const dropdownItemStyle = {
+    display: 'block',
+    padding: '12px 20px',
+    color: '#fff',
+    textDecoration: 'none',
+    fontFamily: 'SceneProRg, sans-serif',
+    fontSize: '13px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    transition: 'all 0.3s ease',
+    backgroundColor: 'transparent',
+  };
+
   return (
     <>
       <nav style={{
@@ -71,20 +95,19 @@ export default function NavBar() {
               onMouseEnter={() => setServicesOpen(true)}
               onMouseLeave={() => setServicesOpen(false)}
             >
-              <button style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#fff',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '13px',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                padding: '12px 16px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}>
+              <button 
+                style={{
+                  ...navLinkStyle,
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
+              >
                 Services
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{
                   transform: servicesOpen ? 'rotate(180deg)' : 'rotate(0deg)',
@@ -99,11 +122,11 @@ export default function NavBar() {
                 position: 'absolute',
                 top: '100%',
                 left: '0',
-                backgroundColor: 'rgba(15, 15, 15, 0.98)',
+                backgroundColor: 'rgba(10, 10, 10, 0.98)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '8px',
                 padding: '8px 0',
-                minWidth: '240px',
+                minWidth: '260px',
                 opacity: servicesOpen ? 1 : 0,
                 visibility: servicesOpen ? 'visible' : 'hidden',
                 transform: servicesOpen ? 'translateY(0)' : 'translateY(-10px)',
@@ -114,15 +137,16 @@ export default function NavBar() {
                   <Link
                     key={index}
                     to={service.path}
-                    style={{
-                      display: 'block',
-                      padding: '10px 20px',
-                      color: '#fff',
-                      textDecoration: 'none',
-                      fontFamily: 'SceneProRg, sans-serif',
-                      fontSize: '13px',
-                      letterSpacing: '2px',
-                      textTransform: 'uppercase',
+                    style={dropdownItemStyle}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#e80200';
+                      e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.1)';
+                      e.currentTarget.style.paddingLeft = '28px';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#fff';
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.paddingLeft = '20px';
                     }}
                   >
                     {service.name}
@@ -134,15 +158,9 @@ export default function NavBar() {
             {/* About */}
             <NavLink 
               to='/about'
-              style={{
-                color: '#fff',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '13px',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                padding: '12px 16px',
-                textDecoration: 'none',
-              }}
+              style={navLinkStyle}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
             >
               About
             </NavLink>
@@ -150,15 +168,9 @@ export default function NavBar() {
             {/* Reviews */}
             <NavLink 
               to='/reviews'
-              style={{
-                color: '#fff',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '13px',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                padding: '12px 16px',
-                textDecoration: 'none',
-              }}
+              style={navLinkStyle}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
             >
               Reviews
             </NavLink>
@@ -166,15 +178,9 @@ export default function NavBar() {
             {/* Blog */}
             <NavLink 
               to='/blog'
-              style={{
-                color: '#fff',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '13px',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                padding: '12px 16px',
-                textDecoration: 'none',
-              }}
+              style={navLinkStyle}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
             >
               Blog
             </NavLink>
@@ -185,20 +191,19 @@ export default function NavBar() {
               onMouseEnter={() => setMoreOpen(true)}
               onMouseLeave={() => setMoreOpen(false)}
             >
-              <button style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#fff',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '13px',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                padding: '12px 16px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-              }}>
+              <button 
+                style={{
+                  ...navLinkStyle,
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
+                onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
+              >
                 More
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{
                   transform: moreOpen ? 'rotate(180deg)' : 'rotate(0deg)',
@@ -213,11 +218,11 @@ export default function NavBar() {
                 position: 'absolute',
                 top: '100%',
                 left: '0',
-                backgroundColor: 'rgba(15, 15, 15, 0.98)',
+                backgroundColor: 'rgba(10, 10, 10, 0.98)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '8px',
                 padding: '8px 0',
-                minWidth: '180px',
+                minWidth: '200px',
                 opacity: moreOpen ? 1 : 0,
                 visibility: moreOpen ? 'visible' : 'hidden',
                 transform: moreOpen ? 'translateY(0)' : 'translateY(-10px)',
@@ -228,15 +233,16 @@ export default function NavBar() {
                   <Link
                     key={index}
                     to={link.path}
-                    style={{
-                      display: 'block',
-                      padding: '10px 20px',
-                      color: '#fff',
-                      textDecoration: 'none',
-                      fontFamily: 'SceneProRg, sans-serif',
-                      fontSize: '13px',
-                      letterSpacing: '2px',
-                      textTransform: 'uppercase',
+                    style={dropdownItemStyle}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#e80200';
+                      e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.1)';
+                      e.currentTarget.style.paddingLeft = '28px';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#fff';
+                      e.currentTarget.style.backgroundColor = 'transparent';
+                      e.currentTarget.style.paddingLeft = '20px';
                     }}
                   >
                     {link.name}
@@ -248,15 +254,9 @@ export default function NavBar() {
             {/* Contact */}
             <NavLink 
               to='/contact-us'
-              style={{
-                color: '#fff',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '13px',
-                letterSpacing: '3px',
-                textTransform: 'uppercase',
-                padding: '12px 16px',
-                textDecoration: 'none',
-              }}
+              style={navLinkStyle}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
             >
               Contact
             </NavLink>
@@ -274,9 +274,21 @@ export default function NavBar() {
               fontSize: '13px',
               letterSpacing: '3px',
               textTransform: 'uppercase',
-              padding: '12px 24px',
+              padding: '14px 28px',
               textDecoration: 'none',
               flexShrink: 0,
+              transition: 'all 0.3s ease',
+              boxShadow: '0 4px 15px rgba(232, 2, 0, 0.3)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#ff1a1a';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+              e.currentTarget.style.boxShadow = '0 6px 25px rgba(232, 2, 0, 0.5)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#e80200';
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 4px 15px rgba(232, 2, 0, 0.3)';
             }}
           >
             Book Appointment
@@ -387,58 +399,31 @@ export default function NavBar() {
               }}>
                 Pages
               </div>
-              <Link to="/about" onClick={closeMenu} style={{
-                display: 'block',
-                padding: '12px 5px',
-                color: '#fff',
-                textDecoration: 'none',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '14px',
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              }}>
-                About
-              </Link>
-              <Link to="/reviews" onClick={closeMenu} style={{
-                display: 'block',
-                padding: '12px 5px',
-                color: '#fff',
-                textDecoration: 'none',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '14px',
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              }}>
-                Reviews
-              </Link>
-              <Link to="/gallery" onClick={closeMenu} style={{
-                display: 'block',
-                padding: '12px 5px',
-                color: '#fff',
-                textDecoration: 'none',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '14px',
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              }}>
-                Gallery
-              </Link>
-              <Link to="/contact-us" onClick={closeMenu} style={{
-                display: 'block',
-                padding: '12px 5px',
-                color: '#fff',
-                textDecoration: 'none',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '14px',
-                letterSpacing: '2px',
-                textTransform: 'uppercase',
-                borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              }}>
-                Contact Us
-              </Link>
+              {[
+                { name: 'About', path: '/about' },
+                { name: 'Reviews', path: '/reviews' },
+                { name: 'Gallery', path: '/gallery' },
+                { name: 'Contact Us', path: '/contact-us' },
+              ].map((link, index) => (
+                <Link
+                  key={index}
+                  to={link.path}
+                  onClick={closeMenu}
+                  style={{
+                    display: 'block',
+                    padding: '12px 5px',
+                    color: '#fff',
+                    textDecoration: 'none',
+                    fontFamily: 'SceneProRg, sans-serif',
+                    fontSize: '14px',
+                    letterSpacing: '2px',
+                    textTransform: 'uppercase',
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                  }}
+                >
+                  {link.name}
+                </Link>
+              ))}
             </div>
 
             {/* Book Button */}
@@ -458,6 +443,7 @@ export default function NavBar() {
                 letterSpacing: '3px',
                 textTransform: 'uppercase',
                 textAlign: 'center',
+                boxShadow: '0 4px 15px rgba(232, 2, 0, 0.3)',
               }}
             >
               Book Appointment
@@ -472,7 +458,7 @@ export default function NavBar() {
                 marginTop: '15px',
                 padding: '16px 24px',
                 backgroundColor: 'transparent',
-                border: '1px solid #fff',
+                border: '2px solid #fff',
                 color: '#fff',
                 textDecoration: 'none',
                 fontFamily: 'SceneProRg, sans-serif',
