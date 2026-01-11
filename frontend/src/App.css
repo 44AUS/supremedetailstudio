@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force dark backgrounds everywhere */
+body, #root, .mantine-Paper-root, .mantine-Container-root, 
+.mantine-AppShell-root, .mantine-Modal-root, .mantine-Drawer-root,
+div, section, main, article, aside, footer, header {
+  background-color: #000 !important;
+}
+
+/* Allow specific overrides for cards/components that need different backgrounds */
+.mantine-Card-root {
+  background-color: rgba(20, 20, 20, 0.9) !important;
+}
+
 /* Override Mantine and other component fonts */
 .mantine-Title-root,
 .mantine-Text-root {
