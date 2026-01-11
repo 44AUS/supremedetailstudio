@@ -12,16 +12,6 @@ import {Button, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu} from "@ne
 import {ChevronDown, Ceramic, House, Tint, Mobile, Detail, Shield, Business, Plus} from "./Icons.jsx";
 import { NavLink } from "react-router-dom";
 import { Link } from 'react-router-dom';
-import { Container, createStyles } from "@mantine/core";
-
-const useStyles = createStyles((theme) => ({
-  header: {
-    // display: 'flex',
-    // justifyContent: 'space-between',
-    // alignItems: 'center',
-    // height: '100%',
-  },
-}));
 
 export default function NavBar() {
   const icons = {
@@ -36,493 +26,352 @@ export default function NavBar() {
     plus: <Plus className="text-danger" fill="currentColor" size={30} />,
   };
   
-  const { classes } = useStyles();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
-  const menuItems = [
-    "Profile",
-    "Dashboard",
-    "Activity",
-    "Analytics",
-    "System",
-    "Deployments",
-    "My Settings",
-    "Team Settings",
-    "Help & Feedback",
-    "Log Out",
+  const navLinkStyle = {
+    cursor: 'pointer',
+    textTransform: 'uppercase',
+    fontFamily: 'SceneProBold',
+    letterSpacing: '2px',
+    fontSize: '13px',
+    color: '#fff',
+    transition: 'all 0.3s ease',
+    padding: '8px 12px',
+    borderRadius: '4px',
+  };
+
+  const dropdownLinkStyle = {
+    padding: '10px 16px',
+    fontFamily: 'SceneProBold',
+    textTransform: 'uppercase',
+    color: '#FFF',
+    letterSpacing: '2px',
+    fontSize: '13px',
+    display: 'block',
+    transition: 'all 0.3s ease',
+  };
+
+  const mobileMenuItems = [
+    { name: 'Auto Detailing', path: '/services/detailing' },
+    { name: 'Mobile Detailing', path: '/services/mobile-detailing' },
+    { name: 'Paint Protection Film', path: '/services/paint-protection-film' },
+    { name: 'Ceramic Coating', path: '/services/ceramic-coatings' },
+    { name: 'Window Tinting', path: '/services/window-tinting' },
+    { name: 'Light Protection Film', path: '/services/light-protection-film' },
+    { name: 'Windshield Protection Film', path: '/services/windshield-protection-film' },
+    { name: 'Paint Correction', path: '/services/paint-correction' },
+    { name: 'Headlight Restoration', path: '/services/headlight-restoration' },
+    { name: 'Additional Services', path: '/services/additional-services' },
+    { name: 'About', path: '/about' },
+    { name: 'Reviews', path: '/reviews' },
+    { name: 'Contact', path: '/contact-us' },
   ];
 
   return (
-
-    <Container size="xl">
-    
-    <Navbar height='85px' classNames={{ wrapper: "!max-w-full" }} isBordered isMenuOpen={isMenuOpen} onMenuOpenChange={setIsMenuOpen}>
-
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="sm:hidden"
-        />
-
-      <NavbarBrand>
-        <NavLink to='/'>
-        <Link to="/" style={{ textDecoration: 'none' }}>
-          <img className="logo" src="images/logo.png" alt='logo' />
-      </Link>
-        </NavLink>
-      </NavbarBrand>
-      
-      <NavbarMenu style={{ overflowY: 'scroll' }}>
-
-      <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              style={{  }}
-              to="/services/detailing"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Auto Detailing
-            </Link>
-          </NavbarMenuItem>
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/services/mobile-detailing"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Mobile Detailing
-            </Link>
-          </NavbarMenuItem>
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/services/paint-protection-film"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Paint Protection Film
-            </Link>
-          </NavbarMenuItem>
-
-          {/* <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/services/fashion-series-ppf"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Fashion Series PPF
-            </Link>
-          </NavbarMenuItem> */}
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/services/ceramic-coatings"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Ceramic Coating
-            </Link>
-          </NavbarMenuItem>
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/services/window-tinting"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Window Tinting
-            </Link>
-          </NavbarMenuItem>
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/services/light-protection-film"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Light Protection Film
-            </Link>
-          </NavbarMenuItem>
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/services/"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Windshield Protection Film
-            </Link>
-          </NavbarMenuItem>
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/services/paint-correction"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Paint Correction
-            </Link>
-          </NavbarMenuItem>
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/services/headlight-restoration"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Headlight Restoration
-            </Link>
-          </NavbarMenuItem>
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/services/additional-services"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Additional Services
-            </Link>
-          </NavbarMenuItem>
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/about"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              About
-            </Link>
-          </NavbarMenuItem>
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/reviews"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Reviews
-            </Link>
-          </NavbarMenuItem>
-
-          <NavbarMenuItem key='1'>
-            <Link
-              color="primary"
-              className="w-full"
-              to="/contact-us"
-              onClick={() => setIsMenuOpen(false)}
-              size="lg"
-            >
-              Contact
-            </Link>
-          </NavbarMenuItem>
-   
-      </NavbarMenu>
-
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
-        <Dropdown 
-        showArrow
-        classNames={{
-          base: "before:bg-default-200", // change arrow background
-          content: "py-1 px-1 border border-default-200 bg-gradient-to-br from-gray to-default-200 dark:from-default-50 dark:to-black",
-        }}
-        backdrop="blur"
+    <div style={{ 
+      position: 'sticky', 
+      top: 0, 
+      zIndex: 1000, 
+      backdropFilter: 'blur(20px)',
+      backgroundColor: 'rgba(0, 0, 0, 0.85)',
+      borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+    }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 20px' }}>
+        <Navbar 
+          height='85px' 
+          classNames={{ 
+            wrapper: "!max-w-full !px-0",
+            base: "!bg-transparent"
+          }} 
+          isBordered={false}
+          isMenuOpen={isMenuOpen} 
+          onMenuOpenChange={setIsMenuOpen}
         >
-          <NavbarItem >
-            <DropdownTrigger>
-              <div style={{ cursor: 'pointer', textTransform: 'uppercase', fontFamily: 'SceneProBold', letterSpacing: '2px', fontSize: '13px' }} endContent={icons.chevron}>Services</div>
-            </DropdownTrigger>
-          </NavbarItem>
-          <DropdownMenu
-          variant="faded"
-            aria-label="Supreme Detail Studio Services"
-            className="w-[240px] h-[100%]"
-            itemClasses={{
-              base: "gap-2 ",
+          <NavbarMenuToggle
+            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            className="sm:hidden text-white"
+          />
 
-            }}
-          >
-            <DropdownItem
-              key="99_uptime"
-              // startContent={icons.detail}
-              // description="Much more than just your ordinary car wash. Come see what the premium side of detailing can do for your vehicle."
-            >
-              <Link to='/services/detailing' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Auto Detailing
-              </Link>
-            </DropdownItem>
-
-            <DropdownItem
-              key="supreme_support"
-              // startContent={icons.mobile}
-              // description="Detailing at your residence in the Louisville, KY area."
-            >
-              <Link to='/services/mobile-detailing' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Mobile Detailing
-              </Link>
-            </DropdownItem>
-
-            <DropdownItem
-              key="autoscaling"
-              // startContent={icons.ceramic}
-              // description="Provides durable and long-lasting protection to surfaces from light scratches, UV rays, chemicals, and environmental contaminants."
-            >
-             
-             <Link to='/services/ceramic-coatings' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Ceramic Coating
-              </Link>
-            </DropdownItem>
-
-            <DropdownItem
-              key="99_uptime"
-              // startContent={icons.detail}
-              // description="Much more than just your ordinary car wash. Come see what the premium side of detailing can do for your vehicle."
-            >
-              <Link to='/services/aviation-detailing' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Aviation Detailing
-              </Link>
-            </DropdownItem>
-
-            <DropdownItem
-              key="99_uptime"
-              // startContent={icons.detail}
-              // description="Much more than just your ordinary car wash. Come see what the premium side of detailing can do for your vehicle."
-            >
-              <Link to='/services/marine-detailing-and-coating' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Marine Detailing
-              </Link>
-            </DropdownItem>
-
-            <DropdownItem
-              key="production_ready"
-              // startContent={icons.detail}
-              // description="Is your car starting to develop swirls or lacking that original gloss and luster from when you first bought it? Then we have the solution for you."
-            >
-              <Link to='/services/paint-correction' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Paint Correction
-              </Link>
-            </DropdownItem>
-
-            <DropdownItem
-              key="production_ready"
-              // startContent={icons.detail}
-              // description="Is your car starting to develop swirls or lacking that original gloss and luster from when you first bought it? Then we have the solution for you."
-            >
-              <Link to='/services/clear-coat-renewal' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Clear Coat Renewal
-              </Link>
-            </DropdownItem>
-
-            <DropdownItem
-              key="usage_metrics"
-              // startContent={icons.shield}
-              // description="Protect and preserve the paint of your vehicle against rock chips, road debris and minor scratches with our professionally installed Paint Protection Film."
-            >
-              <Link to='/services/paint-protection-film' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Paint Protection Film
-              </Link>
-            </DropdownItem>
-
-            {/* <DropdownItem
-              key="usage_metrics"
-              // startContent={icons.shield}
-              // description="Protect and preserve the paint of your vehicle against rock chips, road debris and minor scratches with our professionally installed Paint Protection Film."
-            >
-              <Link to='/services/paint-protection-film' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Fashion Series PPF
-              </Link>
-            </DropdownItem> */}
-
-            <DropdownItem
-              key="usage_metrics"
-              // startContent={icons.shield}
-              // description="Protect and preserve the paint of your vehicle against rock chips, road debris and minor scratches with our professionally installed Paint Protection Film."
-            >
-              <Link to='/services/light-protection-film' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Light Protection Film
-              </Link>
-            </DropdownItem>
-
-            <DropdownItem
-              key="supreme_support"
-              // startContent={icons.tint}
-              // description="Protect the interior of your vehicle from harmful UV rays and the Louisville heat."
-            >
-              <Link to='/services/window-tinting' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Window Tinting
-              </Link>
-            </DropdownItem>
-
-            <DropdownItem
-              key="usage_metrics"
-              // startContent={icons.shield}
-              // description="Protect and preserve the paint of your vehicle against rock chips, road debris and minor scratches with our professionally installed Paint Protection Film."
-            >
-              <Link to='/services/windshield-protection-film' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Windshield Protection
-              </Link>
-            </DropdownItem>
-    
-            {/* <DropdownItem
-              key="supreme_support"
-              // startContent={icons.house}
-              // description="Protect and enhance your kitchen with our protective film installs."
-            >
-             <Link to='/residential-services' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Residential Services
-              </Link>
-            </DropdownItem> */}
-            
-            <DropdownItem
-              key="supreme_support"
-              // startContent={icons.plus}
-              // description="Customize your detailing experience with the additional services we offer"
-            >
-              <Link to='/services/headlight-restoration' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Headlight Restoration
-              </Link>
-            </DropdownItem>
-
-            <DropdownItem
-              key="supreme_support"
-              // startContent={icons.plus}
-              // description="Customize your detailing experience with the additional services we offer"
-            >
-              <Link to='/services/additional-services' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Additional Services
-              </Link>
-            </DropdownItem>
-          </DropdownMenu>
-        </Dropdown>
-
-        {/* <NavbarItem>
-        <NavLink to='/tesla-customers' style={{ textTransform: 'uppercase', fontFamily: 'SceneProBold', letterSpacing: '2px', fontSize: '13px' }}>
-            Tesla Customers
-          </NavLink>
-        </NavbarItem> */}
-        
-        <NavbarItem>
-        <NavLink to='/about' style={{ textTransform: 'uppercase', fontFamily: 'SceneProBold', letterSpacing: '2px', fontSize: '13px' }}>
-            About
-          </NavLink>
-        </NavbarItem>
-
-        <NavbarItem>
-        <NavLink to='/reviews' style={{ textTransform: 'uppercase', fontFamily: 'SceneProBold', letterSpacing: '2px', fontSize: '13px' }}>
-            Reviews
-          </NavLink>
-        </NavbarItem>
-
-        <NavbarItem>
-        <NavLink to='/blog' style={{ textTransform: 'uppercase', fontFamily: 'SceneProBold', letterSpacing: '2px', fontSize: '13px' }}>
-            Blog
-          </NavLink>
-        </NavbarItem>
-
-        <Dropdown
-                showArrow
-                classNames={{
-                  base: "before:bg-default-200", // change arrow background
-                  content: "py-1 px-1 border border-default-200 bg-gradient-to-br from-gray to-default-200 dark:from-default-50 dark:to-black",
+          <NavbarBrand>
+            <Link to="/" style={{ textDecoration: 'none' }}>
+              <img 
+                className="logo" 
+                src="images/logo.png" 
+                alt='Supreme Detail Studio Logo'
+                style={{ 
+                  maxWidth: '180px', 
+                  height: 'auto',
+                  transition: 'transform 0.3s ease'
                 }}
-                backdrop="blur"
-        >
-          <NavbarItem >
-            <DropdownTrigger>
-              <div style={{ cursor: 'pointer', textTransform: 'uppercase', fontFamily: 'SceneProBold', letterSpacing: '2px', fontSize: '13px' }} endContent={icons.chevron}>More</div>
-            </DropdownTrigger>
-          </NavbarItem>
-          <DropdownMenu
-            variant="faded"
-            aria-label="Supreme Detail Studio Services"
-            className="w-[240px] h-[100%]"
-            itemClasses={{
-              base: "gap-2 ",
+                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+              />
+            </Link>
+          </NavbarBrand>
 
-            }}
-          >
-            <DropdownItem
-              key="usage_metrics"
-              // startContent={icons.activity}
+          {/* Mobile Menu */}
+          <NavbarMenu style={{ 
+            backgroundColor: 'rgba(0, 0, 0, 0.98)', 
+            paddingTop: '20px',
+            overflowY: 'auto'
+          }}>
+            {mobileMenuItems.map((item, index) => (
+              <NavbarMenuItem key={index} style={{ padding: '8px 0' }}>
+                <Link
+                  to={item.path}
+                  onClick={() => setIsMenuOpen(false)}
+                  style={{
+                    color: '#fff',
+                    fontFamily: 'SceneProBold',
+                    letterSpacing: '2px',
+                    textTransform: 'uppercase',
+                    fontSize: '14px',
+                    textDecoration: 'none',
+                    display: 'block',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    transition: 'all 0.3s ease',
+                    backgroundColor: 'transparent'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.2)';
+                    e.currentTarget.style.paddingLeft = '24px';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.paddingLeft = '16px';
+                  }}
+                >
+                  {item.name}
+                </Link>
+              </NavbarMenuItem>
+            ))}
+          </NavbarMenu>
+
+          {/* Desktop Navigation */}
+          <NavbarContent className="hidden sm:flex gap-6" justify="center">
+            <Dropdown 
+              showArrow
+              classNames={{
+                base: "before:bg-default-200",
+                content: "py-1 px-1 border border-default-200 bg-gradient-to-br from-gray-900 to-black",
+              }}
+              backdrop="blur"
             >
-              <Link to='/before-and-after' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Before And After
-              </Link>
-            </DropdownItem>
-            <DropdownItem
-              key="production_ready"
-              // startContent={icons.flash}
+              <NavbarItem>
+                <DropdownTrigger>
+                  <div 
+                    style={navLinkStyle}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
+                  >
+                    Services
+                  </div>
+                </DropdownTrigger>
+              </NavbarItem>
+              <DropdownMenu
+                variant="faded"
+                aria-label="Supreme Detail Studio Services"
+                className="w-[260px]"
+                itemClasses={{ base: "gap-2" }}
+              >
+                <DropdownItem key="detailing">
+                  <Link to='/services/detailing' style={dropdownLinkStyle}>
+                    Auto Detailing
+                  </Link>
+                </DropdownItem>
+                <DropdownItem key="mobile">
+                  <Link to='/services/mobile-detailing' style={dropdownLinkStyle}>
+                    Mobile Detailing
+                  </Link>
+                </DropdownItem>
+                <DropdownItem key="ceramic">
+                  <Link to='/services/ceramic-coatings' style={dropdownLinkStyle}>
+                    Ceramic Coating
+                  </Link>
+                </DropdownItem>
+                <DropdownItem key="paint-correction">
+                  <Link to='/services/paint-correction' style={dropdownLinkStyle}>
+                    Paint Correction
+                  </Link>
+                </DropdownItem>
+                <DropdownItem key="ppf">
+                  <Link to='/services/paint-protection-film' style={dropdownLinkStyle}>
+                    Paint Protection Film
+                  </Link>
+                </DropdownItem>
+                <DropdownItem key="light-ppf">
+                  <Link to='/services/light-protection-film' style={dropdownLinkStyle}>
+                    Light Protection Film
+                  </Link>
+                </DropdownItem>
+                <DropdownItem key="tinting">
+                  <Link to='/services/window-tinting' style={dropdownLinkStyle}>
+                    Window Tinting
+                  </Link>
+                </DropdownItem>
+                <DropdownItem key="windshield">
+                  <Link to='/services/windshield-protection-film' style={dropdownLinkStyle}>
+                    Windshield Protection
+                  </Link>
+                </DropdownItem>
+                <DropdownItem key="headlight">
+                  <Link to='/services/headlight-restoration' style={dropdownLinkStyle}>
+                    Headlight Restoration
+                  </Link>
+                </DropdownItem>
+                <DropdownItem key="additional">
+                  <Link to='/services/additional-services' style={dropdownLinkStyle}>
+                    Additional Services
+                  </Link>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+
+            <NavbarItem>
+              <NavLink 
+                to='/about' 
+                style={navLinkStyle}
+                onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+                onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
+              >
+                About
+              </NavLink>
+            </NavbarItem>
+
+            <NavbarItem>
+              <NavLink 
+                to='/reviews' 
+                style={navLinkStyle}
+                onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+                onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
+              >
+                Reviews
+              </NavLink>
+            </NavbarItem>
+
+            <NavbarItem>
+              <NavLink 
+                to='/blog' 
+                style={navLinkStyle}
+                onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+                onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
+              >
+                Blog
+              </NavLink>
+            </NavbarItem>
+
+            <Dropdown
+              showArrow
+              classNames={{
+                base: "before:bg-default-200",
+                content: "py-1 px-1 border border-default-200 bg-gradient-to-br from-gray-900 to-black",
+              }}
+              backdrop="blur"
             >
-              <Link to='/gallery' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              Gallery
+              <NavbarItem>
+                <DropdownTrigger>
+                  <div 
+                    style={navLinkStyle}
+                    onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+                    onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
+                  >
+                    More
+                  </div>
+                </DropdownTrigger>
+              </NavbarItem>
+              <DropdownMenu
+                variant="faded"
+                aria-label="More Links"
+                className="w-[220px]"
+                itemClasses={{ base: "gap-2" }}
+              >
+                <DropdownItem key="before-after">
+                  <Link to='/before-and-after' style={dropdownLinkStyle}>
+                    Before & After
+                  </Link>
+                </DropdownItem>
+                <DropdownItem key="gallery">
+                  <Link to='/gallery' style={dropdownLinkStyle}>
+                    Gallery
+                  </Link>
+                </DropdownItem>
+                <DropdownItem key="faq">
+                  <Link to='/faq' style={dropdownLinkStyle}>
+                    FAQs
+                  </Link>
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+
+            <NavbarItem>
+              <NavLink 
+                to='/contact-us' 
+                style={navLinkStyle}
+                onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+                onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
+              >
+                Contact
+              </NavLink>
+            </NavbarItem>
+          </NavbarContent>
+
+          {/* Mobile Book Button */}
+          <NavbarContent justify="end" className="sm:hidden">
+            <NavbarItem>
+              <Link to='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw' target="_blank">
+                <Button 
+                  radius="none" 
+                  size="sm" 
+                  style={{ 
+                    backgroundColor: '#e80200',
+                    fontFamily: 'SceneProRg',
+                    letterSpacing: '2px',
+                    textTransform: 'uppercase',
+                    fontWeight: 600,
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  Book Now
+                </Button>
               </Link>
-            </DropdownItem>
-            <DropdownItem
-              key="99_uptime"
-              // startContent={icons.server}
-            >
-              <Link to='/faq' style={{ padding: '0px', fontFamily:'SceneProBold', textTransform: 'uppercase', color: '#FFF', letterSpacing: '2px', fontSize: '13px' }}>
-              FAQs
+            </NavbarItem>
+          </NavbarContent>
+
+          {/* Desktop Book Button */}
+          <NavbarContent justify="end" className="max-sm:hidden">
+            <NavbarItem>
+              <Link to='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw' target="_blank">
+                <Button 
+                  radius="none" 
+                  size="md" 
+                  style={{ 
+                    backgroundColor: '#e80200',
+                    fontFamily: 'SceneProRg',
+                    letterSpacing: '3px',
+                    textTransform: 'uppercase',
+                    fontWeight: 600,
+                    padding: '0 32px',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.backgroundColor = '#ff1a1a';
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(232, 2, 0, 0.5)';
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.backgroundColor = '#e80200';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
+                >
+                  Book Appointment
+                </Button>
               </Link>
-            </DropdownItem>
-           
-          </DropdownMenu>
-        </Dropdown>
-
-        <NavbarItem>
-        <NavLink to='/contact-us' style={{ textTransform: 'uppercase', fontFamily: 'SceneProBold', letterSpacing: '2px', fontSize: '13px' }}>
-            Contact
-          </NavLink>
-        </NavbarItem>
-        
-      </NavbarContent>
-
-      <NavbarContent justify="end" className="sm:hidden">
-        <NavbarItem>
-          <Link to='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw' target="_blank">
-          <Button radius="none" size="sm" style={{ backgroundColor: 'rgb(232, 2, 0)', fontFamily: 'SceneProRg', letterSpacing: '2px', textTransform: 'uppercase' }}>
-            Book Now
-          </Button>
-          </Link>
-        </NavbarItem>
-      </NavbarContent>
-
-      <NavbarContent justify="end" className="max-sm:hidden">
-        <NavbarItem>
-          <Link to='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw' target="_blank">
-          <Button radius="none" size="md" style={{ backgroundColor: 'rgb(232, 2, 0)', fontFamily: 'SceneProRg', letterSpacing: '3px', textTransform: 'uppercase' }}>
-            Book Appointment
-          </Button>
-          </Link>
-        </NavbarItem>
-      </NavbarContent>
-
-    </Navbar>
-    </Container>
+            </NavbarItem>
+          </NavbarContent>
+        </Navbar>
+      </div>
+    </div>
   );
 }
