@@ -183,7 +183,7 @@ const Footer2 = () => {
         <div className={classes.footerLeftColumn}>
         <Link to="/" style={{ textDecoration: 'none' }}>
                 <Title className={classes.title}>
-                  <img src="images/logo.png" className="logo" loading="lazy" alt="" width='214px' />
+                  <img src={Logo} className="logo" loading="lazy" alt="Supreme Detail Studio" width='214px' />
                 </Title>
               </Link>
           <div className={classes.socialContainer}>
