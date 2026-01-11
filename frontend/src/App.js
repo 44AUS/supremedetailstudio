@@ -22,7 +22,7 @@ import WindowTintPage from './pages/WindowTintPage';
 import VehicleWindowTintingPage from './pages/VehicleWindowTintingPage';
 import ResidentialWindowTintPage from './pages/ResidentialTintingPage';
 import CommercialWindowTintPage from './pages/CommercialTintingPage';
-import MariettaKYPage from './pages/MariettaKYPage';
+import LouisvilleKYPage from './pages/LouisvilleKYPage';
 import CrestwoodKYPage from './pages/CrestwoodKYPage';
 import MiddletownKYPage from './pages/MiddletownKYPage';
 import JeffersontownKYPage from './pages/JeffersontownKYPage';
