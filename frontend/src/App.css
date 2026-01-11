@@ -2,138 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ScenePro Font Family - OpenType Format */
-@font-face {
-  font-family: "SceneProRg";
-  src: url("./fonts/SceneProRg.OTF") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
+/* Override Mantine and other component fonts */
+.mantine-Title-root,
+.mantine-Text-root {
+  font-family: inherit !important;
 }
 
-@font-face {
-  font-family: "SceneProBdIt";
-  src: url("./fonts/SceneProBdIt.OTF") format("opentype");
-  font-weight: 700;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "SceneProBold";
-  src: url("./fonts/SceneProBold.OTF") format("opentype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "SceneProUltBlk";
-  src: url("./fonts/SceneProUltBlk.OTF") format("opentype");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "SceneProUltBlkIt";
-  src: url("./fonts/SceneProUltBlkIt.OTF") format("opentype");
-  font-weight: 900;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "SceneProMedIt";
-  src: url("./fonts/SceneProMedIt.OTF") format("opentype");
-  font-weight: 500;
-  font-style: italic;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "SceneProMedium";
-  src: url("./fonts/SceneProMedium.OTF") format("opentype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "SceneProLight";
-  src: url("./fonts/SceneProLight.OTF") format("opentype");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "SceneProBlack";
-  src: url("./fonts/SceneProBlack.OTF") format("opentype");
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Evogria";
-  src: url("./fonts/Evogria.otf") format("opentype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  margin: 0;
-  min-height: 100%;
-  background-color: #000;
-  font-family: 'SceneProRg', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #ababab;
-  font-size: 1rem;
-  line-height: 1.4;
-  font-weight: 400;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* Global Link Styles */
-a {
-  transition: all 0.3s ease;
-}
-
-/* Smooth Image Loading */
-img {
-  transition: opacity 0.3s ease;
-  max-width: 100%;
-  height: auto;
-}
-
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #1a1a1a;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #e80200;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #ff1a1a;
+/* Ensure Oswald for all titles */
+[class*="title"],
+[class*="Title"],
+[class*="heading"],
+[class*="Heading"] {
+  font-family: 'Oswald', sans-serif !important;
+  text-transform: uppercase;
 }
 
 /* Mobile Menu Styles */
@@ -156,4 +37,14 @@ img {
   .mobile-menu {
     display: none !important;
   }
+}
+
+/* Smooth transitions */
+a, button {
+  transition: all 0.3s ease;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }

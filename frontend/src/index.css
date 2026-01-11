@@ -1,26 +1,58 @@
-/* Import fonts from App.css */
+/* Global Font Styles using Google Fonts */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   margin: 0;
-  font-family: 'SceneProRg', -apple-system, BlinkMacSystemFont, sans-serif !important;
+  min-height: 100vh;
+  background-color: #000;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #ababab;
+  font-size: 16px;
+  line-height: 1.6;
+  font-weight: 400;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #000;
+}
+
+/* Headings use Oswald */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Body text uses Montserrat */
+p, span, a, li, td, th, label, input, textarea, button {
+  font-family: 'Montserrat', sans-serif;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-/* Force ScenePro fonts globally */
-* {
-  font-family: inherit;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'SceneProUltBlkIt', sans-serif !important;
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
 }
 
-p, span, a, button, input, textarea, li {
-  font-family: 'SceneProRg', sans-serif !important;
+::-webkit-scrollbar-thumb {
+  background: #e80200;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #ff1a1a;
 }
