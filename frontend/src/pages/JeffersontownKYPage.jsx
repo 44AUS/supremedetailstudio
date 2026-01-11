@@ -11,7 +11,7 @@ import { Helmet } from 'react-helmet';
 import Map from '../components/Map';
 import AboutHero from '../components/Heroes/AboutHero';
 import CertifiedInstaller from '../components/BenefitsAndImportance/CertifiedInstaller';
-import curingLamp from '../assets/images/ceramic-coatings/curing-lamp.jpg';
+import curingLamp from '../assets/images/details/curing-lamp.jpg';
 import TeslaInterior from '../assets/images/details/tesla-interior.jpg'
 
 const useStyles = createStyles((theme) => ({
