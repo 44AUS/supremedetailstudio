@@ -9,23 +9,12 @@ import {
   NavbarMenuItem
 } from "@nextui-org/navbar";
 import {Button, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu} from "@nextui-org/react";
-import {ChevronDown, Ceramic, House, Tint, Mobile, Detail, Shield, Business, Plus} from "./Icons.jsx";
+import {ChevronDown} from "./Icons.jsx";
 import { NavLink } from "react-router-dom";
 import { Link } from 'react-router-dom';
+import Logo from '../assets/logo.png';
 
 export default function NavBar() {
-  const icons = {
-    chevron: <ChevronDown fill="currentColor" size={16} />,
-    business: <Business className="text-warning" fill="currentColor" size={30} />,
-    house: <House className="text-success" fill="currentColor" size={30} />,
-    tint: <Tint className="text-secondary" fill="currentColor" size={30} />,
-    mobile: <Mobile className="text-primary" fill="currentColor" size={30} />,
-    detail: <Detail className="text-success" fill="currentColor" size={30} />,
-    ceramic: <Ceramic className="text-danger" fill="currentColor" size={30} />,
-    shield: <Shield className="text-danger" fill="currentColor" size={30} />,
-    plus: <Plus className="text-danger" fill="currentColor" size={30} />,
-  };
-  
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
 
   const navLinkStyle = {
