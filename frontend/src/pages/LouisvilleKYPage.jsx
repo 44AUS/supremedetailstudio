@@ -12,10 +12,10 @@ import { Link } from 'react-router-dom';
 import Map from '../components/Map';
 import LouisvilleKYHero from '../components/Heroes/LouisvilleKYHero';
 import CertifiedInstaller from '../components/BenefitsAndImportance/CertifiedInstaller';
-import curingLamp from '../assets/images/ceramic-coatings/curing-lamp.jpg';
+import curingLamp from '../assets/images/details/curing-lamp.jpg';
 import TeslaInterior from '../assets/images/details/tesla-interior.jpg'
 import Services from '../components/Services/Services';
-import BMWInterior from '../assets/images/details/piano-black-trim.jpg';
+import BMWInterior from '../assets/images/details/bmw-dashboard.jpg';
 import TeslaPlaid from '../assets/images/details/tesla-paint-correction.jpg';
 
 const useStyles = createStyles((theme) => ({
