@@ -3,7 +3,7 @@ import { Parallax } from 'react-scroll-parallax';
 import { Title, Text, Container, createStyles } from '@mantine/core';
 import {Button, ButtonGroup} from "@nextui-org/button";
 import { Link } from 'react-router-dom';
-// import LeatherSeats from '../../assets/images/details/leather-seats.jpg';
+import LeatherSeats from '../../assets/images/details/leather-seats.jpg';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {

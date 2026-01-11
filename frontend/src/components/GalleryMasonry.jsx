@@ -3,7 +3,7 @@ import React from 'react';
 import SteamClean from '../assets/images/details/steam-clean.jpg';
 import BMW760i from '../assets/images/details/bmw-760i.jpg';
 import TeslaRear from '../assets/images/details/tesla-rear.jpg';
-// import OnyxCoating from '../assets/images/ceramic-coatings/onyx-coating.jpg';
+import OnyxCoating from '../assets/images/ceramic-coatings/onyx-coating.jpg';
 import Tesla from '../assets/images/details/tesla-paint-correction.jpg';
 import TeslaSteeringWheel from '../assets/images/details/tesla-steering-wheel.jpg';
 import Tesla3Interior from '../assets/images/details/tesla-model-3-interior.jpg';
