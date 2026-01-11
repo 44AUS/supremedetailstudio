@@ -85,7 +85,7 @@ export default function NavBar() {
             <Link to="/" style={{ textDecoration: 'none' }}>
               <img 
                 className="logo" 
-                src="images/logo.png" 
+                src={Logo} 
                 alt='Supreme Detail Studio Logo'
                 style={{ 
                   maxWidth: '180px', 
