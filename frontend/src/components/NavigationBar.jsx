@@ -79,7 +79,7 @@ export default function NavBar() {
               className="w-full"
               style={{  }}
               to="/services/detailing"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Auto Detailing
@@ -91,7 +91,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/services/mobile-detailing"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Mobile Detailing
@@ -103,7 +103,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/services/paint-protection-film"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Paint Protection Film
@@ -115,7 +115,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/services/fashion-series-ppf"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Fashion Series PPF
@@ -127,7 +127,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/services/ceramic-coatings"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Ceramic Coating
@@ -139,7 +139,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/services/window-tinting"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Window Tinting
@@ -151,7 +151,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/services/light-protection-film"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Light Protection Film
@@ -163,7 +163,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/services/"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Windshield Protection Film
@@ -175,7 +175,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/services/paint-correction"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Paint Correction
@@ -187,7 +187,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/services/headlight-restoration"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Headlight Restoration
@@ -199,7 +199,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/services/additional-services"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Additional Services
@@ -211,7 +211,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/about"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               About
@@ -223,7 +223,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/reviews"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Reviews
@@ -235,7 +235,7 @@ export default function NavBar() {
               color="primary"
               className="w-full"
               to="/contact-us"
-              onClick={()=> isMenuOpen(false)}
+              onClick={() => setIsMenuOpen(false)}
               size="lg"
             >
               Contact
