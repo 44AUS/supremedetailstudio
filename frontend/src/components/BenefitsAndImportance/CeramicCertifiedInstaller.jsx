@@ -2,7 +2,7 @@ import React from 'react'
 import { Parallax } from 'react-scroll-parallax';
 import { Title, Text, Image, Container, Button, Overlay, createStyles } from '@mantine/core';
 import { Link } from 'react-router-dom';
-// import FlyingSpur from '../../assets/images/ceramic-coatings/flying-spur.avif';
+import FlyingSpur from '../../assets/images/ceramic-coatings/onyx-coating-show.jpg';
 import Onyx from '../../assets/images/partners/onyx-logo@2x.webp';
 
 const useStyles = createStyles((theme) => ({
@@ -10,7 +10,7 @@ const useStyles = createStyles((theme) => ({
     position: 'relative',
     paddingTop: '150px',
     paddingBottom: '150px',
-    backgroundImage: 'url(/images/ceramic-coatings/flying-spur.avif)',
+    backgroundImage: `url(${FlyingSpur})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     [theme.fn.smallerThan('md')]: {
