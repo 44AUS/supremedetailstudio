@@ -7,7 +7,7 @@ import BenefitsOfPPF from '../components/BenefitsAndImportance/BenefitsOfPPF';
 import PPFComponent from '../components/PPF/PPF';
 // import StekRed from '../../src/assets/images/partners/stek--white-red.webp';
 // import GSWFWhite from '../../assets/images/partners/GSWFWhite.svg';
-import GSWFBlue from '../../src/assets/images/partners/GSWFBlue.png';
+// import GSWFBlue from '../../src/assets/images/partners/GSWFBlue.png'; // File not available
 import Gallery from '../components/Gallery';
 import StagesOfPPF from '../components/BenefitsAndImportance/StagesOfPPF';
 import VideoIntroduction from '../components/BenefitsAndImportance/VideoIntroduction';
