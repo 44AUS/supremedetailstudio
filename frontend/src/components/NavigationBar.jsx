@@ -30,13 +30,14 @@ export default function NavBar() {
 
   const navLinkStyle = {
     color: '#fff',
-    fontFamily: 'SceneProRg, sans-serif',
-    fontSize: '13px',
-    letterSpacing: '3px',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    letterSpacing: '2px',
     textTransform: 'uppercase',
-    padding: '12px 16px',
+    padding: '12px 18px',
     textDecoration: 'none',
     transition: 'color 0.3s ease',
+    fontWeight: 500,
   };
 
   const dropdownItemStyle = {
@@ -44,12 +45,13 @@ export default function NavBar() {
     padding: '12px 20px',
     color: '#fff',
     textDecoration: 'none',
-    fontFamily: 'SceneProRg, sans-serif',
-    fontSize: '13px',
-    letterSpacing: '2px',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    letterSpacing: '1px',
     textTransform: 'uppercase',
     transition: 'all 0.3s ease',
     backgroundColor: 'transparent',
+    fontWeight: 400,
   };
 
   return (
@@ -87,7 +89,7 @@ export default function NavBar() {
           <div className="desktop-nav" style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: '4px',
           }}>
             {/* Services Dropdown */}
             <div 
@@ -126,7 +128,7 @@ export default function NavBar() {
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '8px',
                 padding: '8px 0',
-                minWidth: '260px',
+                minWidth: '280px',
                 opacity: servicesOpen ? 1 : 0,
                 visibility: servicesOpen ? 'visible' : 'hidden',
                 transform: servicesOpen ? 'translateY(0)' : 'translateY(-10px)',
@@ -270,15 +272,16 @@ export default function NavBar() {
             style={{
               backgroundColor: '#e80200',
               color: '#fff',
-              fontFamily: 'SceneProRg, sans-serif',
-              fontSize: '13px',
-              letterSpacing: '3px',
+              fontFamily: "'Oswald', sans-serif",
+              fontSize: '14px',
+              letterSpacing: '2px',
               textTransform: 'uppercase',
               padding: '14px 28px',
               textDecoration: 'none',
               flexShrink: 0,
               transition: 'all 0.3s ease',
               boxShadow: '0 4px 15px rgba(232, 2, 0, 0.3)',
+              fontWeight: 500,
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = '#ff1a1a';
@@ -298,6 +301,7 @@ export default function NavBar() {
           <button
             className="mobile-menu-btn"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
             style={{
               display: 'none',
               flexDirection: 'column',
@@ -355,12 +359,13 @@ export default function NavBar() {
             <div style={{ marginBottom: '20px' }}>
               <div style={{
                 color: '#e80200',
-                fontFamily: 'SceneProRg, sans-serif',
+                fontFamily: "'Oswald', sans-serif",
                 fontSize: '12px',
                 letterSpacing: '3px',
                 textTransform: 'uppercase',
                 marginBottom: '10px',
                 paddingLeft: '5px',
+                fontWeight: 600,
               }}>
                 Services
               </div>
@@ -371,14 +376,15 @@ export default function NavBar() {
                   onClick={closeMenu}
                   style={{
                     display: 'block',
-                    padding: '12px 5px',
+                    padding: '14px 5px',
                     color: '#fff',
                     textDecoration: 'none',
-                    fontFamily: 'SceneProRg, sans-serif',
-                    fontSize: '14px',
-                    letterSpacing: '2px',
+                    fontFamily: "'Oswald', sans-serif",
+                    fontSize: '16px',
+                    letterSpacing: '1px',
                     textTransform: 'uppercase',
                     borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                    fontWeight: 400,
                   }}
                 >
                   {service.name}
@@ -390,12 +396,13 @@ export default function NavBar() {
             <div style={{ marginBottom: '20px' }}>
               <div style={{
                 color: '#e80200',
-                fontFamily: 'SceneProRg, sans-serif',
+                fontFamily: "'Oswald', sans-serif",
                 fontSize: '12px',
                 letterSpacing: '3px',
                 textTransform: 'uppercase',
                 marginBottom: '10px',
                 paddingLeft: '5px',
+                fontWeight: 600,
               }}>
                 Pages
               </div>
@@ -411,14 +418,15 @@ export default function NavBar() {
                   onClick={closeMenu}
                   style={{
                     display: 'block',
-                    padding: '12px 5px',
+                    padding: '14px 5px',
                     color: '#fff',
                     textDecoration: 'none',
-                    fontFamily: 'SceneProRg, sans-serif',
-                    fontSize: '14px',
-                    letterSpacing: '2px',
+                    fontFamily: "'Oswald', sans-serif",
+                    fontSize: '16px',
+                    letterSpacing: '1px',
                     textTransform: 'uppercase',
                     borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+                    fontWeight: 400,
                   }}
                 >
                   {link.name}
@@ -438,12 +446,13 @@ export default function NavBar() {
                 backgroundColor: '#e80200',
                 color: '#fff',
                 textDecoration: 'none',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '14px',
-                letterSpacing: '3px',
+                fontFamily: "'Oswald', sans-serif",
+                fontSize: '16px',
+                letterSpacing: '2px',
                 textTransform: 'uppercase',
                 textAlign: 'center',
                 boxShadow: '0 4px 15px rgba(232, 2, 0, 0.3)',
+                fontWeight: 500,
               }}
             >
               Book Appointment
@@ -461,11 +470,12 @@ export default function NavBar() {
                 border: '2px solid #fff',
                 color: '#fff',
                 textDecoration: 'none',
-                fontFamily: 'SceneProRg, sans-serif',
-                fontSize: '14px',
-                letterSpacing: '3px',
+                fontFamily: "'Oswald', sans-serif",
+                fontSize: '16px',
+                letterSpacing: '2px',
                 textTransform: 'uppercase',
                 textAlign: 'center',
+                fontWeight: 500,
               }}
             >
               Call (502) 417-0690
