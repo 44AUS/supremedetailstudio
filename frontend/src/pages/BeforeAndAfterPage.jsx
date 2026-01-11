@@ -2,10 +2,6 @@ import React, { useState } from 'react'
 import { Container, Title, SimpleGrid, Text, Button, AspectRatio, createStyles } from '@mantine/core';
 import BeforeAndAfterHero from '../components/Heroes/BeforeAndAfterHero';
 import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
-import DoorPanelBefore from '../assets/images/before-after/door-panel-before.jpg';
-import DoorPanelAfter from '../assets/images/before-after/door-panel-after.jpg';
-import CenterConsoleBefore from '../assets/images/before-after/center-console-before.jpg';
-import CenterConsoleAfter from '../assets/images/before-after/center-console-after.jpg';
 import WheelBefore from '../assets/images/before-after/wheel-before.webp';
 import WheelAfter from '../assets/images/before-after/wheel-after.webp';
 import FloorMatBefore from '../assets/images/before-after/floor-mat-before.webp';
