@@ -67,7 +67,7 @@ const useStyles = createStyles((theme) => ({
     animation: 'fadein 1s',
   },
   desc: {
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     color: '#e80200',
     fontSize: '1.25rem',
     lineHeight: 1.6,
