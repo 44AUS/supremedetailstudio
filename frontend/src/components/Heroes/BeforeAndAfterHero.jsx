@@ -130,7 +130,7 @@ const BeforeAndAfterHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            Check out the finest before and after photos of our car detailing services in Louisville, KY, at Supreme Detail Studio. We're the preferred destination for Louisville residents and businesses, boasting certified professionals dedicated to providing top-notch service. Rest assured, your vehicle will depart with a pristine showroom finish, backed by our commitment to excellence.
+            Check out the finest before and after photos of our car detailing services in Marietta, GA, at Supreme Detail Studio. We're the preferred destination for Marietta residents and businesses, boasting certified professionals dedicated to providing top-notch service. Rest assured, your vehicle will depart with a pristine showroom finish, backed by our commitment to excellence.
           </Text>
         </Container>
         <div className="mx-auto mt-10 flex items-center justify-center max-w-2xl lg:mx-0 lg:max-w-none">

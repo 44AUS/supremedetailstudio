@@ -102,7 +102,7 @@ const InteriorHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            At Supreme Detail Studio, our <span style={{ fontWeight: 'bold' }}>interior detailing in Louisville</span> service will leave your vehicle looking and feeling like new. Our owner, with almost a decade of experience, ensures your vehicle will leave our shop looking its absolute best!
+            At Supreme Detail Studio, our <span style={{ fontWeight: 'bold' }}>interior detailing in Marietta</span> service will leave your vehicle looking and feeling like new. Our owner, with almost a decade of experience, ensures your vehicle will leave our shop looking its absolute best!
           </Text>
         </Container>
 

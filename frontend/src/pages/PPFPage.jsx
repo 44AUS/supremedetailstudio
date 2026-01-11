@@ -166,13 +166,13 @@ const PPFPage = () => {
   return (
     <>
     <Helmet>
-      <title>STEK Clear Bra & Paint Protection Film In Louisville, KY: Ultimate Vehicle Shield | Supreme Detail Studio</title>
-      <meta name='title' content='STEK Clear Bra & Paint Protection Film In Louisville, KY: Ultimate Vehicle Shield | Supreme Detail Studio' />
+      <title>STEK Clear Bra & Paint Protection Film In Marietta, GA: Ultimate Vehicle Shield | Supreme Detail Studio</title>
+      <meta name='title' content='STEK Clear Bra & Paint Protection Film In Marietta, GA: Ultimate Vehicle Shield | Supreme Detail Studio' />
       <meta name='description' content='Stop worrying about your vehicle’s paint and start driving in a carefree manner with a PPF from Supreme Detail Studio! Call us today at (502) 417-0690.' />
       <meta name='keywords' content='louisville ky Paint Protection Film, supreme detail studio, louisville mobile car detailing, louisville undercarriage detailing, louisville mobile car wash, louisville Paint Protection Film, louisville paint correction, louisville mobile detail new albany,' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
-      <meta property="og:title" content='STEK Clear Bra & Paint Protection Film In Louisville, KY: Ultimate Vehicle Shield | Supreme Detail Studio' />
+      <meta property="og:title" content='STEK Clear Bra & Paint Protection Film In Marietta, GA: Ultimate Vehicle Shield | Supreme Detail Studio' />
       <meta property="og:description" content='Stop worrying about your vehicle’s paint and start driving in a carefree manner with a PPF from Supreme Detail Studio! Call us today at (502) 417-0690.' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
       

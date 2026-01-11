@@ -191,7 +191,7 @@ const AboutPage = () => {
           <img src={BMWSteeringWheel} />
           </div>
          <div>
-          <Text className={classes.WhyDesc}>Do you want to have your car ready for the showroom? Our exterior detailing services in Middletown, KY will give you the head-turning experience you have always wanted. We offer top-quality exterior auto detailing in Louisville, KY and Middletown, KY to make your car look new from the inside out. You can also add premium add-ons, such as scratch removal and ceramic coating if you want that next level of detail. Call us today for a ride that shines like no other!</Text>
+          <Text className={classes.WhyDesc}>Do you want to have your car ready for the showroom? Our exterior detailing services in Middletown, KY will give you the head-turning experience you have always wanted. We offer top-quality exterior auto detailing in Marietta, GA and Middletown, KY to make your car look new from the inside out. You can also add premium add-ons, such as scratch removal and ceramic coating if you want that next level of detail. Call us today for a ride that shines like no other!</Text>
           <Text className={classes.WhyDesc}>Here’s what’s included in our car detailing services:</Text>
           <Text className={classes.ulTitle}>EXTERIOR CAR CLEANING</Text>
           <ul role='list' className={classes.cityList}>

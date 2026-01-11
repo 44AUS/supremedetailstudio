@@ -156,13 +156,13 @@ const WindowTintPage = () => {
   return (
     <>
     <Helmet>
-      <title>Window Tinting in Louisville, KY | Professional Window Tints in Louisville, KY | Supreme Detail Studio</title>
-      <meta name='title' content='Window Tinting in Louisville, KY | Professional Window Tints in Louisville, KY | Supreme Detail Studio' />
+      <title>Window Tinting in Marietta, GA | Professional Window Tints in Marietta, GA | Supreme Detail Studio</title>
+      <meta name='title' content='Window Tinting in Marietta, GA | Professional Window Tints in Marietta, GA | Supreme Detail Studio' />
       <meta name='description' content='It is time to stop your interior from degrading from the sun and infrared heat! Call Supreme Detail Studio for window tinting today at (502) 417-0690.' />
       <meta name='keywords' content='louisville ky window tinting, supreme detail studio, louisville mobile car detailing, louisville undercarriage detailing, louisville mobile car wash, louisville Window Tinting, louisville paint correction, louisville mobile detail new albany,' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
-      <meta property="og:title" content='Window Tinting in Louisville, KY | Professional Window Tints in Louisville, KY | Supreme Detail Studio' />
+      <meta property="og:title" content='Window Tinting in Marietta, GA | Professional Window Tints in Marietta, GA | Supreme Detail Studio' />
       <meta property="og:description" content='It is time to stop your interior from degrading from the sun and infrared heat! Call Supreme Detail Studio for window tinting today at (502) 417-0690.' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
@@ -180,7 +180,7 @@ const WindowTintPage = () => {
     <div className={classes.bgBody}>
     <Container size="xl">
       <div className={classes.wrapper}>
-        <Title className={classes.h1}>Window Tinting Services In Louisville, KY</Title>
+        <Title className={classes.h1}>Window Tinting Services In Marietta, GA</Title>
         <div>
           <Text className={classes.desc}>
             

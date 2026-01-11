@@ -123,12 +123,12 @@ const InteriorProtectionFilmPage = () => {
   return (
     <>
     <Helmet>
-      <title>Interior Protection Film In Louisville, KY | Supreme Detail Studio</title>
-      <meta name='title' content='Interior Protection Film In Louisville, KY | Supreme Detail Studio' />
-      <meta name='description' content='Louisville, KY Interior Protection' />
+      <title>Interior Protection Film In Marietta, GA | Supreme Detail Studio</title>
+      <meta name='title' content='Interior Protection Film In Marietta, GA | Supreme Detail Studio' />
+      <meta name='description' content='Marietta, GA Interior Protection' />
       <meta name='keywords' content='louisville ky Interior Protection, supreme detail studio, louisville mobile car detailing, louisville undercarriage detailing, louisville mobile car wash, louisville Interior Protection, louisville paint correction, louisville mobile detail new albany,' />
-      <meta property="og:title" content='Interior Protection In Louisville, KY | Supreme Detail Studio' />
-      <meta property="og:description" content='Louisville, KY Interior Protection' />
+      <meta property="og:title" content='Interior Protection In Marietta, GA | Supreme Detail Studio' />
+      <meta property="og:description" content='Marietta, GA Interior Protection' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
     </Helmet>
     <InteriorProtectionFilmHero />

@@ -129,7 +129,7 @@ const WindowTintingHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            Discover why an increasing number of Louisville, KY drivers are turning to Supreme Detail Studio for all of their window tinting needs. We offer the highest quality window tint at the best price, guaranteed!
+            Discover why an increasing number of Marietta, GA drivers are turning to Supreme Detail Studio for all of their window tinting needs. We offer the highest quality window tint at the best price, guaranteed!
           </Text>
         </Container>
 

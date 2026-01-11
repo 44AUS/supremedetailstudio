@@ -159,14 +159,14 @@ const VehicleWindowTintingPage = () => {
   return (
     <>
     <Helmet>
-      <title>Vehicle Window Tinting In Louisville, KY | Supreme Detail Studio</title>
-      <meta name='title' content='Vehicle Window Tinting In Louisville, KY | Supreme Detail Studio' />
-      <meta name='description' content='Louisville, KY Vehicle Window Tinting' />
+      <title>Vehicle Window Tinting In Marietta, GA | Supreme Detail Studio</title>
+      <meta name='title' content='Vehicle Window Tinting In Marietta, GA | Supreme Detail Studio' />
+      <meta name='description' content='Marietta, GA Vehicle Window Tinting' />
       <meta name='keywords' content='louisville ky Vehicle Window Tinting, supreme detail studio, louisville mobile car detailing, louisville undercarriage detailing, louisville mobile car wash, louisville Vehicle Window Tinting, louisville paint correction, louisville mobile detail new albany,' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
-      <meta property="og:title" content='Vehicle Window Tinting In Louisville, KY | Supreme Detail Studio' />
-      <meta property="og:description" content='Louisville, KY Vehicle Window Tinting' />
+      <meta property="og:title" content='Vehicle Window Tinting In Marietta, GA | Supreme Detail Studio' />
+      <meta property="og:description" content='Marietta, GA Vehicle Window Tinting' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
     </Helmet>

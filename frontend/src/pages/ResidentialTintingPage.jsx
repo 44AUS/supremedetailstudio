@@ -155,13 +155,13 @@ const ResidentialWindowTintPage = () => {
   return (
     <>
     <Helmet>
-      <title>Residential Window Tinting In Louisville, KY | Supreme Detail Studio</title>
-      <meta name='title' content='Residential Window Tinting In Louisville, KY | Supreme Detail Studio' />
-      <meta name='description' content='Louisville, KY Residential Window Tinting' />
+      <title>Residential Window Tinting In Marietta, GA | Supreme Detail Studio</title>
+      <meta name='title' content='Residential Window Tinting In Marietta, GA | Supreme Detail Studio' />
+      <meta name='description' content='Marietta, GA Residential Window Tinting' />
       <meta name='keywords' content='louisville ky Residential Window Tinting, supreme detail studio, louisville mobile car detailing, louisville undercarriage detailing, louisville mobile car wash, louisville Residential Window Tinting, louisville paint correction, louisville mobile detail new albany,' />
       
-      <meta property="og:title" content='Residential Window Tinting In Louisville, KY | Supreme Detail Studio' />
-      <meta property="og:description" content='Louisville, KY Residential Window Tintings' />
+      <meta property="og:title" content='Residential Window Tinting In Marietta, GA | Supreme Detail Studio' />
+      <meta property="og:description" content='Marietta, GA Residential Window Tintings' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
     </Helmet>
     <ResidentialWindowTintingHero />

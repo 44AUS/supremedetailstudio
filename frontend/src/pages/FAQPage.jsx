@@ -111,13 +111,13 @@ const FaqPage = () => {
   return (
     <>
     <Helmet>
-      <title>Expert Vehicle Care Louisville, KY | Supreme Detail Studio</title>
-      <meta name='title' content='Expert Vehicle Care Louisville, KY | Supreme Detail Studio' />
+      <title>Expert Vehicle Care Marietta, GA | Supreme Detail Studio</title>
+      <meta name='title' content='Expert Vehicle Care Marietta, GA | Supreme Detail Studio' />
       <meta name='description' content='Want more out of your vehicle, home, or office? Contact Supreme Detail Studio today at (502) 417-0690 to learn more about what we offer your vehicle!' />
       <meta name='keywords' content='louisville ky ppf, supreme detail studio, louisville mobile car detailing, louisville window tinting, louisville paint protection film, stek louisville, louisville paint correction, louisville mobile detail new albany,' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
-      <meta property="og:title" content='Expert Vehicle Care Louisville, KY | Supreme Detail Studio' />
+      <meta property="og:title" content='Expert Vehicle Care Marietta, GA | Supreme Detail Studio' />
       <meta property="og:description" content='Want more out of your vehicle, home, or office? Contact Supreme Detail Studio today at (502) 417-0690 to learn more about what we offer your vehicle!' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
     </Helmet>

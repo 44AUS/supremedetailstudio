@@ -129,7 +129,7 @@ const GalleryHero = () => {
 
         <Container>
         <Text className={classes.description}>
-            Experience the best car detailing services in Louisville, KY at Supreme Detail Studio, the top choice for Louisville residents. 
+            Experience the best car detailing services in Marietta, GA at Supreme Detail Studio, the top choice for Marietta residents. 
             Our comprehensive offerings include <Link to="/services/detailing" style={{ textDecoration: 'underline' }}>Auto Detailing</Link>, <Link to="/services/paint-protection-film" style={{ textDecoration: 'underline' }}>Paint Protection Film</Link>, <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>Ceramic Coating</Link>, <Link to="/services/window-tinting" style={{ textDecoration: 'underline' }}>Window Tinting</Link>, <Link to="/services/paint-correction" style={{ textDecoration: 'underline' }}>Paint Correction</Link>, <Link to="/services/vinyl-wrap-chrome-deletion" style={{ textDecoration: 'underline' }}>Vinyl Wrap & Chrome Deletion</Link>, <Link to="/services/additional-services" style={{ textDecoration: 'underline' }}>and much more</Link>. Our certified professional detailers are committed to delivering superior care, we guarantee your vehicle will leave with a showroom quality finish.
           </Text>
         </Container>

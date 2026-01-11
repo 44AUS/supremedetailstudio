@@ -131,7 +131,7 @@ const AddOnHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            Experience the best  <span style={{ fontWeight: 'bold' }}>add on services</span> in Louisville, KY at <span style={{ fontWeight: 'bold' }}>Supreme Detail Studio</span>, the top choice for Louisville residents. Our add on offerings include Engine Bay Cleaning, Headlight Restoration, Pet Hair Removal, Ozone Odor Treatment and much more. Our certified professional detailers are committed to delivering superior care, we guarantee your vehicle will leave with a showroom quality finish.
+            Experience the best  <span style={{ fontWeight: 'bold' }}>add on services</span> in Marietta, GA at <span style={{ fontWeight: 'bold' }}>Supreme Detail Studio</span>, the top choice for Marietta residents. Our add on offerings include Engine Bay Cleaning, Headlight Restoration, Pet Hair Removal, Ozone Odor Treatment and much more. Our certified professional detailers are committed to delivering superior care, we guarantee your vehicle will leave with a showroom quality finish.
           </Text>
         </Container>
 

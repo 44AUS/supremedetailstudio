@@ -129,7 +129,7 @@ const PaintCorrectionHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            At Supreme Detail Studio, we go above and beyond to provide you with the absolute best possible service. Our owner has been perfecting the art of auto detailing for almost a decade. Polish away scratches and small imperfections to restore a glossy shine with our expert <span style={{ fontWeight: 'bold' }}>paint correction in Louisville</span> services.
+            At Supreme Detail Studio, we go above and beyond to provide you with the absolute best possible service. Our owner has been perfecting the art of auto detailing for almost a decade. Polish away scratches and small imperfections to restore a glossy shine with our expert <span style={{ fontWeight: 'bold' }}>paint correction in Marietta</span> services.
           </Text>
         </Container>
 

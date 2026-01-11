@@ -131,7 +131,7 @@ const PPFHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            At Supreme Detail Studio, we specialize in tailoring our services to suit both the design of your vehicle and your unique driving preferences. Whether you opt for our standard protection kit or go for our end to end paint protection, we provide an extensive range of clear bra coverage options, offering more choices than any other PPF shop in Louisville, KY.
+            At Supreme Detail Studio, we specialize in tailoring our services to suit both the design of your vehicle and your unique driving preferences. Whether you opt for our standard protection kit or go for our end to end paint protection, we provide an extensive range of clear bra coverage options, offering more choices than any other PPF shop in Marietta, GA.
           </Text>
         </Container>
 

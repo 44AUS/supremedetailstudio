@@ -141,16 +141,16 @@ import Zoom from 'react-medium-image-zoom'
          <div>
           <Title className={classes.desc}>WE SET A HIGH STANDARD FOR ALL TYPES OF DETAILING SERVICES</Title>
           <Title className={classes.h1}>BEST AUTO DETAILING COMPANY IN LOUISVILLE, KY</Title>
-          <Text className={classes.WhyDesc}>Located in Louisville, Kentucky, we are a dedicated protection and detailing team specializing in a wide range of premium services. Our offerings include advanced <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>ceramic coating</Link> solutions for street vehicles, boats, and industrial or agricultural equipment, as well as residential properties. Additionally, we provide top-tier <Link to="/services/paint-protection-film" style={{ textDecoration: 'underline' }}>paint protection film</Link> products and professional-grade <Link to="/services/window-tinting" style={{ textDecoration: 'underline' }}>window tinting</Link> for all vehicle makes and models. No matter the type of vehicle or machinery you need serviced, our meticulous attention to detail and state-of-the-art techniques guarantee unmatched care and protection for your valuable assets.</Text>
+          <Text className={classes.WhyDesc}>Located in Marietta, Kentucky, we are a dedicated protection and detailing team specializing in a wide range of premium services. Our offerings include advanced <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>ceramic coating</Link> solutions for street vehicles, boats, and industrial or agricultural equipment, as well as residential properties. Additionally, we provide top-tier <Link to="/services/paint-protection-film" style={{ textDecoration: 'underline' }}>paint protection film</Link> products and professional-grade <Link to="/services/window-tinting" style={{ textDecoration: 'underline' }}>window tinting</Link> for all vehicle makes and models. No matter the type of vehicle or machinery you need serviced, our meticulous attention to detail and state-of-the-art techniques guarantee unmatched care and protection for your valuable assets.</Text>
                 <Zoom>
                 <img src={Corvette} alt="gallery-img" style={{width: "100%", display: "block", marginBottom: '1.25rem' }} />
                 </Zoom>
           <Title className={classes.h1}>PPF CERTIFIED INSTALLER IN LOUISVILLE, KY</Title>
-          <Text className={classes.WhyDesc}>Welcome to Supreme Detail Studio, where luxury and convenience converge seamlessly. Proudly located in Louisville, KY, we are recognized as one of the top auto detailing companies in the area. While our expertise lies in detailing luxury vehicles, we go beyond boundaries. We also take pride in being a leading provider of paint protection film (PPF) installation for luxury cars, boats, motorcycles, and everything in between.</Text>
+          <Text className={classes.WhyDesc}>Welcome to Supreme Detail Studio, where luxury and convenience converge seamlessly. Proudly located in Marietta, GA, we are recognized as one of the top auto detailing companies in the area. While our expertise lies in detailing luxury vehicles, we go beyond boundaries. We also take pride in being a leading provider of paint protection film (PPF) installation for luxury cars, boats, motorcycles, and everything in between.</Text>
           
           <Text className={classes.WhyDesc}>Our other services include <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>Ceramic Paint Coating</Link>, <Link to="/services/residential" style={{ textDecoration: 'underline' }}>Home Coatings</Link>, <Link to="/services/vinyl-wrap-chrome-deletion" style={{ textDecoration: 'underline' }}>Vinyl Wrap & Chrome Deletion</Link>, and more. At Supreme Detail Studio, precision is our hallmark. Through dedicated focus on every detail, we've risen above local competition to establish ourselves as a top automotive detailing choice for residents across Kentuckiana, spanning Jefferson County, KY, Oldham County, KY, Floyd County, IN, and Clark County, IN.</Text>
           
-          <Text className={classes.WhyDesc}>Supreme Detail Studio is committed to embracing all our offered services and expanding our customer base in and around Louisville, Kentucky. Whether you need vehicle detailing or ceramic coating and tinting for your home or office, we proudly assist clients from the following areas:</Text>
+          <Text className={classes.WhyDesc}>Supreme Detail Studio is committed to embracing all our offered services and expanding our customer base in and around Marietta, Kentucky. Whether you need vehicle detailing or ceramic coating and tinting for your home or office, we proudly assist clients from the following areas:</Text>
           <ul role='list' className={classes.cityList}>
           <SimpleGrid
         cols={3}
@@ -161,7 +161,7 @@ import Zoom from 'react-medium-image-zoom'
           { maxWidth: 600, cols: 2, spacing: 'sm' },
         ]}
         >
-            <Link to="/service-areas/louisville-ky" style={{ textDecoration: 'underline' }}><li className={classes.li}>Louisville, KY</li></Link>
+            <Link to="/service-areas/louisville-ky" style={{ textDecoration: 'underline' }}><li className={classes.li}>Marietta, GA</li></Link>
             <li className={classes.li}>Prospect, KY</li>
             <li className={classes.li}>Lagrange, KY</li>
             <Link to="/service-areas/crestwood-ky" style={{ textDecoration: 'underline' }}><li className={classes.li}>Crestwood, KY</li></Link>

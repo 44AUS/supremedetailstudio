@@ -103,7 +103,7 @@ const FullDetailHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            At Supreme Detail Studio, we take <span style={{ fontWeight: 'bold' }}>full detailing in Louisville</span> to a whole new level. Our owner, with almost a decade of experience, ensures your vehicle will leave our shop looking its absolute best!
+            At Supreme Detail Studio, we take <span style={{ fontWeight: 'bold' }}>full detailing in Marietta</span> to a whole new level. Our owner, with almost a decade of experience, ensures your vehicle will leave our shop looking its absolute best!
           </Text>
         </Container>
 

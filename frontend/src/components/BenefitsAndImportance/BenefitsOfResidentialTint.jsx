@@ -113,7 +113,7 @@ const BenefitsOfResidentialTint = () => {
       <div>
       <div className={classes.benefitIcon}><div>1</div></div>
         <h1 className={classes.h1Why}>SOLAR</h1>
-        <p className={classes.WhyDesc}>The same way window tinting prevents solar energy from building up inside your vehicle is how it works preventing it from building up inside your home. We have a selection of solar-specific window tint film for residential properties in and around the Louisville area to resist infrared heat given off by the sun. These are great for the areas of your home that are facing the sun during the hottest points of the day.</p>
+        <p className={classes.WhyDesc}>The same way window tinting prevents solar energy from building up inside your vehicle is how it works preventing it from building up inside your home. We have a selection of solar-specific window tint film for residential properties in and around the Marietta area to resist infrared heat given off by the sun. These are great for the areas of your home that are facing the sun during the hottest points of the day.</p>
       </div>
       <div>
       <div className={classes.benefitIcon}><div>2</div></div>

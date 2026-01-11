@@ -195,7 +195,7 @@ const Services = () => {
           linkProp='/services/window-tinting'
           imageProp={Tinting}
           comingSoonProp={true}
-          descriptionProp='Protect the interior of your vehicle, office, or residence from harmful UV rays and the Louisville heat.'
+          descriptionProp='Protect the interior of your vehicle, office, or residence from harmful UV rays and the Marietta heat.'
           />
         </div>
         <div>

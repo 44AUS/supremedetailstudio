@@ -107,13 +107,13 @@ const InteriorDetailing = () => {
   return (
     <>
     <Helmet>
-      <title>Automotive Interior Detailing Louisville, KY | Supreme Detail Studio</title>
-      <meta name='title' content='Automotive Interior Detailing Louisville, KY | Supreme Detail Studio' />
+      <title>Automotive Interior Detailing Marietta, GA | Supreme Detail Studio</title>
+      <meta name='title' content='Automotive Interior Detailing Marietta, GA | Supreme Detail Studio' />
       <meta name='description' content='Supreme Detail Studio is an interior and exterior vehicle care team that will help improve your vehicle! Call us today at (502) 417-0690 to get started' />
       <meta name='keywords' content='car detail louisville ky, louisville ky paint correction, louisville mobile car detailing, louisville undercarriage detailing, louisville mobile car wash, louisville ceramic coating, louisville paint correction, louisville mobile detail new albany,' />
       <meta property="og:image" content='%PUBLIC_URL%/images/detailing.jpg' />
 
-      <meta property="og:title" content='Automotive Interior Detailing Louisville, KY | Supreme Detail Studio' />
+      <meta property="og:title" content='Automotive Interior Detailing Marietta, GA | Supreme Detail Studio' />
       <meta property="og:description" content='Supreme Detail Studio is an interior and exterior vehicle care team that will help improve your vehicle! Call us today at (502) 417-0690 to get started' />
       <meta property="og:image" content='%PUBLIC_URL%/images/detailing.jpg' />
 

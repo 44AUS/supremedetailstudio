@@ -127,14 +127,14 @@ const HeadlightRestoration = () => {
   return (
     <>
     <Helmet>
-      <title>The Best Headlight Restoration In Louisville, KY | Supreme Detail Studio</title>
-      <meta name='title' content='The Best Headlight Restoration In Louisville, KY | Supreme Detail Studio' />
-      <meta name='description' content={`If you're seeking headlight restoration services in Louisville, KY, look no further than Supreme Detail Studio. Our top-notch equipment and professional detailers guarantee the highest quality restoration for your headlights.`} />
+      <title>The Best Headlight Restoration In Marietta, GA | Supreme Detail Studio</title>
+      <meta name='title' content='The Best Headlight Restoration In Marietta, GA | Supreme Detail Studio' />
+      <meta name='description' content={`If you're seeking headlight restoration services in Marietta, GA, look no further than Supreme Detail Studio. Our top-notch equipment and professional detailers guarantee the highest quality restoration for your headlights.`} />
       <meta name='keywords' content='louisville ky paint correction, louisville mobile car detailing, louisville undercarriage detailing, louisville headlight restoration, louisville mobile car wash, louisville ceramic coating, louisville paint correction, louisville mobile detail' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
-      <meta name='og:title' content='The Best Headlight Restoration In Louisville, KY | Supreme Detail Studio' />
-      <meta name='og:description' content={`If you're seeking headlight restoration services in Louisville, KY, look no further than Supreme Detail Studio. Our top-notch equipment and professional detailers guarantee the highest quality restoration for your headlights.`} />
+      <meta name='og:title' content='The Best Headlight Restoration In Marietta, GA | Supreme Detail Studio' />
+      <meta name='og:description' content={`If you're seeking headlight restoration services in Marietta, GA, look no further than Supreme Detail Studio. Our top-notch equipment and professional detailers guarantee the highest quality restoration for your headlights.`} />
 
     </Helmet>
     <HeadlightRestorationHero />
@@ -154,7 +154,7 @@ const HeadlightRestoration = () => {
       <div className={classes.wrapper}>
         <Title className={classes.h1}>What Is Headlight Restoration?</Title>
         <div>
-        <p className={classes.WhyDesc}>Headlight restoration is the process of restoring the clarity and brightness of your car's headlights. Over time, headlights can become foggy, yellowed, and scratched, making them less effective at night and in poor weather conditions. Our headlight restoration service in Louisville, KY can remove these imperfections and restore your headlights to their original condition.</p>
+        <p className={classes.WhyDesc}>Headlight restoration is the process of restoring the clarity and brightness of your car's headlights. Over time, headlights can become foggy, yellowed, and scratched, making them less effective at night and in poor weather conditions. Our headlight restoration service in Marietta, GA can remove these imperfections and restore your headlights to their original condition.</p>
 
         <div className="mx-auto mt-10 flex items-center justify-center max-w-2xl lg:mx-0 lg:max-w-none">
         <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-6">

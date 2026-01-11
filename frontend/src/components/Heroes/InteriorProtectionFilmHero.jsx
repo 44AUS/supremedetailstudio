@@ -77,7 +77,7 @@ const InteriorProtectionFilmHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            Explore the reason behind the growing number of Louisville, KY drivers choosing <span style={{ color: '#e80200', fontWeight: 'bold' }}>Supreme Detail Studio</span> to protect their vehicles interior. This thin film restores, renews, and protects the most trafficked areas in your vehicle like the gloss piano black trim, carbon accents, and anything that's getting scratched between trips.
+            Explore the reason behind the growing number of Marietta, GA drivers choosing <span style={{ color: '#e80200', fontWeight: 'bold' }}>Supreme Detail Studio</span> to protect their vehicles interior. This thin film restores, renews, and protects the most trafficked areas in your vehicle like the gloss piano black trim, carbon accents, and anything that's getting scratched between trips.
           </Text>
         </Container>
 

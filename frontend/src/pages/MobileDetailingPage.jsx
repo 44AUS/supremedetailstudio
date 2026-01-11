@@ -120,14 +120,14 @@ const MobileDetailing = () => {
   return (
     <>
     <Helmet>
-      <title>Mobile Detailing Services In Louisville, KY | Supreme Detail Studio</title>
-      <meta name='title' content='Mobile Detailing Services In Louisville, KY | Supreme Detail Studio' />
-      <meta name='description' content='Supreme Detail Studio is the premier destination for top-tier mobile car detailing in Louisville, KY. Our commitment to excellence in vehicle care sets us apart in the world of mobile auto detailing.' />
+      <title>Mobile Detailing Services In Marietta, GA | Supreme Detail Studio</title>
+      <meta name='title' content='Mobile Detailing Services In Marietta, GA | Supreme Detail Studio' />
+      <meta name='description' content='Supreme Detail Studio is the premier destination for top-tier mobile car detailing in Marietta, GA. Our commitment to excellence in vehicle care sets us apart in the world of mobile auto detailing.' />
       <meta name='keywords' content='mobile car detail louisville ky, louisville ky paint correction, louisville mobile car detailing, louisville undercarriage detailing, louisville mobile car wash, louisville ceramic coating, louisville paint correction, louisville mobile detail new albany,' />
       <meta property="og:image" content='%PUBLIC_URL%/images/detailing.jpg' />
 
-      <meta name='og:title' content='Mobile Detailing Services In Louisville, KY | Supreme Detail Studio' />
-      <meta name='og:description' content='Supreme Detail Studio is the premier destination for top-tier mobile car detailing in Louisville, KY. Our commitment to excellence in vehicle care sets us apart in the world of mobile auto detailing.' />
+      <meta name='og:title' content='Mobile Detailing Services In Marietta, GA | Supreme Detail Studio' />
+      <meta name='og:description' content='Supreme Detail Studio is the premier destination for top-tier mobile car detailing in Marietta, GA. Our commitment to excellence in vehicle care sets us apart in the world of mobile auto detailing.' />
 
     </Helmet>
     <MobileDetailingHero />

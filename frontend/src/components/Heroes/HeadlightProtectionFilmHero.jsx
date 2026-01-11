@@ -129,7 +129,7 @@ const HeadlightProtectionFilmHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            Explore the reason behind the growing number of Louisville, KY drivers choosing Supreme Detail Studio for light protection film. This thin film is applied to the headlights and taillights offering 8mils of durable protection against rock chips and cracks, scratches, delamination, oxidation, and other damages you may encounter from debris in open environments.
+            Explore the reason behind the growing number of Marietta, GA drivers choosing Supreme Detail Studio for light protection film. This thin film is applied to the headlights and taillights offering 8mils of durable protection against rock chips and cracks, scratches, delamination, oxidation, and other damages you may encounter from debris in open environments.
           </Text>
         </Container>
 

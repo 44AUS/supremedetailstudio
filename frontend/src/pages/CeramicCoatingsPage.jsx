@@ -157,14 +157,14 @@ const CeramicCoatings = () => {
   return (
     <>
     <Helmet>
-      <title>Ceramic Paint Coating Services in Louisville, KY | Onyx Coating Certified Professionals | Supreme Detail Studio</title>
-      <meta name='title' content='Ceramic Paint Coating Services in Louisville, KY | Onyx Coating Certified Professionals | Supreme Detail Studio' />
-      <meta name='description' content='Supreme Detail Studio offers the best ceramic paint coating services in Louisville, KY. Visit our website to browse our ceramic coating package options!' />
+      <title>Ceramic Paint Coating Services in Marietta, GA | Onyx Coating Certified Professionals | Supreme Detail Studio</title>
+      <meta name='title' content='Ceramic Paint Coating Services in Marietta, GA | Onyx Coating Certified Professionals | Supreme Detail Studio' />
+      <meta name='description' content='Supreme Detail Studio offers the best ceramic paint coating services in Marietta, GA. Visit our website to browse our ceramic coating package options!' />
       <meta name='keywords' content='louisville ky best ceramic coating, supreme detail studio, best louisville mobile car detailing, louisville best ceramic coating, louisville paint correction' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
-      <meta property="og:title" content='Ceramic Paint Coating Services in Louisville, KY | Onyx Coating Certified Professionals | Supreme Detail Studio' />
-      <meta property="og:description" content='Supreme Detail Studio offers the best ceramic paint coating services in Louisville, KY. Visit our website to browse our ceramic coating package options!' />
+      <meta property="og:title" content='Ceramic Paint Coating Services in Marietta, GA | Onyx Coating Certified Professionals | Supreme Detail Studio' />
+      <meta property="og:description" content='Supreme Detail Studio offers the best ceramic paint coating services in Marietta, GA. Visit our website to browse our ceramic coating package options!' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
     </Helmet>

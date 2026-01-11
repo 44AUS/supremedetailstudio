@@ -131,7 +131,7 @@ const DetailingHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            Welcome to Supreme Detail Studio, the premier destination for top-tier car detailing in Louisville, KY. Our commitment to excellence in vehicle care sets us apart in the world of auto detailing. From thorough interior cleaning to meticulous exterior polishing, our certified professional detailers are dedicated to rejuvenating your vehicle, ensuring it leaves our shop looking its absolute best.
+            Welcome to Supreme Detail Studio, the premier destination for top-tier car detailing in Marietta, GA. Our commitment to excellence in vehicle care sets us apart in the world of auto detailing. From thorough interior cleaning to meticulous exterior polishing, our certified professional detailers are dedicated to rejuvenating your vehicle, ensuring it leaves our shop looking its absolute best.
           </Text>
         </Container>
 

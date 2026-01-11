@@ -130,14 +130,14 @@ const PaintCorrection = () => {
   return (
     <>
     <Helmet>
-      <title>Paint Correction Services In Louisville, KY | Supreme Detail Studio</title>
-      <meta name='title' content='Paint Correction Services In Louisville, KY | Supreme Detail Studio' />
-      <meta name='description' content='Remove scratches and swirl marks in Louisville, KY with our paint correction services' />
+      <title>Paint Correction Services In Marietta, GA | Supreme Detail Studio</title>
+      <meta name='title' content='Paint Correction Services In Marietta, GA | Supreme Detail Studio' />
+      <meta name='description' content='Remove scratches and swirl marks in Marietta, GA with our paint correction services' />
       <meta name='keywords' content='louisville ky paint correction, louisville mobile car detailing, louisville undercarriage detailing, louisville mobile car wash, louisville ceramic coating, louisville paint correction, louisville mobile detail new albany,' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
-      <meta name='og:title' content='Paint Correction Services In Louisville, KY | Supreme Detail Studio' />
-      <meta name='og:description' content='Remove scratches and swirl marks in Louisville, KY with our paint correction services' />
+      <meta name='og:title' content='Paint Correction Services In Marietta, GA | Supreme Detail Studio' />
+      <meta name='og:description' content='Remove scratches and swirl marks in Marietta, GA with our paint correction services' />
     </Helmet>
     <PaintCorrectionHero />
     <VideoIntroduction

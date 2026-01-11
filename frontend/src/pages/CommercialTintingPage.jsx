@@ -154,13 +154,13 @@ const CommercialWindowTintPage = () => {
   return (
     <>
     <Helmet>
-      <title>Commercial Window Tinting In Louisville, KY | Supreme Detail Studio</title>
-      <meta name='title' content='Commercial Window Tinting In Louisville, KY | Supreme Detail Studio' />
-      <meta name='description' content='Louisville, KY Commercial Window Tinting' />
+      <title>Commercial Window Tinting In Marietta, GA | Supreme Detail Studio</title>
+      <meta name='title' content='Commercial Window Tinting In Marietta, GA | Supreme Detail Studio' />
+      <meta name='description' content='Marietta, GA Commercial Window Tinting' />
       <meta name='keywords' content='louisville ky Commercial Window Tinting, supreme detail studio, louisville mobile car detailing, louisville undercarriage detailing, louisville mobile car wash, louisville Commercial Window Tinting, louisville paint correction, louisville mobile detail new albany,' />
       
-      <meta property="og:title" content='Commercial Window Tinting In Louisville, KY | Supreme Detail Studio' />
-      <meta property="og:description" content='Louisville, KY Commercial Window Tintings' />
+      <meta property="og:title" content='Commercial Window Tinting In Marietta, GA | Supreme Detail Studio' />
+      <meta property="og:description" content='Marietta, GA Commercial Window Tintings' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
     </Helmet>
     <CommercialWindowTintingHero />
@@ -177,7 +177,7 @@ const CommercialWindowTintPage = () => {
     <div className={classes.bgBody}>
     <Container size="xl">
       <div className={classes.wrapper}>
-        <Title className={classes.h1}>Louisville Commercial & Office Window Film</Title>
+        <Title className={classes.h1}>Marietta Commercial & Office Window Film</Title>
         <div>
           <Text className={classes.desc}>
             Coming Soon!

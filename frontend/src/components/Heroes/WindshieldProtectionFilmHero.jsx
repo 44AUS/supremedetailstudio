@@ -129,7 +129,7 @@ const WindshieldProtectionFilmHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            Explore the reason behind the growing number of Louisville, KY drivers choosing Supreme Detail Studio for windshield protection film. This clear, thin film is applied to the outside of a windshield to help make it more impact-resistant and prevent costly rock chips, pitting, and cracks. The added protection gives owners peace of mind by helping them avoid expensive windshield replacements, calibration fees and insurance premium increases, which according to Kelley Blue Book, costs an average of $1,000.
+            Explore the reason behind the growing number of Marietta, GA drivers choosing Supreme Detail Studio for windshield protection film. This clear, thin film is applied to the outside of a windshield to help make it more impact-resistant and prevent costly rock chips, pitting, and cracks. The added protection gives owners peace of mind by helping them avoid expensive windshield replacements, calibration fees and insurance premium increases, which according to Kelley Blue Book, costs an average of $1,000.
           </Text>
         </Container>
 

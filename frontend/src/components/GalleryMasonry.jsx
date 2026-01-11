@@ -71,7 +71,7 @@ const GalleryMasonry = () => {
     <div className={classes.wrapper}>
         <Title className={classes.h1}>OUR GALLERY OF REGULAR DETAILING EXCELLENCE</Title>
         <div className={classes.desc}>
-          Louisville, KY's #1 Automotive Detailing & Appearance Center
+          Marietta, GA's #1 Automotive Detailing & Appearance Center
         </div>
     <ResponsiveMasonry
                 columnsCountBreakPoints={{350: 1, 750: 2, 900: 3}}

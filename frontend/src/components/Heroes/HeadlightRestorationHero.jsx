@@ -107,7 +107,7 @@ const HeadlightRestorationHero = () => {
 
         <Container>
           <Text size="lg" className={classes.description}>
-            If you're seeking headlight restoration services in Louisville, KY, look no further than Supreme Detail Studio. Our top-notch equipment and professional detailers guarantee the highest quality restoration for your headlights.
+            If you're seeking headlight restoration services in Marietta, GA, look no further than Supreme Detail Studio. Our top-notch equipment and professional detailers guarantee the highest quality restoration for your headlights.
           </Text>
         </Container>
 

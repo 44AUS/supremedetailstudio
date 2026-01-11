@@ -14,7 +14,7 @@ const mockdata = [
     title: 'The Top Five Reasons You Need Window Tint',
     image:
       'https://www.supremedetailstudio.com/static/media/tint.0ced29bc158fad5f37bb.jpeg',
-    decription: 'Most people think they don’t need window tint because they live in Louisville, KY. Then a heat wave comes, their seats or steering wheels are on fire, and they only have themselves to blame. There…',
+    decription: 'Most people think they don’t need window tint because they live in Marietta, GA. Then a heat wave comes, their seats or steering wheels are on fire, and they only have themselves to blame. There…',
   },
 ];
 
