@@ -3,7 +3,7 @@ import { Parallax } from 'react-scroll-parallax';
 import { Title, Text, Image, Container, Button, Overlay, createStyles } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import Tint from '../../assets/images/tint/tint.webp';
-// import Madico from '../../assets/images/windshield-protection/madico.svg';
+import Madico from '../../assets/images/partners/madico.svg';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -135,7 +135,7 @@ const CertifiedWindshieldComponent = () => {
         </div>
 
         <div className={classes.partner}>
-      <Image src="/images/windshield-protection/madico.svg" alt="Madico" className={classes.partnerLogo} />
+      <Image src={Madico} alt="Madico" className={classes.partnerLogo} />
       </div>
       </div>
     </div>

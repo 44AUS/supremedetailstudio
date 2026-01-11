@@ -3,7 +3,7 @@ import { Parallax } from 'react-scroll-parallax';
 import { Title, Text, Image, Container, Button, Overlay, createStyles } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import Tint from '../../assets/images/tint/commercial-tint-bg.jpeg';
-// import Geoshield from '../../assets/images/partners/Geoshield_Logo_Color_Subtext.png';
+import Geoshield from '../../assets/images/partners/Geoshield_Logo_Color.png';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -135,7 +135,7 @@ const FlatGlassCertifiedComponent = () => {
         </div>
 
         <div className={classes.partner}>
-      <Image src="/images/partners/Geoshield_Logo_Color_Subtext.png" alt="Geoshield" className={classes.partnerLogo} />
+      <Image src={Geoshield} alt="Geoshield" className={classes.partnerLogo} />
       </div>
       </div>
     </div>
