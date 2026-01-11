@@ -6,7 +6,7 @@ import BenefitsOfCeramic from '../components/BenefitsAndImportance/BenefitsOfCer
 import CeramicFAQ from '../components/FAQs/CeramicFAQ';
 import { Helmet } from 'react-helmet';
 import CeramicCoatingComponent from '../components/CeramicCoating/CeramicCoating';
-import SystemX from '../assets/images/partners/systemx-logo-black-scaled.png';
+// SystemX logo not available - removed import
 import VideoIntroduction from '../components/BenefitsAndImportance/VideoIntroduction';
 import ComparisonComponent from '../components/BenefitsAndImportance/ComparisonComponent';
 import CertifiedCeramicComponent from '../components/BenefitsAndImportance/CeramicCertifiedInstaller';
