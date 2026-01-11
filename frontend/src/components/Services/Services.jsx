@@ -27,7 +27,7 @@ const useStyles = createStyles((theme) => ({
   },
   h1: {
     marginTop: 0,
-    fontFamily: 'SceneProUltBlkIt',
+    fontFamily: "'Oswald', sans-serif",
     textAlign: 'center',
     color: '#fff',
     fontSize: '36px',
@@ -42,7 +42,7 @@ const useStyles = createStyles((theme) => ({
   },
   h1Why: {
     marginTop: 0,
-    fontFamily: 'SceneProUltBlkIt',
+    fontFamily: "'Oswald', sans-serif",
     textAlign: 'center',
     color: '#fff',
     fontSize: '22px',
