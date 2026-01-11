@@ -1,366 +1,498 @@
-import React from "react";
-import {
-  Navbar, 
-  NavbarBrand, 
-  NavbarContent, 
-  NavbarItem, 
-  NavbarMenuToggle,
-  NavbarMenu,
-  NavbarMenuItem
-} from "@nextui-org/navbar";
-import {Button, DropdownItem, DropdownTrigger, Dropdown, DropdownMenu} from "@nextui-org/react";
-import {ChevronDown} from "./Icons.jsx";
-import { NavLink } from "react-router-dom";
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link, NavLink } from 'react-router-dom';
 import Logo from '../assets/logo.png';
 
 export default function NavBar() {
-  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
 
-  const navLinkStyle = {
-    cursor: 'pointer',
-    textTransform: 'uppercase',
-    fontFamily: 'SceneProBold',
-    letterSpacing: '2px',
-    fontSize: '13px',
-    color: '#fff',
-    transition: 'all 0.3s ease',
-    padding: '8px 12px',
-    borderRadius: '4px',
-  };
-
-  const dropdownLinkStyle = {
-    padding: '10px 16px',
-    fontFamily: 'SceneProBold',
-    textTransform: 'uppercase',
-    color: '#FFF',
-    letterSpacing: '2px',
-    fontSize: '13px',
-    display: 'block',
-    transition: 'all 0.3s ease',
-  };
-
-  const mobileMenuItems = [
+  const services = [
     { name: 'Auto Detailing', path: '/services/detailing' },
     { name: 'Mobile Detailing', path: '/services/mobile-detailing' },
-    { name: 'Paint Protection Film', path: '/services/paint-protection-film' },
     { name: 'Ceramic Coating', path: '/services/ceramic-coatings' },
-    { name: 'Window Tinting', path: '/services/window-tinting' },
-    { name: 'Light Protection Film', path: '/services/light-protection-film' },
-    { name: 'Windshield Protection Film', path: '/services/windshield-protection-film' },
     { name: 'Paint Correction', path: '/services/paint-correction' },
+    { name: 'Paint Protection Film', path: '/services/paint-protection-film' },
+    { name: 'Light Protection Film', path: '/services/light-protection-film' },
+    { name: 'Window Tinting', path: '/services/window-tinting' },
+    { name: 'Windshield Protection', path: '/services/windshield-protection-film' },
     { name: 'Headlight Restoration', path: '/services/headlight-restoration' },
     { name: 'Additional Services', path: '/services/additional-services' },
-    { name: 'About', path: '/about' },
-    { name: 'Reviews', path: '/reviews' },
-    { name: 'Contact', path: '/contact-us' },
+  ];
+
+  const moreLinks = [
+    { name: 'Before & After', path: '/before-and-after' },
+    { name: 'Gallery', path: '/gallery' },
+    { name: 'FAQs', path: '/faq' },
   ];
 
   return (
-    <div style={{ 
-      position: 'sticky', 
-      top: 0, 
-      zIndex: 1000, 
+    <nav style={{
+      position: 'sticky',
+      top: 0,
+      zIndex: 1000,
+      backgroundColor: 'rgba(0, 0, 0, 0.95)',
       backdropFilter: 'blur(20px)',
-      backgroundColor: 'rgba(0, 0, 0, 0.85)',
-      borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+      borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
     }}>
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '0 20px' }}>
-        <Navbar 
-          height='85px' 
-          classNames={{ 
-            wrapper: "!max-w-full !px-0",
-            base: "!bg-transparent"
-          }} 
-          isBordered={false}
-          isMenuOpen={isMenuOpen} 
-          onMenuOpenChange={setIsMenuOpen}
-        >
-          <NavbarMenuToggle
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            className="sm:hidden text-white"
+      <div style={{
+        maxWidth: '1400px',
+        margin: '0 auto',
+        padding: '0 24px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        height: '80px',
+      }}>
+        {/* Logo */}
+        <Link to="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
+          <img 
+            src={Logo} 
+            alt='Supreme Detail Studio'
+            style={{ 
+              height: '50px',
+              width: 'auto',
+              transition: 'transform 0.3s ease'
+            }}
+            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
           />
+        </Link>
 
-          <NavbarBrand>
-            <Link to="/" style={{ textDecoration: 'none' }}>
-              <img 
-                className="logo" 
-                src={Logo} 
-                alt='Supreme Detail Studio Logo'
-                style={{ 
-                  maxWidth: '180px', 
-                  height: 'auto',
-                  transition: 'transform 0.3s ease'
-                }}
-                onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
-              />
-            </Link>
-          </NavbarBrand>
-
-          {/* Mobile Menu */}
-          <NavbarMenu style={{ 
-            backgroundColor: 'rgba(0, 0, 0, 0.98)', 
-            paddingTop: '20px',
-            overflowY: 'auto'
-          }}>
-            {mobileMenuItems.map((item, index) => (
-              <NavbarMenuItem key={index} style={{ padding: '8px 0' }}>
+        {/* Desktop Navigation */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }} className="desktop-nav">
+          {/* Services Dropdown */}
+          <div 
+            style={{ position: 'relative' }}
+            onMouseEnter={() => setServicesOpen(true)}
+            onMouseLeave={() => setServicesOpen(false)}
+          >
+            <button style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#fff',
+              fontFamily: 'SceneProBold, sans-serif',
+              fontSize: '13px',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              padding: '12px 16px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'color 0.3s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+            onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
+            >
+              Services
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{
+                transform: servicesOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s ease'
+              }}>
+                <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              </svg>
+            </button>
+            
+            {/* Services Dropdown Menu */}
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              left: '0',
+              backgroundColor: 'rgba(15, 15, 15, 0.98)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '12px',
+              padding: '12px 0',
+              minWidth: '260px',
+              opacity: servicesOpen ? 1 : 0,
+              visibility: servicesOpen ? 'visible' : 'hidden',
+              transform: servicesOpen ? 'translateY(0)' : 'translateY(-10px)',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
+            }}>
+              {services.map((service, index) => (
                 <Link
-                  to={item.path}
-                  onClick={() => setIsMenuOpen(false)}
+                  key={index}
+                  to={service.path}
                   style={{
-                    color: '#fff',
-                    fontFamily: 'SceneProBold',
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase',
-                    fontSize: '14px',
-                    textDecoration: 'none',
                     display: 'block',
-                    padding: '12px 16px',
-                    borderRadius: '8px',
+                    padding: '12px 20px',
+                    color: '#fff',
+                    textDecoration: 'none',
+                    fontFamily: 'SceneProMedium, sans-serif',
+                    fontSize: '13px',
+                    letterSpacing: '1px',
                     transition: 'all 0.3s ease',
-                    backgroundColor: 'transparent'
                   }}
                   onMouseOver={(e) => {
                     e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.2)';
-                    e.currentTarget.style.paddingLeft = '24px';
+                    e.currentTarget.style.paddingLeft = '28px';
+                    e.currentTarget.style.color = '#e80200';
                   }}
                   onMouseOut={(e) => {
                     e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.paddingLeft = '16px';
+                    e.currentTarget.style.paddingLeft = '20px';
+                    e.currentTarget.style.color = '#fff';
                   }}
                 >
-                  {item.name}
+                  {service.name}
                 </Link>
-              </NavbarMenuItem>
-            ))}
-          </NavbarMenu>
+              ))}
+            </div>
+          </div>
 
-          {/* Desktop Navigation */}
-          <NavbarContent className="hidden sm:flex gap-6" justify="center">
-            <Dropdown 
-              showArrow
-              classNames={{
-                base: "before:bg-default-200",
-                content: "py-1 px-1 border border-default-200 bg-gradient-to-br from-gray-900 to-black",
-              }}
-              backdrop="blur"
+          {/* About */}
+          <NavLink 
+            to='/about'
+            style={{
+              color: '#fff',
+              fontFamily: 'SceneProBold, sans-serif',
+              fontSize: '13px',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              padding: '12px 16px',
+              textDecoration: 'none',
+              transition: 'color 0.3s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+            onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
+          >
+            About
+          </NavLink>
+
+          {/* Reviews */}
+          <NavLink 
+            to='/reviews'
+            style={{
+              color: '#fff',
+              fontFamily: 'SceneProBold, sans-serif',
+              fontSize: '13px',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              padding: '12px 16px',
+              textDecoration: 'none',
+              transition: 'color 0.3s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+            onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
+          >
+            Reviews
+          </NavLink>
+
+          {/* Blog */}
+          <NavLink 
+            to='/blog'
+            style={{
+              color: '#fff',
+              fontFamily: 'SceneProBold, sans-serif',
+              fontSize: '13px',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              padding: '12px 16px',
+              textDecoration: 'none',
+              transition: 'color 0.3s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+            onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
+          >
+            Blog
+          </NavLink>
+
+          {/* More Dropdown */}
+          <div 
+            style={{ position: 'relative' }}
+            onMouseEnter={() => setMoreOpen(true)}
+            onMouseLeave={() => setMoreOpen(false)}
+          >
+            <button style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#fff',
+              fontFamily: 'SceneProBold, sans-serif',
+              fontSize: '13px',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              padding: '12px 16px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'color 0.3s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+            onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
             >
-              <NavbarItem>
-                <DropdownTrigger>
-                  <div 
-                    style={navLinkStyle}
-                    onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
-                    onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
-                  >
-                    Services
-                  </div>
-                </DropdownTrigger>
-              </NavbarItem>
-              <DropdownMenu
-                variant="faded"
-                aria-label="Supreme Detail Studio Services"
-                className="w-[260px]"
-                itemClasses={{ base: "gap-2" }}
-              >
-                <DropdownItem key="detailing">
-                  <Link to='/services/detailing' style={dropdownLinkStyle}>
-                    Auto Detailing
-                  </Link>
-                </DropdownItem>
-                <DropdownItem key="mobile">
-                  <Link to='/services/mobile-detailing' style={dropdownLinkStyle}>
-                    Mobile Detailing
-                  </Link>
-                </DropdownItem>
-                <DropdownItem key="ceramic">
-                  <Link to='/services/ceramic-coatings' style={dropdownLinkStyle}>
-                    Ceramic Coating
-                  </Link>
-                </DropdownItem>
-                <DropdownItem key="paint-correction">
-                  <Link to='/services/paint-correction' style={dropdownLinkStyle}>
-                    Paint Correction
-                  </Link>
-                </DropdownItem>
-                <DropdownItem key="ppf">
-                  <Link to='/services/paint-protection-film' style={dropdownLinkStyle}>
-                    Paint Protection Film
-                  </Link>
-                </DropdownItem>
-                <DropdownItem key="light-ppf">
-                  <Link to='/services/light-protection-film' style={dropdownLinkStyle}>
-                    Light Protection Film
-                  </Link>
-                </DropdownItem>
-                <DropdownItem key="tinting">
-                  <Link to='/services/window-tinting' style={dropdownLinkStyle}>
-                    Window Tinting
-                  </Link>
-                </DropdownItem>
-                <DropdownItem key="windshield">
-                  <Link to='/services/windshield-protection-film' style={dropdownLinkStyle}>
-                    Windshield Protection
-                  </Link>
-                </DropdownItem>
-                <DropdownItem key="headlight">
-                  <Link to='/services/headlight-restoration' style={dropdownLinkStyle}>
-                    Headlight Restoration
-                  </Link>
-                </DropdownItem>
-                <DropdownItem key="additional">
-                  <Link to='/services/additional-services' style={dropdownLinkStyle}>
-                    Additional Services
-                  </Link>
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-
-            <NavbarItem>
-              <NavLink 
-                to='/about' 
-                style={navLinkStyle}
-                onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
-                onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
-              >
-                About
-              </NavLink>
-            </NavbarItem>
-
-            <NavbarItem>
-              <NavLink 
-                to='/reviews' 
-                style={navLinkStyle}
-                onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
-                onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
-              >
-                Reviews
-              </NavLink>
-            </NavbarItem>
-
-            <NavbarItem>
-              <NavLink 
-                to='/blog' 
-                style={navLinkStyle}
-                onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
-                onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
-              >
-                Blog
-              </NavLink>
-            </NavbarItem>
-
-            <Dropdown
-              showArrow
-              classNames={{
-                base: "before:bg-default-200",
-                content: "py-1 px-1 border border-default-200 bg-gradient-to-br from-gray-900 to-black",
-              }}
-              backdrop="blur"
-            >
-              <NavbarItem>
-                <DropdownTrigger>
-                  <div 
-                    style={navLinkStyle}
-                    onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
-                    onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
-                  >
-                    More
-                  </div>
-                </DropdownTrigger>
-              </NavbarItem>
-              <DropdownMenu
-                variant="faded"
-                aria-label="More Links"
-                className="w-[220px]"
-                itemClasses={{ base: "gap-2" }}
-              >
-                <DropdownItem key="before-after">
-                  <Link to='/before-and-after' style={dropdownLinkStyle}>
-                    Before & After
-                  </Link>
-                </DropdownItem>
-                <DropdownItem key="gallery">
-                  <Link to='/gallery' style={dropdownLinkStyle}>
-                    Gallery
-                  </Link>
-                </DropdownItem>
-                <DropdownItem key="faq">
-                  <Link to='/faq' style={dropdownLinkStyle}>
-                    FAQs
-                  </Link>
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-
-            <NavbarItem>
-              <NavLink 
-                to='/contact-us' 
-                style={navLinkStyle}
-                onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
-                onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
-              >
-                Contact
-              </NavLink>
-            </NavbarItem>
-          </NavbarContent>
-
-          {/* Mobile Book Button */}
-          <NavbarContent justify="end" className="sm:hidden">
-            <NavbarItem>
-              <Link to='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw' target="_blank">
-                <Button 
-                  radius="none" 
-                  size="sm" 
-                  style={{ 
-                    backgroundColor: '#e80200',
-                    fontFamily: 'SceneProRg',
-                    letterSpacing: '2px',
-                    textTransform: 'uppercase',
-                    fontWeight: 600,
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  Book Now
-                </Button>
-              </Link>
-            </NavbarItem>
-          </NavbarContent>
-
-          {/* Desktop Book Button */}
-          <NavbarContent justify="end" className="max-sm:hidden">
-            <NavbarItem>
-              <Link to='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw' target="_blank">
-                <Button 
-                  radius="none" 
-                  size="md" 
-                  style={{ 
-                    backgroundColor: '#e80200',
-                    fontFamily: 'SceneProRg',
-                    letterSpacing: '3px',
-                    textTransform: 'uppercase',
-                    fontWeight: 600,
-                    padding: '0 32px',
-                    transition: 'all 0.3s ease'
+              More
+              <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{
+                transform: moreOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                transition: 'transform 0.3s ease'
+              }}>
+                <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+              </svg>
+            </button>
+            
+            {/* More Dropdown Menu */}
+            <div style={{
+              position: 'absolute',
+              top: '100%',
+              left: '0',
+              backgroundColor: 'rgba(15, 15, 15, 0.98)',
+              border: '1px solid rgba(255, 255, 255, 0.1)',
+              borderRadius: '12px',
+              padding: '12px 0',
+              minWidth: '200px',
+              opacity: moreOpen ? 1 : 0,
+              visibility: moreOpen ? 'visible' : 'hidden',
+              transform: moreOpen ? 'translateY(0)' : 'translateY(-10px)',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
+            }}>
+              {moreLinks.map((link, index) => (
+                <Link
+                  key={index}
+                  to={link.path}
+                  style={{
+                    display: 'block',
+                    padding: '12px 20px',
+                    color: '#fff',
+                    textDecoration: 'none',
+                    fontFamily: 'SceneProMedium, sans-serif',
+                    fontSize: '13px',
+                    letterSpacing: '1px',
+                    transition: 'all 0.3s ease',
                   }}
                   onMouseOver={(e) => {
-                    e.currentTarget.style.backgroundColor = '#ff1a1a';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(232, 2, 0, 0.5)';
+                    e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.2)';
+                    e.currentTarget.style.paddingLeft = '28px';
+                    e.currentTarget.style.color = '#e80200';
                   }}
                   onMouseOut={(e) => {
-                    e.currentTarget.style.backgroundColor = '#e80200';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.backgroundColor = 'transparent';
+                    e.currentTarget.style.paddingLeft = '20px';
+                    e.currentTarget.style.color = '#fff';
                   }}
                 >
-                  Book Appointment
-                </Button>
-              </Link>
-            </NavbarItem>
-          </NavbarContent>
-        </Navbar>
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Contact */}
+          <NavLink 
+            to='/contact-us'
+            style={{
+              color: '#fff',
+              fontFamily: 'SceneProBold, sans-serif',
+              fontSize: '13px',
+              letterSpacing: '2px',
+              textTransform: 'uppercase',
+              padding: '12px 16px',
+              textDecoration: 'none',
+              transition: 'color 0.3s ease',
+            }}
+            onMouseOver={(e) => e.currentTarget.style.color = '#e80200'}
+            onMouseOut={(e) => e.currentTarget.style.color = '#fff'}
+          >
+            Contact
+          </NavLink>
+        </div>
+
+        {/* Book Appointment Button - Desktop */}
+        <Link 
+          to='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw' 
+          target="_blank"
+          className="desktop-nav"
+          style={{
+            backgroundColor: '#e80200',
+            color: '#fff',
+            fontFamily: 'SceneProBold, sans-serif',
+            fontSize: '13px',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            padding: '14px 28px',
+            textDecoration: 'none',
+            borderRadius: '4px',
+            transition: 'all 0.3s ease',
+            boxShadow: '0 4px 15px rgba(232, 2, 0, 0.3)',
+            flexShrink: 0,
+          }}
+          onMouseOver={(e) => {
+            e.currentTarget.style.backgroundColor = '#ff1a1a';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 6px 25px rgba(232, 2, 0, 0.5)';
+          }}
+          onMouseOut={(e) => {
+            e.currentTarget.style.backgroundColor = '#e80200';
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 15px rgba(232, 2, 0, 0.3)';
+          }}
+        >
+          Book Now
+        </Link>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="mobile-menu-btn"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          style={{
+            display: 'none',
+            background: 'transparent',
+            border: 'none',
+            cursor: 'pointer',
+            padding: '10px',
+          }}
+        >
+          <div style={{
+            width: '28px',
+            height: '3px',
+            backgroundColor: '#fff',
+            marginBottom: '6px',
+            transition: 'all 0.3s ease',
+            transform: isMenuOpen ? 'rotate(45deg) translateY(9px)' : 'none',
+          }}></div>
+          <div style={{
+            width: '28px',
+            height: '3px',
+            backgroundColor: '#fff',
+            marginBottom: '6px',
+            opacity: isMenuOpen ? 0 : 1,
+            transition: 'all 0.3s ease',
+          }}></div>
+          <div style={{
+            width: '28px',
+            height: '3px',
+            backgroundColor: '#fff',
+            transition: 'all 0.3s ease',
+            transform: isMenuOpen ? 'rotate(-45deg) translateY(-9px)' : 'none',
+          }}></div>
+        </button>
       </div>
-    </div>
+
+      {/* Mobile Menu */}
+      <div 
+        className="mobile-menu"
+        style={{
+          display: 'none',
+          position: 'fixed',
+          top: '80px',
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.98)',
+          padding: '24px',
+          overflowY: 'auto',
+          transform: isMenuOpen ? 'translateX(0)' : 'translateX(-100%)',
+          transition: 'transform 0.3s ease',
+        }}
+      >
+        {services.map((service, index) => (
+          <Link
+            key={index}
+            to={service.path}
+            onClick={() => setIsMenuOpen(false)}
+            style={{
+              display: 'block',
+              padding: '16px 0',
+              color: '#fff',
+              textDecoration: 'none',
+              fontFamily: 'SceneProBold, sans-serif',
+              fontSize: '16px',
+              letterSpacing: '1px',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+            }}
+          >
+            {service.name}
+          </Link>
+        ))}
+        <Link
+          to="/about"
+          onClick={() => setIsMenuOpen(false)}
+          style={{
+            display: 'block',
+            padding: '16px 0',
+            color: '#fff',
+            textDecoration: 'none',
+            fontFamily: 'SceneProBold, sans-serif',
+            fontSize: '16px',
+            letterSpacing: '1px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          About
+        </Link>
+        <Link
+          to="/reviews"
+          onClick={() => setIsMenuOpen(false)}
+          style={{
+            display: 'block',
+            padding: '16px 0',
+            color: '#fff',
+            textDecoration: 'none',
+            fontFamily: 'SceneProBold, sans-serif',
+            fontSize: '16px',
+            letterSpacing: '1px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          Reviews
+        </Link>
+        <Link
+          to="/contact-us"
+          onClick={() => setIsMenuOpen(false)}
+          style={{
+            display: 'block',
+            padding: '16px 0',
+            color: '#fff',
+            textDecoration: 'none',
+            fontFamily: 'SceneProBold, sans-serif',
+            fontSize: '16px',
+            letterSpacing: '1px',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          }}
+        >
+          Contact
+        </Link>
+        <Link
+          to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw"
+          target="_blank"
+          onClick={() => setIsMenuOpen(false)}
+          style={{
+            display: 'block',
+            marginTop: '24px',
+            padding: '16px 24px',
+            backgroundColor: '#e80200',
+            color: '#fff',
+            textDecoration: 'none',
+            fontFamily: 'SceneProBold, sans-serif',
+            fontSize: '14px',
+            letterSpacing: '2px',
+            textTransform: 'uppercase',
+            textAlign: 'center',
+            borderRadius: '4px',
+          }}
+        >
+          Book Appointment
+        </Link>
+      </div>
+
+      <style>{`
+        @media (max-width: 1024px) {
+          .desktop-nav {
+            display: none !important;
+          }
+          .mobile-menu-btn {
+            display: block !important;
+          }
+          .mobile-menu {
+            display: block !important;
+          }
+        }
+      `}</style>
+    </nav>
   );
 }
