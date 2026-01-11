@@ -21,8 +21,9 @@ import { IoIosArrowForward } from "react-icons/io";
 const useStyles = createStyles((theme) => ({
   wrapper: {
     paddingTop: '4rem',
-    // paddingBottom: '4rem',
+    paddingBottom: '4rem',
     position: 'relative',
+    backgroundColor: '#000',
   },
   h1: {
     marginTop: 0,
