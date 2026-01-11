@@ -170,7 +170,7 @@ const CeramicCoatings = () => {
     </Helmet>
     <CeramicHero />
     <VideoIntroduction
-          titleProp='CERAMIC COATING PACKAGES FOR LOUISVILLE'
+          titleProp='CERAMIC COATING PACKAGES FOR MARIETTA'
           descriptionProp={`Ceramic Coating your paint is the next generation in Paint Protection. It has been designed to form a semi-permanent crystal layer that will make conventional car waxes and sealants obsolete, due their high strength as well an extraordinary levels of gloss. All created by superior cross linking abilities made possible by condensed nanoparticles, leaving you with the aesthetic and performance you've always wanted for you car!`}
           videoProp='dpqVKHSZFYs'
           buttonText='View Our Packages'

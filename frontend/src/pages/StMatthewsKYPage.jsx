@@ -177,7 +177,7 @@ const AboutPage = () => {
           <img src={Onyx} />
           </div>
          <div>
-          <Title className={classes.desc}>THE BEST CERAMIC COATING IN LOUISVILLE, KY</Title>
+          <Title className={classes.desc}>THE BEST CERAMIC COATING IN MARIETTA, GA</Title>
           <Title className={classes.h1}>Why choose a ceramic coating?</Title>
           <Text className={classes.WhyDesc}>Want to give your precious car’s exteriors extra protection while keeping it free from dirt, stains, and grime? Get top-notch <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>ceramic coating</Link> in St. Matthews, KY, from Supreme Detail Studio!</Text>
           <Text className={classes.WhyDesc}>While personal care and car washes help maintain your vehicle’s exterior, using regular items is not enough. You’ll need a trusted auto care company like Supreme Detail Studio to receive unparalleled ceramic coating services in Jefferson County, KY. Get in touch with us today, so we can keep your car exterior protected and looking good as new!</Text>

@@ -22,7 +22,7 @@ import WindowTintPage from './pages/WindowTintPage';
 import VehicleWindowTintingPage from './pages/VehicleWindowTintingPage';
 import ResidentialWindowTintPage from './pages/ResidentialTintingPage';
 import CommercialWindowTintPage from './pages/CommercialTintingPage';
-import LouisvilleKYPage from './pages/LouisvilleKYPage';
+import MariettaKYPage from './pages/MariettaKYPage';
 import CrestwoodKYPage from './pages/CrestwoodKYPage';
 import MiddletownKYPage from './pages/MiddletownKYPage';
 import JeffersontownKYPage from './pages/JeffersontownKYPage';
@@ -81,7 +81,7 @@ function App() {
             <Route path='/services/residential-tinting' element={<ResidentialWindowTintPage />} />
             <Route path='/services/commercial-tinting' element={<CommercialWindowTintPage />} />
 
-            <Route path='/service-areas/louisville-ky' element={<LouisvilleKYPage />} />
+            <Route path='/service-areas/louisville-ky' element={<MariettaKYPage />} />
             <Route path='/service-areas/crestwood-ky' element={<CrestwoodKYPage />} />
             <Route path='/service-areas/st-matthews-ky' element={<StMatthewsKYPage />} />
             <Route path='/service-areas/middletown-ky' element={<MiddletownKYPage />} />
