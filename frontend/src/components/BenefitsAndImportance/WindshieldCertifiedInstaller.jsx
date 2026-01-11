@@ -135,7 +135,7 @@ const CertifiedWindshieldComponent = () => {
         </div>
 
         <div className={classes.partner}>
-      <Image src={Madico} alt="Madico" className={classes.partnerLogo} />
+      <Image src="/images/windshield-protection/madico.svg" alt="Madico" className={classes.partnerLogo} />
       </div>
       </div>
     </div>

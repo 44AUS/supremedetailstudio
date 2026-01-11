@@ -10,7 +10,7 @@ const useStyles = createStyles((theme) => ({
     position: 'relative',
     paddingTop: '150px',
     paddingBottom: '150px',
-    backgroundImage: `url(${FlyingSpur})`,
+    backgroundImage: 'url(/images/ceramic-coatings/flying-spur.avif)',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     [theme.fn.smallerThan('md')]: {

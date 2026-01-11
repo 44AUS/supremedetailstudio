@@ -135,7 +135,7 @@ const FlatGlassCertifiedComponent = () => {
         </div>
 
         <div className={classes.partner}>
-      <Image src={Geoshield} alt="Geoshield" className={classes.partnerLogo} />
+      <Image src="/images/partners/Geoshield_Logo_Color_Subtext.png" alt="Geoshield" className={classes.partnerLogo} />
       </div>
       </div>
     </div>

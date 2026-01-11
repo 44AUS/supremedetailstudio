@@ -28,7 +28,7 @@ const DetailingServices = () => {
           <ServicesCard
           titleProp='Full Detail'
           linkProp='/services/full-detail'
-          imageProp={PianoBlack}
+          imageProp="/images/details/piano-black-trim.jpg"
           reccomendedProp={false}
           descriptionProp='If you are looking to get your exterior and interior cleaned this package is for you'
           />
