@@ -56,11 +56,11 @@ const useStyles = createStyles((theme) => ({
 	  },
   },
   WhyDesc: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif",
     color: '#fff',
     fontSize: '18px',
     lineHeight: 1.8,
-    fontWeight: 500,
+    fontWeight: 400,
     textAlign: 'center',
     marginTop: '1.25rem',
     marginBottom: '1.25rem',
