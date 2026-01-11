@@ -10,7 +10,7 @@ import ContactUsHero from '../components/Heroes/ContactUsHero';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import Map from '../components/Map';
-import MariettaKYHero from '../components/Heroes/MariettaKYHero';
+import LouisvilleKYHero from '../components/Heroes/LouisvilleKYHero';
 import CertifiedInstaller from '../components/BenefitsAndImportance/CertifiedInstaller';
 import curingLamp from '../assets/images/details/curing-lamp.jpg';
 import TeslaInterior from '../assets/images/details/tesla-interior.jpg'
