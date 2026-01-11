@@ -4,7 +4,7 @@ import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
 import BenefitsOfPPF from '../components/BenefitsAndImportance/BenefitsOfPPF';
 import ResidentialWindowTintingHero from '../components/Heroes/ResidentialWindowTintingHero';
-import Geoshield from '../assets/images/partners/Geoshield_Logo_Color_Subtext.png';
+import Geoshield from '../assets/images/partners/Geoshield_Logo_Color.png';
 import VideoIntroduction from '../components/BenefitsAndImportance/VideoIntroduction';
 import FlatGlassCertifiedComponent from '../components/BenefitsAndImportance/FlatGlassCertifiedInstaller';
 import BenefitsOfResidentialTint from '../components/BenefitsAndImportance/BenefitsOfResidentialTint';
