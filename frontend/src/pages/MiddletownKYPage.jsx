@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import Map from '../components/Map';
 import MiddletownKYHero from '../components/Heroes/MiddletownKYHero';
 import CertifiedInstaller from '../components/BenefitsAndImportance/CertifiedInstaller';
-import curingLamp from '../assets/images/ceramic-coatings/curing-lamp.jpg';
+import curingLamp from '../assets/images/details/curing-lamp.jpg';
 import TeslaInterior from '../assets/images/details/tesla-interior.jpg';
 import BMWExterior from '../assets/images/details/bmw-760i.jpg';
 import BMWSteeringWheel from '../assets/images/details/bmw-steering-wheel.jpg';
