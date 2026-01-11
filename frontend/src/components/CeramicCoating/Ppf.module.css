@@ -1,0 +1,37 @@
+.list {
+  gap: '16px';
+}
+
+
+.tab {
+    position: relative;
+    color: #FFF;
+    background-color: #2e2e2e;
+    text-align: left;
+    border-radius: 5px;
+    padding: 13px 21px 12px;
+    letter-spacing: 2px;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-family: 'SceneProRg';
+    transition: color .4s, #FFF .4s;
+    gap: '16px';
+
+    &[data-active] {
+      z-index: 1;
+      color: #000;
+      background-color: #FFF;
+      box-shadow: inset 1px 1px 19px rgba(0, 0, 0, .86);
+    }
+    &[data-active]:hover {
+      z-index: 1;
+      color: #000;
+      background-color: #FFF;
+      box-shadow: inset 1px 1px 19px rgba(0, 0, 0, .86);
+    }
+  }
+
+  .tab:hover {
+    color: #000;
+    background-color: #FFF;
+  }

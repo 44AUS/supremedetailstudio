@@ -1,0 +1,196 @@
+import React from 'react';
+import { Container, Title, Image, Text, createStyles } from '@mantine/core';
+import { Helmet } from 'react-helmet';
+import { Link } from 'react-router-dom';
+import BenefitsOfPPF from '../components/BenefitsAndImportance/BenefitsOfPPF';
+import ResidentialWindowTintingHero from '../components/Heroes/ResidentialWindowTintingHero';
+import Geoshield from '../assets/images/partners/Geoshield_Logo_Color_Subtext.png';
+import VideoIntroduction from '../components/BenefitsAndImportance/VideoIntroduction';
+import FlatGlassCertifiedComponent from '../components/BenefitsAndImportance/FlatGlassCertifiedInstaller';
+import BenefitsOfResidentialTint from '../components/BenefitsAndImportance/BenefitsOfResidentialTint';
+import ResidentialTintFAQ from '../components/FAQs/ResidentialTintFAQ';
+
+const useStyles = createStyles((theme) => ({
+  wrapper: {
+    paddingTop: '15px',
+    paddingBottom: 0,
+    position: 'relative',
+  },
+  bgBody: {
+    backgroundColor: '#0f0f0f',
+  },
+  h1: {
+    marginTop: 0,
+    fontFamily: 'SceneProUltBlkIt',
+    textAlign: 'center',
+    color: '#fff',
+    fontSize: '36px',
+    textTransform: 'uppercase',
+    lineHeight: 1.2,
+    fontWeight: 800,
+    animation: 'fadein 1s',
+    '@media (max-width: 520px)': {
+      fontSize: 24,
+      textAlign: 'center',
+	  },
+  },
+  partnerLogo: {
+    float:'none',
+    top: '0px',
+    left:0,
+    width:'calc(100% - 668px)',
+    position:'relative',
+    height:'auto',
+    paddingTop:'0px',
+    paddingLeft:'0px',
+    paddingBottom:'0px',
+    maxWidth:'352px',
+    paddingRight:'0px',
+    minWidth:'25px',
+    textAlign:'start',
+    display:'block',
+    marginRight:'auto',
+    marginLeft:'auto',
+    marginTop:'14px',
+    marginBottom:'15px',
+    [theme.fn.smallerThan('md')]: {
+      maxWidth:'252px',
+    },
+  },
+  paper: {
+    backgroundColor: '#2f2f2f',
+    border: '0px solid',
+    borderRadius: 12,
+    fontWeight: 600,
+    [theme.fn.smallerThan('sm')]: {
+    },
+  },
+  group: {
+    padding: 24,
+  },
+  serviceTitle: {
+    color: 'rgba(255, 255, 255, .87)',
+    fontSize: 16,
+    fontWeight: 600,
+  },
+  serviceDescription: {
+    color: 'rgba(235, 235, 235, .6)',
+    paddingTop: 8,
+    fontSize: 14,
+    fontWeight: 500,
+  },
+  list: {
+    [theme.fn.smallerThan('sm')]: {
+      marginBottom: 20,
+    },
+  },
+  listItem: {
+    color: '#FFF',
+    fontFamily: `Outfit, ${theme.fontFamily}`,
+    fontSize: '18px',
+    margin: 'auto'
+  },
+  smallHeading: {
+    fontFamily: `Outfit, ${theme.fontFamily}`,
+    color: '#ebebeb',
+    fontSize: '2rem',
+    lineHeight: '1.28125',
+    textAlign: 'center',
+    marginBottom: '1.25rem',
+  },
+  desc: {
+    fontFamily: `Outfit, ${theme.fontFamily}`,
+    color: '#ababab',
+    fontSize: '1.25rem',
+    lineHeight: 1.6,
+    fontWeight: 500,
+    textAlign: 'center',
+    marginBottom: '1.25rem',
+    animation: 'fadein 1s',
+  },
+  control: {
+		paddingLeft: 50,
+		paddingRight: 50,
+		fontFamily: `Outfit, ${theme.fontFamily}`,
+		fontSize: '1.125rem',
+		fontWeight: 600,
+		transition: 'color .25s,border-color .25s,background-color .25s',
+		justifyContent: 'center',
+		alignItems: 'center',
+	
+		[theme.fn.smallerThan('md')]: {
+		  width: '100%',
+		},
+  },
+  card: {
+    backgroundColor: 'rgb(15,15,15)',
+    color: '#FFF',
+    fontFamily: `Outfit, ${theme.fontFamily}`,
+    border: '1px solid rgba(202,204,255,.1)',
+  },
+
+  section: {
+    borderBottom: `1px solid rgba(202,204,255,.1)`,
+    paddingLeft: theme.spacing.md,
+    paddingRight: theme.spacing.md,
+    paddingBottom: theme.spacing.md,
+    fontFamily: `Outfit, ${theme.fontFamily}`,
+  },
+
+  like: {
+    color: theme.colors.red[6],
+  },
+
+  label: {
+    textTransform: 'uppercase',
+    fontFamily: `Outfit, ${theme.fontFamily}`,
+    fontSize: theme.fontSizes.xs,
+    fontWeight: 700,
+  },
+}));
+
+const ResidentialWindowTintPage = () => {
+  const { classes, theme } = useStyles();
+
+  return (
+    <>
+    <Helmet>
+      <title>Residential Window Tinting In Louisville, KY | Supreme Detail Studio</title>
+      <meta name='title' content='Residential Window Tinting In Louisville, KY | Supreme Detail Studio' />
+      <meta name='description' content='Louisville, KY Residential Window Tinting' />
+      <meta name='keywords' content='louisville ky Residential Window Tinting, supreme detail studio, louisville mobile car detailing, louisville undercarriage detailing, louisville mobile car wash, louisville Residential Window Tinting, louisville paint correction, louisville mobile detail new albany,' />
+      
+      <meta property="og:title" content='Residential Window Tinting In Louisville, KY | Supreme Detail Studio' />
+      <meta property="og:description" content='Louisville, KY Residential Window Tintings' />
+      <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
+    </Helmet>
+    <ResidentialWindowTintingHero />
+    <VideoIntroduction
+          titleProp='HOME PRIVACY AND INTERIOR COMFORT'
+          descriptionProp={`In the Derby City, the sun shines with brilliance during all points of the year. Residents of the Kentuckiana area know that this can impact their home’s interior in many ways, while those who live in a more urban setting have passersby walking past frequently. Privacy, security, and temperature improvements are all important for your home, and Supreme Detail Studio has the answers! Imagine a space where the light is perfect, the temperature is always comfortable, and you and your family know you have the privacy you deserve. You get this with us.`}
+          videoProp='Pz8x_kA7Ypc'
+          buttonText='VIew Our Packages'
+          buttonLink='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/NpWY3v1pvBzbrzoPqp7c'
+          />
+    {/* <BenefitsOfPPF /> */}
+    <BenefitsOfResidentialTint />
+    <FlatGlassCertifiedComponent />
+    <div className={classes.bgBody}>
+    <Container size="xl">
+      <div className={classes.wrapper}>
+        <Title className={classes.h1}>Residential Window Tint Options</Title>
+        <div>
+          <Text className={classes.desc}>
+            Coming Soon!
+          </Text>
+        </div>
+      </div>
+    <ResidentialTintFAQ />
+    </Container>
+    </div>
+    {/* <TellUs /> */}
+    </>
+  )
+}
+
+export default ResidentialWindowTintPage;
