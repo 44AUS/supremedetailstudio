@@ -27,7 +27,7 @@ const useStyles = createStyles((theme) => ({
     zIndex: 1,
   },
   title: {
-    fontFamily: 'SceneProBold',
+    fontFamily: "'Montserrat', sans-serif",
     fontSize: '42px',
     letterSpacing: '3px',
     paddingLeft: '50px',
@@ -44,7 +44,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   ourPartners: {
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     fontSize: '14px',
     letterSpacing: '3px',
     paddingLeft: '50px',
@@ -87,7 +87,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   description: {
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     color: '#979797',
     marginBottom: '70px',
     lineHeight: '1.8',

@@ -152,6 +152,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   link: {
+    fontFamily: "'Montserrat', sans-serif",
     color: '#e80200',
     textDecoration: 'none',
     fontWeight: 600,

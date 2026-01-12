@@ -48,14 +48,14 @@ const AddOnCard = (props) => {
     <Link to={props.linkProp} target='_blank' style={{ textDecoration: 'none' }}>
     <Card p="md" className={classes.card}>
       <Card.Section className={classes.section} mt="md">
-      <Text mt="xs" style={{ fontFamily: `SceneProRg`, fontSize: '20px' }}>
+      <Text mt="xs" style={{ fontFamily: `Montserrat`, fontSize: '20px' }}>
           {props.titleProp}
         </Text>
-        <Text mt="xs" style={{ fontFamily: `SceneProRg`, fontSize: '15px', color: '#868686' }}>
+        <Text mt="xs" style={{ fontFamily: `Montserrat`, fontSize: '15px', color: '#868686' }}>
           {props.descProp}
         </Text>
   
-          <Text mt="xs" fw={500} style={{ fontFamily: `SceneProRg`, fontSize: '19px' }}>
+          <Text mt="xs" fw={500} style={{ fontFamily: `Montserrat`, fontSize: '19px' }}>
             Starts at {props.priceProp}
           </Text>
 

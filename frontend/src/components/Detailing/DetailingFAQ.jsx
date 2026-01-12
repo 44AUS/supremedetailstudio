@@ -23,7 +23,7 @@ const useStyles = createStyles((theme) => ({
 	  },
   },
   desc: {
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif", 
     color: '#e80200',
     fontSize: '1.25rem',
     lineHeight: 1.6,
@@ -124,7 +124,7 @@ const DetailingFAQ = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -134,7 +134,7 @@ const DetailingFAQ = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>
@@ -146,7 +146,7 @@ const DetailingFAQ = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -156,7 +156,7 @@ const DetailingFAQ = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`,
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>
@@ -168,7 +168,7 @@ const DetailingFAQ = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -178,7 +178,7 @@ const DetailingFAQ = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`,
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>
@@ -190,7 +190,7 @@ const DetailingFAQ = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -200,7 +200,7 @@ const DetailingFAQ = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`,
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>
@@ -212,7 +212,7 @@ const DetailingFAQ = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -222,7 +222,7 @@ const DetailingFAQ = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`,
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>

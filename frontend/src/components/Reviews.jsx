@@ -13,7 +13,7 @@ const useStyles = createStyles((theme) => ({
   },
   h1: {
     marginTop: 0,
-    fontFamily: 'SceneProUltBlkIt',
+    fontFamily: "'Montserrat', sans-serif",
     textAlign: 'center',
     color: '#fff',
     fontSize: '36px',
@@ -27,7 +27,7 @@ const useStyles = createStyles((theme) => ({
 	  },
   },
   desc: {
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     color: '#e80200',
     fontSize: '1.25rem',
     lineHeight: 1.6,

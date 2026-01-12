@@ -38,7 +38,7 @@ import Zoom from 'react-medium-image-zoom'
         },
         h1Why: {
           marginTop: 0,
-          fontFamily: 'SceneProUltBlkIt',
+          fontFamily: "'Montserrat', sans-serif",
           textAlign: 'center',
           color: '#fff',
           fontSize: '22px',
@@ -52,7 +52,7 @@ import Zoom from 'react-medium-image-zoom'
           },
         },
         WhyDesc: {
-          fontFamily: `SceneProRg`,
+          fontFamily: "'Montserrat', sans-serif",
           color: '#fff',
           fontSize: '15px',
           lineHeight: 1.8,
@@ -65,7 +65,7 @@ import Zoom from 'react-medium-image-zoom'
           },
         },
         desc: {
-          fontFamily: 'SceneProRg',
+          fontFamily: "'Montserrat', sans-serif",
           color: '#e80200',
           fontSize: '1.25rem',
           lineHeight: 1.6,
@@ -79,7 +79,7 @@ import Zoom from 'react-medium-image-zoom'
           },
         },
         benefitIcon: {
-          fontFamily: `SceneProRg`, 
+          fontFamily: "'Montserrat', sans-serif",
           fontSize: '16px',
           fontWeight: 800,
           color: '#FFF',
@@ -99,12 +99,15 @@ import Zoom from 'react-medium-image-zoom'
           },
         },
         cityList: {
+          fontFamily: "'Montserrat', sans-serif",
+          color: '#FFF',
           listStyle: 'inside',
           listStyleType: 'disc',
           padding: '10px'
         },
         li: {
           display: 'list-item',
+          color: '#FFF',
           // lineHeight: 1.8,
           fontWeight: 500,
           fontSize: '15px',
@@ -116,6 +119,60 @@ import Zoom from 'react-medium-image-zoom'
             fontSize: '15px',
           },
         },
+        buttonContainer: {
+    marginTop: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '20px',
+    flexWrap: 'wrap',
+  },
+  primaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#e80200',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '18px 40px',
+    textDecoration: 'none',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: '0 4px 20px rgba(232, 2, 0, 0.4)',
+    '&:hover': {
+      backgroundColor: '#ff1a1a',
+      transform: 'translateY(-3px)',
+      boxShadow: '0 8px 30px rgba(232, 2, 0, 0.6)',
+    },
+  },
+  secondaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '16px 38px',
+    textDecoration: 'none',
+    border: '2px solid rgba(255, 255, 255, 0.8)',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderColor: '#fff',
+      transform: 'translateY(-3px)',
+    },
+  },
       }));
       const BestDetailBiz = () => {
           const { classes } = useStyles();
@@ -141,16 +198,16 @@ import Zoom from 'react-medium-image-zoom'
          <div>
           <Title className={classes.desc}>WE SET A HIGH STANDARD FOR ALL TYPES OF DETAILING SERVICES</Title>
           <Title className={classes.h1}>BEST AUTO DETAILING COMPANY IN MARIETTA, GA</Title>
-          <Text className={classes.WhyDesc}>Located in Marietta, Kentucky, we are a dedicated protection and detailing team specializing in a wide range of premium services. Our offerings include advanced <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>ceramic coating</Link> solutions for street vehicles, boats, and industrial or agricultural equipment, as well as residential properties. Additionally, we provide top-tier <Link to="/services/paint-protection-film" style={{ textDecoration: 'underline' }}>paint protection film</Link> products and professional-grade <Link to="/services/window-tinting" style={{ textDecoration: 'underline' }}>window tinting</Link> for all vehicle makes and models. No matter the type of vehicle or machinery you need serviced, our meticulous attention to detail and state-of-the-art techniques guarantee unmatched care and protection for your valuable assets.</Text>
+          <Text className={classes.WhyDesc}>Located in Marietta, Georgia, we are a dedicated protection and detailing team specializing in a wide range of premium services. Our offerings include advanced <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>ceramic coating</Link> solutions for street vehicles, boats, and industrial or agricultural equipment, as well as residential properties. Additionally, we provide top-tier <Link to="/services/paint-protection-film" style={{ textDecoration: 'underline' }}>paint protection film</Link> products and professional-grade <Link to="/services/window-tinting" style={{ textDecoration: 'underline' }}>window tinting</Link> for all vehicle makes and models. No matter the type of vehicle or machinery you need serviced, our meticulous attention to detail and state-of-the-art techniques guarantee unmatched care and protection for your valuable assets.</Text>
                 <Zoom>
                 <img src={Corvette} alt="gallery-img" style={{width: "100%", display: "block", marginBottom: '1.25rem' }} />
                 </Zoom>
           <Title className={classes.h1}>PPF CERTIFIED INSTALLER IN MARIETTA, GA</Title>
           <Text className={classes.WhyDesc}>Welcome to Supreme Detail Studio, where luxury and convenience converge seamlessly. Proudly located in Marietta, GA, we are recognized as one of the top auto detailing companies in the area. While our expertise lies in detailing luxury vehicles, we go beyond boundaries. We also take pride in being a leading provider of paint protection film (PPF) installation for luxury cars, boats, motorcycles, and everything in between.</Text>
           
-          <Text className={classes.WhyDesc}>Our other services include <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>Ceramic Paint Coating</Link>, <Link to="/services/residential" style={{ textDecoration: 'underline' }}>Home Coatings</Link>, <Link to="/services/vinyl-wrap-chrome-deletion" style={{ textDecoration: 'underline' }}>Vinyl Wrap & Chrome Deletion</Link>, and more. At Supreme Detail Studio, precision is our hallmark. Through dedicated focus on every detail, we've risen above local competition to establish ourselves as a top automotive detailing choice for residents across Kentuckiana, spanning Jefferson County, KY, Oldham County, KY, Floyd County, IN, and Clark County, IN.</Text>
+          <Text className={classes.WhyDesc}>Our other services include <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>Ceramic Paint Coating</Link>, <Link to="/services/residential" style={{ textDecoration: 'underline' }}>Home Coatings</Link>, <Link to="/services/vinyl-wrap-chrome-deletion" style={{ textDecoration: 'underline' }}>Vinyl Wrap & Chrome Deletion</Link>, and more. At Supreme Detail Studio, precision is our hallmark. Through dedicated focus on every detail, we've risen above local competition to establish ourselves as a top automotive detailing choice for residents across Georgia, spanning Cobb County, GA, Dekalb County, GA, Fulton County, GA, and Douglas County, GA.</Text>
           
-          <Text className={classes.WhyDesc}>Supreme Detail Studio is committed to embracing all our offered services and expanding our customer base in and around Marietta, Kentucky. Whether you need vehicle detailing or ceramic coating and tinting for your home or office, we proudly assist clients from the following areas:</Text>
+          <Text className={classes.WhyDesc}>Supreme Detail Studio is committed to embracing all our offered services and expanding our customer base in and around Marietta, Georgia. Whether you need vehicle detailing or ceramic coating and tinting for your home or office, we proudly assist clients from the following areas:</Text>
           <ul role='list' className={classes.cityList}>
           <SimpleGrid
         cols={3}
@@ -161,37 +218,31 @@ import Zoom from 'react-medium-image-zoom'
           { maxWidth: 600, cols: 2, spacing: 'sm' },
         ]}
         >
-            <Link to="/service-areas/louisville-ky" style={{ textDecoration: 'underline' }}><li className={classes.li}>Marietta, GA</li></Link>
-            <li className={classes.li}>Prospect, KY</li>
-            <li className={classes.li}>Lagrange, KY</li>
-            <Link to="/service-areas/crestwood-ky" style={{ textDecoration: 'underline' }}><li className={classes.li}>Crestwood, KY</li></Link>
-            <Link to="/service-areas/middletown-ky" style={{ textDecoration: 'underline' }}><li className={classes.li}>Middletown, KY</li></Link>
-            <li className={classes.li}>Jeffersontown, KY</li>
-            <li className={classes.li}>Okolona, KY</li>
-            <li className={classes.li}>Fairdale, KY</li>
-            <li className={classes.li}>Pleasure Ridge Park, KY</li>
-            <Link to="/service-areas/st-matthews-ky" style={{ textDecoration: 'underline' }}><li className={classes.li}>St. Matthews, KY</li></Link>
-            <li className={classes.li}>New Albany, IN</li>
-            <li className={classes.li}>Clarksville, IN</li>
+            <Link to="/service-areas/marietta-ga" style={{ textDecoration: 'underline' }}><li className={classes.li}>Marietta, GA</li></Link>
+            <li className={classes.li}>Smyrna, GA</li>
+            <li className={classes.li}>Roswell, GA</li>
+            <Link to="/service-areas/atlanta-ga" style={{ textDecoration: 'underline' }}><li className={classes.li}>Atlanta, GA</li></Link>
+            <Link to="/service-areas/sandy-springs-ga" style={{ textDecoration: 'underline' }}><li className={classes.li}>Sandy Springs, GA</li></Link>
+            <li className={classes.li}>Alpharetta, GA</li>
+            <li className={classes.li}>Acworth, GA</li>
+            <li className={classes.li}>Woodstock, GA</li>
+            <li className={classes.li}>Austell, GA</li>
+            <Link to="/service-areas/kennesaw-ga" style={{ textDecoration: 'underline' }}><li className={classes.li}>Kennesaw, GA</li></Link>
+            <li className={classes.li}>Lithia Springs, GA</li>
+            <li className={classes.li}>Douglasville, GA</li>
             </SimpleGrid>
           </ul>
           <div className="mx-auto mt-10 flex items-center justify-center max-w-2xl lg:mx-0 lg:max-w-none">
         <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-6">
 
-          <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw" target="_blank"  style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
-          <Button 
-          radius="none" size="md" variant="shadow" style={{ backgroundColor: 'rgb(232, 2, 0)', fontFamily: 'SceneProRg', letterSpacing: '3px', textTransform: 'uppercase' }}
-          >
-            Book Appointment
-          </Button>
-          </Link>
-          <Link to="tel:(502) 417-0690" style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
-          <Button 
-          radius="none" size="md" variant="shadow" style={{ backgroundColor: 'rgb(232, 2, 0)', fontFamily: 'SceneProRg', letterSpacing: '3px', textTransform: 'uppercase' }}
-          >
-            CALL (502) 417-0690
-          </Button>
-          </Link>
+          <div className={classes.buttonContainer}>
+                      <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
+                        Book Appointment
+                      </Link>
+                      <Link to="tel:5024170690" className={classes.secondaryButton}>
+                        Call (502) 417-0690
+                      </Link>
+                    </div>
 
           </div>
         </div>

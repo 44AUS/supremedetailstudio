@@ -8,10 +8,7 @@ body, #root {
 }
 
 /* Override Mantine and other component fonts */
-.mantine-Title-root,
-.mantine-Text-root {
-  font-family: inherit !important;
-}
+
 
 /* Ensure Oswald for all titles */
 [class*="title"],

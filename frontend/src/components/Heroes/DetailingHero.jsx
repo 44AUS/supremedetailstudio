@@ -127,6 +127,60 @@ const useStyles = createStyles((theme) => ({
       transform: 'translateY(-3px)',
     },
   },
+  buttonContainer: {
+    marginTop: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '20px',
+    flexWrap: 'wrap',
+  },
+  primaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#e80200',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '18px 40px',
+    textDecoration: 'none',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: '0 4px 20px rgba(232, 2, 0, 0.4)',
+    '&:hover': {
+      backgroundColor: '#ff1a1a',
+      transform: 'translateY(-3px)',
+      boxShadow: '0 8px 30px rgba(232, 2, 0, 0.6)',
+    },
+  },
+  secondaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '16px 38px',
+    textDecoration: 'none',
+    border: '2px solid rgba(255, 255, 255, 0.8)',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderColor: '#fff',
+      transform: 'translateY(-3px)',
+    },
+  },
 }));
 
 const DetailingHero = () => {
@@ -151,13 +205,13 @@ const DetailingHero = () => {
           </Text>
 
           <div className={classes.buttonContainer}>
-            <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw" target="_blank" className={classes.primaryButton}>
-              Book Appointment
-            </Link>
-            <Link to="tel:5024170690" className={classes.secondaryButton}>
-              Call (502) 417-0690
-            </Link>
-          </div>
+                      <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
+                        Book Appointment
+                      </Link>
+                      <Link to="tel:5024170690" className={classes.secondaryButton}>
+                        Call (502) 417-0690
+                      </Link>
+                    </div>
         </div>
       </Container>
     </div>

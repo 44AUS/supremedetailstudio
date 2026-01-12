@@ -19,7 +19,7 @@ const useStyles = createStyles((theme) => ({
   },
   h1: {
     marginTop: 0,
-    fontFamily: `Outfit, ${theme.fontFamily}`,
+    fontFamily: "'Montserrat', sans-serif", 
     textAlign: 'center',
     color: '#fff',
     fontSize: '3.13rem',
@@ -33,7 +33,7 @@ const useStyles = createStyles((theme) => ({
   title: {
     marginTop: 0,
     marginBottom: '.5rem',
-    fontFamily: `Outfit, ${theme.fontFamily}`,
+    fontFamily: "'Montserrat', sans-serif", 
     textAlign: 'center',
     color: '#fff',
     fontSize: '2.13rem',
@@ -45,7 +45,7 @@ const useStyles = createStyles((theme) => ({
 	  },
   },
   desc: {
-    fontFamily: `Outfit, ${theme.fontFamily}`,
+    fontFamily: "'Montserrat', sans-serif", 
     color: '#ababab',
     fontSize: '1.25rem',
     lineHeight: 1.6,
@@ -54,7 +54,7 @@ const useStyles = createStyles((theme) => ({
     marginBottom: '1.25rem',
   },
   p: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif", 
     color: '#ababab',
     fontSize: '1.25rem',
     lineHeight: 1.6,
@@ -84,7 +84,7 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 500,
   },
   control: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif", 
     fontWeight: 400,
     fontSize: '1rem',
     transition: 'color .25s,border-color .25s,background-color .25s',
@@ -98,7 +98,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   listItem: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif", 
     display: 'flex',
     padding: '1.5rem 2rem',
     alignItems: 'center',
@@ -136,7 +136,8 @@ const useStyles = createStyles((theme) => ({
     // backgroundColor: 'rgb(15,15,15)',
   },
   whyDetailInner: {
-    fontFamily: `SceneProRg`,
+    color: '#FFF',
+    fontFamily: "'Montserrat', sans-serif", 
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',

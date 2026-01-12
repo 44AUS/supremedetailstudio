@@ -11,7 +11,7 @@ const useStyles = createStyles((theme) => ({
     display: 'block',
     objectFit: 'contain',
     color: '#FFFFFF',
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif", 
     fontSize: 20,
     fontWeight: 600,
     lineHeight: 1.1,
@@ -26,7 +26,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   footerText: {
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif", 
     color: '#FFF',
     fontSize: '14px',
     lineHeight: '180%',
@@ -37,6 +37,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   footer2: {
+    fontFamily: "'Montserrat', sans-serif", 
     backgroundColor: '#000',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -80,6 +81,7 @@ const useStyles = createStyles((theme) => ({
     display: 'flex',
   },
   footerLabel: {
+    fontFamily: "'Oswald', sans-serif",
     color: '#fff',
     letterSpacing: '3px',
     textTransform: 'uppercase',
@@ -258,7 +260,7 @@ const Footer2 = () => {
           <div className={classes.businessInfo}>
             <div class="contact-details-wrapper">
               <a href="https://maps.app.goo.gl/QFjgzaEzVkWFQyQw6" target="_blank" className={classes.contactDetailsText}>
-                <strong>Address:</strong> 4600 Pinewood Rd Unit A Marietta, GA 40218
+                <strong>Address:</strong> Marietta, GA USA
               </a>
               <a href="tel:(502)417-0690" className={classes.contactDetailsText}>
                 <strong>Phone: Call or Text </strong>(502) 417-0690

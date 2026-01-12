@@ -34,7 +34,7 @@ const useStyles = createStyles((theme) => ({
   h1: {
     marginTop: 0,
     marginBottom: '1.25rem',
-    fontFamily: 'SceneProUltBlkIt',
+    fontFamily: "'Montserrat', sans-serif", 
     textAlign: 'center',
     color: '#fff',
     fontSize: '36px',
@@ -76,12 +76,12 @@ const useStyles = createStyles((theme) => ({
   },
   listItem: {
     color: '#FFF',
-    fontFamily: `Outfit, ${theme.fontFamily}`,
+    fontFamily: "'Montserrat', sans-serif", 
     fontSize: '18px',
     margin: 'auto'
   },
   smallHeading: {
-    fontFamily: `Outfit, ${theme.fontFamily}`,
+    fontFamily: "'Montserrat', sans-serif", 
     color: '#ebebeb',
     fontSize: '2rem',
     lineHeight: '1.28125',
@@ -104,7 +104,7 @@ const useStyles = createStyles((theme) => ({
 	  },
   },
   WhyDesc: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif", 
     color: '#fff',
     fontSize: '1.25rem',
     lineHeight: 1.6,
@@ -120,7 +120,7 @@ const useStyles = createStyles((theme) => ({
   control: {
 		paddingLeft: 50,
 		paddingRight: 50,
-		fontFamily: `Outfit, ${theme.fontFamily}`,
+		fontFamily: "'Montserrat', sans-serif", 
 		fontSize: '1.125rem',
 		fontWeight: 600,
 		transition: 'color .25s,border-color .25s,background-color .25s',
@@ -146,7 +146,7 @@ const GalleryPage = () => {
       <title>Certified Automotive Detailing in Marietta, GA | Supreme Detail Studio</title>
       <meta name='title' content='Certified Automotive Detailing in Marietta, GA | Supreme Detail Studio' />
       <meta name='description' content='Want more out of your vehicle, home, or office? Contact Supreme Detail Studio today at (502) 417-0690 to learn more about what we offer your vehicle!' />
-      <meta name='keywords' content='louisville ky Paint Protection Film, supreme detail studio, louisville mobile car detailing, louisville undercarriage detailing, louisville mobile car wash, louisville Paint Protection Film, louisville paint correction, louisville mobile detail new albany,' />
+      <meta name='keywords' content='marietta ga Paint Protection Film, supreme detail studio, marietta mobile car detailing, marietta undercarriage detailing, marietta mobile car wash, marietta Paint Protection Film, marietta paint correction, marietta mobile detail' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
       <meta property="og:title" content='Certified Automotive Detailing in Marietta, GA | Supreme Detail Studio' />

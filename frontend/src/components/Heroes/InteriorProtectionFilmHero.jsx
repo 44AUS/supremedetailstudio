@@ -60,7 +60,61 @@ const useStyles = createStyles((theme) => ({
     [theme.fn.smallerThan('md')]: {
       marginTop: '10px',
     },
-  }
+  },
+  buttonContainer: {
+    marginTop: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '20px',
+    flexWrap: 'wrap',
+  },
+  primaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#e80200',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '18px 40px',
+    textDecoration: 'none',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: '0 4px 20px rgba(232, 2, 0, 0.4)',
+    '&:hover': {
+      backgroundColor: '#ff1a1a',
+      transform: 'translateY(-3px)',
+      boxShadow: '0 8px 30px rgba(232, 2, 0, 0.6)',
+    },
+  },
+  secondaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '16px 38px',
+    textDecoration: 'none',
+    border: '2px solid rgba(255, 255, 255, 0.8)',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderColor: '#fff',
+      transform: 'translateY(-3px)',
+    },
+  },
 }));
 
 const InteriorProtectionFilmHero = () => {
@@ -81,54 +135,15 @@ const InteriorProtectionFilmHero = () => {
           </Text>
         </Container>
 
-        <div className={classes.controls}>
-          <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw" target="_blank"  style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
-          <Button 
-          className={classes.control} 
-          size="lg"
-          styles={(theme) => ({
-            root: {
-              backgroundColor: 'rgba(0,0,0,0)',
-              border: '2px solid #e80200',
-              fontFamily: `SceneProRg`,
-              textTransform: 'uppercase',
-              fontWeight: 600,
-              letterSpacing: '1px',
-              borderRadius: '0px',
-              '&:hover': {
-                backgroundColor: '#e80200',
-                boxShadow: '0 0 4px 0 #e80200',
-              },
-            },
-          })}
-          >
-            Book Appointment
-          </Button>
-          </Link>
-          <Link to="tel:(502) 417-0690" target="_blank" style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
-          <Button 
-          className={classes.control} 
-          size="lg"
-          styles={(theme) => ({
-            root: {
-              backgroundColor: 'rgba(0,0,0,0)',
-              border: '2px solid #e80200',
-              fontFamily: `SceneProRg`,
-              textTransform: 'uppercase',
-              fontWeight: 600,
-              letterSpacing: '1px',
-              borderRadius: '0px',
-              '&:hover': {
-                backgroundColor: '#e80200',
-                boxShadow: '0 0 4px 0 #e80200',
-              },
-            },
-          })}
-          >
-            Call (502) 417-0690
-          </Button>
-          </Link>
-        </div>
+        <div className={classes.buttonContainer}>
+                                        <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
+                                          Book Appointment
+                                        </Link>
+                                        <Link to="tel:5024170690" className={classes.secondaryButton}>
+                                          Call (502) 417-0690
+                                        </Link>
+                                      </div>
+                                      
       </div>
     </div>
   )

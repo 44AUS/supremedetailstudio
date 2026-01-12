@@ -68,12 +68,12 @@ const useStyles = createStyles((theme) => ({
   },
   listItem: {
     color: '#FFF',
-    fontFamily: `Outfit, ${theme.fontFamily}`,
+    fontFamily: "'Montserrat', sans-serif", 
     fontSize: '18px',
     margin: 'auto'
   },
   smallHeading: {
-    fontFamily: `Evogria, ${theme.fontFamily}`,
+   fontFamily: "'Montserrat', sans-serif", 
     color: '#ebebeb',
     fontSize: '2rem',
     lineHeight: '1.28125',
@@ -81,7 +81,7 @@ const useStyles = createStyles((theme) => ({
     marginBottom: '1.25rem',
   },
   desc: {
-    fontFamily: `Evogria, ${theme.fontFamily}`,
+   fontFamily: "'Montserrat', sans-serif", 
     color: '#ababab',
     fontSize: '1.25rem',
     lineHeight: 1.6,
@@ -93,7 +93,7 @@ const useStyles = createStyles((theme) => ({
   control: {
 		paddingLeft: 50,
 		paddingRight: 50,
-		fontFamily: `Outfit, ${theme.fontFamily}`,
+		fontFamily: "'Montserrat', sans-serif", 
 		fontSize: '1.125rem',
 		fontWeight: 600,
 		transition: 'color .25s,border-color .25s,background-color .25s',
@@ -107,7 +107,7 @@ const useStyles = createStyles((theme) => ({
   card: {
     backgroundColor: 'rgb(15,15,15)',
     color: '#FFF',
-    fontFamily: `Outfit, ${theme.fontFamily}`,
+    fontFamily: "'Montserrat', sans-serif", 
     border: '1px solid rgba(202,204,255,.1)',
   },
 

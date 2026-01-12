@@ -157,7 +157,7 @@ const AboutHero = () => {
           </Text>
 
           <div className={classes.buttonContainer}>
-            <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw" target="_blank" className={classes.primaryButton}>
+            <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
               Book Appointment
             </Link>
             <Link to="tel:5024170690" className={classes.secondaryButton}>

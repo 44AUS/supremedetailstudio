@@ -81,11 +81,10 @@ function App() {
             <Route path='/services/residential-tinting' element={<ResidentialWindowTintPage />} />
             <Route path='/services/commercial-tinting' element={<CommercialWindowTintPage />} />
 
-            <Route path='/service-areas/louisville-ky' element={<LouisvilleKYPage />} />
-            <Route path='/service-areas/crestwood-ky' element={<CrestwoodKYPage />} />
-            <Route path='/service-areas/st-matthews-ky' element={<StMatthewsKYPage />} />
-            <Route path='/service-areas/middletown-ky' element={<MiddletownKYPage />} />
-            <Route path='/service-areas/jeffersontown-ky' element={<JeffersontownKYPage />} />
+            <Route path='/service-areas/marietta-ga' element={<LouisvilleKYPage />} />
+            <Route path='/service-areas/atlanta-ga' element={<CrestwoodKYPage />} />
+            <Route path='/service-areas/kennesaw-ga' element={<StMatthewsKYPage />} />
+            <Route path='/service-areas/sandy-springs' element={<MiddletownKYPage />} />
 
             <Route path='/about' element={<AboutPage />} />
             <Route path='/gallery' element={<GalleryPage />} />

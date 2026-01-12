@@ -34,7 +34,7 @@ const useStyles = createStyles((theme) => ({
   },
   title: {
     color: '#FFF',
-    fontFamily: 'SceneProUltBlk',
+    fontFamily: "'Montserrat', sans-serif",
     textTransform: 'uppercase',
     display: 'block',
     width: '100%',
@@ -60,7 +60,7 @@ const useStyles = createStyles((theme) => ({
   // },
   viewService: {
     color: '#FFF',
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     fontSize: '15px',
     marginTop: '23px',
   },

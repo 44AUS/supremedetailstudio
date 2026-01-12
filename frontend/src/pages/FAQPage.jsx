@@ -139,7 +139,7 @@ const FaqPage = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000',
@@ -150,7 +150,7 @@ const FaqPage = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>
@@ -163,7 +163,7 @@ const FaqPage = () => {
         <Accordion.Control 
         style={{ 
           color: '#ebebeb', 
-          fontFamily: `SceneProRg`, 
+          fontFamily: "'Montserrat', sans-serif", 
           fontSize: '1.125rem', 
           fontWeight: '700', 
           backgroundColor: '#000',
@@ -174,7 +174,7 @@ const FaqPage = () => {
         <Accordion.Panel 
         style={{ 
           backgroundColor: '#000', 
-          fontFamily: `SceneProRg`, 
+          fontFamily: "'Montserrat', sans-serif", 
           color: 'hsla(0,0%,67.1%,.8)',
           lineHeight: '1.75rem',
         }}>
@@ -187,7 +187,7 @@ const FaqPage = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -197,7 +197,7 @@ const FaqPage = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`,
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>
@@ -209,7 +209,7 @@ const FaqPage = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -219,7 +219,7 @@ const FaqPage = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`,
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>
@@ -231,7 +231,7 @@ const FaqPage = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -241,7 +241,7 @@ const FaqPage = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`,
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>
@@ -253,7 +253,7 @@ const FaqPage = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -263,7 +263,7 @@ const FaqPage = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`,
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>
@@ -275,7 +275,7 @@ const FaqPage = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -285,7 +285,7 @@ const FaqPage = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`,
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>
@@ -297,7 +297,7 @@ const FaqPage = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -307,7 +307,7 @@ const FaqPage = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`,
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>
@@ -319,7 +319,7 @@ const FaqPage = () => {
           <Accordion.Control 
           style={{ 
             color: '#ebebeb', 
-            fontFamily: `SceneProRg`, 
+            fontFamily: "'Montserrat', sans-serif", 
             fontSize: '1.125rem', 
             fontWeight: '700', 
             backgroundColor: '#000' 
@@ -329,7 +329,7 @@ const FaqPage = () => {
           <Accordion.Panel 
           style={{ 
             backgroundColor: '#000', 
-            fontFamily: `SceneProRg`,
+            fontFamily: "'Montserrat', sans-serif", 
             color: 'hsla(0,0%,67.1%,.8)',
             lineHeight: '1.75rem',
           }}>

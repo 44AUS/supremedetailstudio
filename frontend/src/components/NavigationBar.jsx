@@ -266,7 +266,7 @@ export default function NavBar() {
 
           {/* Book Appointment Button - Desktop */}
           <Link 
-            to='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw' 
+            to='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD' 
             target="_blank"
             className="desktop-nav"
             style={{
@@ -436,7 +436,7 @@ export default function NavBar() {
 
             {/* Book Button */}
             <Link
-              to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw"
+              to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
               target="_blank"
               onClick={closeMenu}
               style={{

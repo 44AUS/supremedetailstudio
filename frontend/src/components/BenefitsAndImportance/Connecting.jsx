@@ -16,7 +16,7 @@ const useStyles = createStyles((theme) => ({
   },
   h1: {
     marginTop: 0,
-    fontFamily: 'SceneProUltBlkIt',
+    fontFamily: "'Montserrat', sans-serif",
     textAlign: 'center',
     color: '#fff',
     fontSize: '36px',
@@ -31,7 +31,7 @@ const useStyles = createStyles((theme) => ({
   },
   h1Why: {
     marginTop: 0,
-    fontFamily: 'SceneProUltBlkIt',
+    fontFamily: "'Montserrat', sans-serif",
     textAlign: 'center',
     color: '#fff',
     fontSize: '22px',
@@ -45,7 +45,7 @@ const useStyles = createStyles((theme) => ({
 	  },
   },
   WhyDesc: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif",
     color: '#fff',
     fontSize: '18px',
     lineHeight: 1.8,
@@ -56,7 +56,7 @@ const useStyles = createStyles((theme) => ({
     animation: 'fadein 1s',
   },
   desc: {
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     color: '#e80200',
     fontSize: '1.25rem',
     lineHeight: 1.6,
@@ -71,7 +71,7 @@ const useStyles = createStyles((theme) => ({
 	  },
   },
   benefitIcon: {
-    fontFamily: `SceneProRg`, 
+    fontFamily: "'Montserrat', sans-serif", 
     fontSize: '16px',
     fontWeight: 800,
     color: '#FFF',
@@ -105,7 +105,61 @@ const useStyles = createStyles((theme) => ({
     [theme.fn.smallerThan('md')]: {
       marginTop: '10px',
     },
-  }
+  },
+  buttonContainer: {
+    marginTop: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '20px',
+    flexWrap: 'wrap',
+  },
+  primaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#e80200',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '18px 40px',
+    textDecoration: 'none',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: '0 4px 20px rgba(232, 2, 0, 0.4)',
+    '&:hover': {
+      backgroundColor: '#ff1a1a',
+      transform: 'translateY(-3px)',
+      boxShadow: '0 8px 30px rgba(232, 2, 0, 0.6)',
+    },
+  },
+  secondaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '16px 38px',
+    textDecoration: 'none',
+    border: '2px solid rgba(255, 255, 255, 0.8)',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderColor: '#fff',
+      transform: 'translateY(-3px)',
+    },
+  },
 }));
 const Connecting = () => {
     const { classes } = useStyles();
@@ -120,7 +174,7 @@ const Connecting = () => {
           Reach out to our team
         </div>
       <div>
-        <p className={classes.WhyDesc}>To embark on your professional auto detailing journey with the skilled car care team at Supreme Detail Studio, start by getting in touch with us directly to discuss all aspects of your pride and joy. You can either call us directly at <Link to="tel:(502) 417-0690" style={{ textDecoration: 'underline' }}>(502) 417-0690</Link> to connect with our specialized vehicle protection and automotive detailing crew or use our booking calender by clicking the button below. Either way, we can assist you in choosing the optimal service for your make and model that you drive here in the Marietta, Kentucky area.</p>
+        <p className={classes.WhyDesc}>To embark on your professional auto detailing journey with the skilled car care team at Supreme Detail Studio, start by getting in touch with us directly to discuss all aspects of your pride and joy. You can either call us directly at <Link to="tel:(502) 417-0690" style={{ textDecoration: 'underline' }}>(502) 417-0690</Link> to connect with our specialized vehicle protection and automotive detailing crew or use our booking calender by clicking the button below. Either way, we can assist you in choosing the optimal service for your make and model that you drive here in the Marietta, Georgia area.</p>
         <p className={classes.WhyDesc}>Otherwise, start by browsing the many services we offer here at Supreme Detail Studio, including our certified ceramic coatings, self-healing paint protection film, window tinting, paint correction, interior and exterior detailing services, vinyl wrap and chrome deletion, wheel curb rash repair, and our paintless dent repair service.</p>
       </div>
       <div>
@@ -128,20 +182,14 @@ const Connecting = () => {
       <div className="mx-auto mt-10 flex items-center justify-center max-w-2xl lg:mx-0 lg:max-w-none">
         <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-6">
 
-          <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw" target="_blank"  style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
-          <Button 
-          radius="none" size="md" variant="shadow" style={{ backgroundColor: 'rgb(232, 2, 0)', fontFamily: 'SceneProRg', letterSpacing: '3px', textTransform: 'uppercase' }}
-          >
-            Book Appointment
-          </Button>
-          </Link>
-          <Link to="tel:(502) 417-0690" style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
-          <Button 
-          radius="none" size="md" variant="shadow" style={{ backgroundColor: 'rgb(232, 2, 0)', fontFamily: 'SceneProRg', letterSpacing: '3px', textTransform: 'uppercase' }}
-          >
-            CALL (502) 417-0690
-          </Button>
-          </Link>
+          <div className={classes.buttonContainer}>
+                      <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
+                        Book Appointment
+                      </Link>
+                      <Link to="tel:5024170690" className={classes.secondaryButton}>
+                        Call (502) 417-0690
+                      </Link>
+                    </div>
 
           </div>
         </div>

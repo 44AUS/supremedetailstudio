@@ -151,13 +151,13 @@ const AboutPage = () => {
   return (
     <>
       <Helmet>
-      <title>Ceramic Coating Services in St. Matthews, KY | Varying Ceramic Coating Packages Available | Supreme Detail Studio</title>
-      <meta name='title' content='Ceramic Coating Services in St. Matthews, KY | Varying Ceramic Coating Packages Available | Supreme Detail Studio' />
+      <title>Ceramic Coating Services in Kennesaw, GA | Varying Ceramic Coating Packages Available | Supreme Detail Studio</title>
+      <meta name='title' content='Ceramic Coating Services in Kennesaw, GA | Varying Ceramic Coating Packages Available | Supreme Detail Studio' />
       <meta name='description' content='Protect your car’s paint with ceramic coating! Ceramic coating will keep your car cleaner for longer &amp;amp; will make follow-up car washes easier. Contact our skilled technicians in St. Matthews to schedule an appointment!' />
       <meta name='keywords' content='louisville ky ceramic coating, supreme detail studio, louisville mobile car detailing, louisville window tinting, louisville paint protection film, stek louisville, louisville paint correction, louisville mobile detail new albany,' />
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
 
-      <meta name='og:title' content='Ceramic Coating Services in St. Matthews, KY | Varying Ceramic Coating Packages Available | Supreme Detail Studio' />
+      <meta name='og:title' content='Ceramic Coating Services in Kennesaw, GA | Varying Ceramic Coating Packages Available | Supreme Detail Studio' />
       <meta name='og:description' content='Protect your car’s paint with ceramic coating! Ceramic coating will keep your car cleaner for longer &amp;amp; will make follow-up car washes easier. Contact our skilled technicians in St. Matthews to schedule an appointment!' />
 
     </Helmet>
@@ -179,7 +179,7 @@ const AboutPage = () => {
          <div>
           <Title className={classes.desc}>THE BEST CERAMIC COATING IN MARIETTA, GA</Title>
           <Title className={classes.h1}>Why choose a ceramic coating?</Title>
-          <Text className={classes.WhyDesc}>Want to give your precious car’s exteriors extra protection while keeping it free from dirt, stains, and grime? Get top-notch <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>ceramic coating</Link> in St. Matthews, KY, from Supreme Detail Studio!</Text>
+          <Text className={classes.WhyDesc}>Want to give your precious car’s exteriors extra protection while keeping it free from dirt, stains, and grime? Get top-notch <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>ceramic coating</Link> in Kennesaw, GA, from Supreme Detail Studio!</Text>
           <Text className={classes.WhyDesc}>While personal care and car washes help maintain your vehicle’s exterior, using regular items is not enough. You’ll need a trusted auto care company like Supreme Detail Studio to receive unparalleled ceramic coating services in Jefferson County, KY. Get in touch with us today, so we can keep your car exterior protected and looking good as new!</Text>
          </div>
         </SimpleGrid>

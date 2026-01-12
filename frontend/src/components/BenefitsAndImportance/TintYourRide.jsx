@@ -20,7 +20,7 @@
         },
         h1: {
           marginTop: 0,
-          fontFamily: 'SceneProUltBlkIt',
+          fontFamily: "'Montserrat', sans-serif",
           color: '#fff',
           fontSize: '32px',
           textTransform: 'uppercase',
@@ -34,7 +34,7 @@
         },
         h1smaller: {
           marginTop: 0,
-          fontFamily: 'SceneProUltBlkIt',
+          fontFamily: "'Montserrat', sans-serif",
           color: '#fff',
           fontSize: '30px',
           textTransform: 'uppercase',
@@ -48,7 +48,7 @@
         },
         h1Why: {
           marginTop: 0,
-          fontFamily: 'SceneProUltBlkIt',
+          fontFamily: "'Montserrat', sans-serif",
           textAlign: 'center',
           color: '#fff',
           fontSize: '22px',
@@ -62,7 +62,7 @@
           },
         },
         WhyDesc: {
-          fontFamily: `SceneProRg`,
+          fontFamily: "'Montserrat', sans-serif",
           color: '#fff',
           fontSize: '15px',
           lineHeight: 1.8,
@@ -89,7 +89,7 @@
           },
         },
         benefitIcon: {
-          fontFamily: `SceneProRg`, 
+          fontFamily: "'Montserrat', sans-serif", 
           fontSize: '16px',
           fontWeight: 800,
           color: '#FFF',
@@ -132,7 +132,7 @@
                    <div>
           <Title className={classes.desc}>TINT INSTALLATION THAT EXCEEDS ALL EXPECTATIONS</Title>
           <Title className={classes.h1}>TINT YOUR RIDE, HOME, OR OFFICE WITH THE HELP OF SUPREME DETAIL STUDIO</Title>
-          <Text className={classes.WhyDesc}>At Supreme Detail Studio, located in Marietta, Kentucky, we maintain a consistent standard across all our services: a strong emphasis on customer care. Within the detailing industry, we've distinguished ourselves by focusing intensely on our <Link to="/reviews" style={{ textDecoration: 'underline' }}>customers'</Link> needs. Our core principle is centered on treating each vehicle, boat, or property with meticulous care and precision, as if it were our own. This personalized approach deeply connects with clients who seek more than just typical detailing; we cater to individuals who passionately entrust us with protecting and preserving what matters most to them.</Text>
+          <Text className={classes.WhyDesc}>At Supreme Detail Studio, located in Marietta, Georgia, we maintain a consistent standard across all our services: a strong emphasis on customer care. Within the detailing industry, we've distinguished ourselves by focusing intensely on our <Link to="/reviews" style={{ textDecoration: 'underline' }}>customers'</Link> needs. Our core principle is centered on treating each vehicle, boat, or property with meticulous care and precision, as if it were our own. This personalized approach deeply connects with clients who seek more than just typical detailing; we cater to individuals who passionately entrust us with protecting and preserving what matters most to them.</Text>
           <Title className={classes.h1smaller}>PROFESSIONAL PAINT PROTECTION FILM INSTALLATION IN MARIETTA, GA</Title>
           <Text className={classes.WhyDesc}>In vehicle detailing, <Link to="/team" style={{ textDecoration: 'underline' }}>the team at Supreme Detail Studio</Link> sets itself apart with our extensive knowledge of the various types of vehicles we work on. With nearly a decade of experience, our owner specializes in applying ceramic coatings to vehicles and installing paint protection film on diverse and luxury cars. Austin has been trained by Steve Costa, who is highly regarded in the PPF industry with over 30 years of experience, further enhancing our capability to deliver exceptional service and quality.</Text>
           <Text className={classes.WhyDesc}>We are committed to delivering exceptional customer service right from the very beginning. Whether it's a thorough clean-up after a lengthy trip or a detailed enhancement to revive your vehicle's luster, our skilled professionals ensure each project is completed with a commitment to perfection.</Text>

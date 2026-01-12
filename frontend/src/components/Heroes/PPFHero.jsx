@@ -82,15 +82,16 @@ const useStyles = createStyles((theme) => ({
     justifyContent: 'center',
     backgroundColor: '#e80200',
     color: '#fff',
-    fontFamily: 'SceneProBold, sans-serif',
-    fontSize: '14px',
-    letterSpacing: '3px',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
     textTransform: 'uppercase',
     padding: '18px 40px',
     textDecoration: 'none',
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
+    fontWeight: 500,
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     boxShadow: '0 4px 20px rgba(232, 2, 0, 0.4)',
     '&:hover': {
@@ -105,15 +106,16 @@ const useStyles = createStyles((theme) => ({
     justifyContent: 'center',
     backgroundColor: 'transparent',
     color: '#fff',
-    fontFamily: 'SceneProBold, sans-serif',
-    fontSize: '14px',
-    letterSpacing: '3px',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
     textTransform: 'uppercase',
     padding: '16px 38px',
     textDecoration: 'none',
     border: '2px solid rgba(255, 255, 255, 0.8)',
     borderRadius: '4px',
     cursor: 'pointer',
+    fontWeight: 500,
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
     '&:hover': {
       backgroundColor: 'rgba(255, 255, 255, 0.1)',
@@ -142,14 +144,14 @@ const PPFHero = () => {
             At Supreme Detail Studio, we specialize in tailoring our services to suit both the design of your vehicle and your unique driving preferences. Whether you opt for our standard protection kit or go for our end to end paint protection, we provide an extensive range of clear bra coverage options, offering more choices than any other PPF shop in Marietta, GA.
           </Text>
 
-          <div className={classes.buttonContainer}>
-            <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl" target="_blank" className={classes.primaryButton}>
-              Book Appointment
-            </Link>
-            <Link to="tel:5024170690" className={classes.secondaryButton}>
-              Call (502) 417-0690
-            </Link>
-          </div>
+         <div className={classes.buttonContainer}>
+                                                   <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
+                                                     Book Appointment
+                                                   </Link>
+                                                   <Link to="tel:5024170690" className={classes.secondaryButton}>
+                                                     Call (502) 417-0690
+                                                   </Link>
+                                                 </div>
         </div>
       </Container>
     </div>
