@@ -196,13 +196,13 @@ const Hero = () => {
           </Text>
        
           <div className={classes.buttonContainer}>
-            <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw" target="_blank" className={classes.primaryButton}>
-              Book Appointment
-            </Link>
-            <Link to="tel:5024170690" className={classes.secondaryButton}>
-              Call (502) 417-0690
-            </Link>
-          </div>
+                      <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
+                        Book Appointment
+                      </Link>
+                      <Link to="tel:5024170690" className={classes.secondaryButton}>
+                        Call (502) 417-0690
+                      </Link>
+                    </div>
         </div>
       </Container>
     </div>
