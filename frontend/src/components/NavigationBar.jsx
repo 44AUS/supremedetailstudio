@@ -79,7 +79,7 @@ export default function NavBar() {
               src={Logo} 
               alt='Supreme Detail Studio'
               style={{ 
-                height: '50px',
+                height: '40px',
                 width: 'auto',
               }}
             />
