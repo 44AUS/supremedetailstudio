@@ -186,8 +186,8 @@ import Zoom from 'react-medium-image-zoom'
         spacing="xl"
         breakpoints={[
           { maxWidth: 980, cols: 2, spacing: 'md' },
-          { maxWidth: 755, cols: 1, spacing: 'sm' },
-          { maxWidth: 600, cols: 1, spacing: 'sm' },
+          { maxWidth: 755, cols: 1, spacing: 'md' },
+          { maxWidth: 600, cols: 1, spacing: 'md' },
         ]}
         >
           <div>
@@ -198,36 +198,36 @@ import Zoom from 'react-medium-image-zoom'
          <div>
           <Title className={classes.desc}>WE SET A HIGH STANDARD FOR ALL TYPES OF DETAILING SERVICES</Title>
           <Title className={classes.h1}>BEST AUTO DETAILING COMPANY IN MARIETTA, GA</Title>
-          <Text className={classes.WhyDesc}>Located in Marietta, Georgia, we are a dedicated protection and detailing team specializing in a wide range of premium services. Our offerings include advanced <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>ceramic coating</Link> solutions for street vehicles, boats, and industrial or agricultural equipment, as well as residential properties. Additionally, we provide top-tier <Link to="/services/paint-protection-film" style={{ textDecoration: 'underline' }}>paint protection film</Link> products and professional-grade <Link to="/services/window-tinting" style={{ textDecoration: 'underline' }}>window tinting</Link> for all vehicle makes and models. No matter the type of vehicle or machinery you need serviced, our meticulous attention to detail and state-of-the-art techniques guarantee unmatched care and protection for your valuable assets.</Text>
+          <Text className={classes.WhyDesc}>Located in Marietta, Georgia, we are a dedicated protection and detailing team specializing in a wide range of premium services. Our offerings include advanced <Link to="/services/ceramic-coatings" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>ceramic coating</Link> solutions for street vehicles, boats, and industrial or agricultural equipment, as well as residential properties. Additionally, we provide top-tier <Link to="/services/paint-protection-film" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>paint protection film</Link> products and professional-grade <Link to="/services/window-tinting" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>window tinting</Link> for all vehicle makes and models. No matter the type of vehicle or machinery you need serviced, our meticulous attention to detail and state-of-the-art techniques guarantee unmatched care and protection for your valuable assets.</Text>
                 <Zoom>
                 <img src={Corvette} alt="gallery-img" style={{width: "100%", display: "block", marginBottom: '1.25rem' }} />
                 </Zoom>
           <Title className={classes.h1}>PPF CERTIFIED INSTALLER IN MARIETTA, GA</Title>
           <Text className={classes.WhyDesc}>Welcome to Supreme Detail Studio, where luxury and convenience converge seamlessly. Proudly located in Marietta, GA, we are recognized as one of the top auto detailing companies in the area. While our expertise lies in detailing luxury vehicles, we go beyond boundaries. We also take pride in being a leading provider of paint protection film (PPF) installation for luxury cars, boats, motorcycles, and everything in between.</Text>
           
-          <Text className={classes.WhyDesc}>Our other services include <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>Ceramic Paint Coating</Link>, <Link to="/services/residential" style={{ textDecoration: 'underline' }}>Home Coatings</Link>, <Link to="/services/vinyl-wrap-chrome-deletion" style={{ textDecoration: 'underline' }}>Vinyl Wrap & Chrome Deletion</Link>, and more. At Supreme Detail Studio, precision is our hallmark. Through dedicated focus on every detail, we've risen above local competition to establish ourselves as a top automotive detailing choice for residents across Georgia, spanning Cobb County, GA, Dekalb County, GA, Fulton County, GA, and Douglas County, GA.</Text>
+          <Text className={classes.WhyDesc}>Our other services include <Link to="/services/ceramic-coatings" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>Ceramic Paint Coating</Link>, <Link to="/services/residential" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>Home Coatings</Link>, <Link to="/services/vinyl-wrap-chrome-deletion" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>Vinyl Wrap & Chrome Deletion</Link>, and more. At Supreme Detail Studio, precision is our hallmark. Through dedicated focus on every detail, we've risen above local competition to establish ourselves as a top automotive detailing choice for residents across Georgia, spanning Cobb County, GA, Dekalb County, GA, Fulton County, GA, and Douglas County, GA.</Text>
           
           <Text className={classes.WhyDesc}>Supreme Detail Studio is committed to embracing all our offered services and expanding our customer base in and around Marietta, Georgia. Whether you need vehicle detailing or ceramic coating and tinting for your home or office, we proudly assist clients from the following areas:</Text>
           <ul role='list' className={classes.cityList}>
           <SimpleGrid
         cols={3}
-        spacing="sm"
+        spacing="md"
         breakpoints={[
           { maxWidth: 980, cols: 3, spacing: 'md' },
           { maxWidth: 755, cols: 2, spacing: 'sm' },
           { maxWidth: 600, cols: 2, spacing: 'sm' },
         ]}
         >
-            <Link to="/service-areas/marietta-ga" style={{ textDecoration: 'underline' }}><li className={classes.li}>Marietta, GA</li></Link>
+            <Link to="/service-areas/marietta-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Marietta, GA</li></Link>
             <li className={classes.li}>Smyrna, GA</li>
             <li className={classes.li}>Roswell, GA</li>
-            <Link to="/service-areas/atlanta-ga" style={{ textDecoration: 'underline' }}><li className={classes.li}>Atlanta, GA</li></Link>
-            <Link to="/service-areas/sandy-springs-ga" style={{ textDecoration: 'underline' }}><li className={classes.li}>Sandy Springs, GA</li></Link>
+            <Link to="/service-areas/atlanta-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Atlanta, GA</li></Link>
+            <Link to="/service-areas/sandy-springs-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Sandy Springs, GA</li></Link>
             <li className={classes.li}>Alpharetta, GA</li>
             <li className={classes.li}>Acworth, GA</li>
             <li className={classes.li}>Woodstock, GA</li>
             <li className={classes.li}>Austell, GA</li>
-            <Link to="/service-areas/kennesaw-ga" style={{ textDecoration: 'underline' }}><li className={classes.li}>Kennesaw, GA</li></Link>
+            <Link to="/service-areas/kennesaw-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Kennesaw, GA</li></Link>
             <li className={classes.li}>Lithia Springs, GA</li>
             <li className={classes.li}>Douglasville, GA</li>
             </SimpleGrid>

@@ -6,8 +6,8 @@ import BMWInterior from '../../assets/images/details/bmw-steering-wheel.jpg';
 const useStyles = createStyles((theme) => ({
   wrapper: {
     position: 'relative',
-    paddingTop: '160px',
-    paddingBottom: '160px',
+    // paddingTop: '160px',
+    // paddingBottom: '160px',
     backgroundImage: `url(${BMWInterior})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
@@ -153,15 +153,14 @@ const useStyles = createStyles((theme) => ({
   },
   link: {
     fontFamily: "'Montserrat', sans-serif",
-    color: '#e80200',
-    textDecoration: 'none',
-    fontWeight: 600,
+    color: '#fff',
+    textDecoration: 'underline',
     borderBottom: '1px solid transparent',
     transition: 'all 0.3s ease',
-    '&:hover': {
-      color: '#ff4444',
-      borderBottom: '1px solid #ff4444',
-    },
+    // '&:hover': {
+    //   color: '#ff4444',
+    //   borderBottom: '1px solid #ff4444',
+    // },
   },
 }));
 
