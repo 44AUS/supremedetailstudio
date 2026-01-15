@@ -43,7 +43,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   description: {
-    fontFamily: 'SceneProRg, sans-serif',
+    fontFamily: "'Montserrat', sans-serif",
     color: 'rgba(255, 255, 255, 0.95)',
     fontSize: '18px',
     textAlign: 'center',

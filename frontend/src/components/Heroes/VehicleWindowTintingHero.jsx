@@ -55,12 +55,16 @@ const useStyles = createStyles((theme) => ({
     },
   },
   description: {
-    fontFamily: `SceneProRg`,
-    color: '#FFF',
-    fontSize: '22px',
+    fontFamily: "'Montserrat', sans-serif",
+    color: 'rgba(255, 255, 255, 0.95)',
+    fontSize: '18px',
     textAlign: 'center',
+    lineHeight: 1.8,
+    maxWidth: '800px',
+    margin: '0 auto',
     [theme.fn.smallerThan('md')]: {
-      fontSize: '18px',
+      fontSize: '16px',
+      padding: '0 20px',
     },
   },
   controls: {

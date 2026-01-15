@@ -53,12 +53,16 @@ const useStyles = createStyles((theme) => ({
     },
   },
   description: {
-    fontFamily: "'Montserrat', sans-serif", 
-    color: '#FFF',
-    fontSize: '22px',
+    fontFamily: "'Montserrat', sans-serif",
+    color: 'rgba(255, 255, 255, 0.95)',
+    fontSize: '18px',
     textAlign: 'center',
+    lineHeight: 1.8,
+    maxWidth: '800px',
+    margin: '0 auto',
     [theme.fn.smallerThan('md')]: {
-      fontSize: '18px',
+      fontSize: '16px',
+      padding: '0 20px',
     },
   },
   controls: {
@@ -185,7 +189,7 @@ const ReviewsHero = () => {
         <Container>
         <Text className={classes.description}>
             Experience the best 5 start rated car detailing services in Marietta, GA at Supreme Detail Studio, the top choice for Marietta residents. 
-            Our comprehensive offerings include <Link to="/services/detailing" style={{ textDecoration: 'underline' }}>Auto Detailing</Link>, <Link to="/services/paint-protection-film" style={{ textDecoration: 'underline' }}>Paint Protection Film</Link>, <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline' }}>Ceramic Coating</Link>, <Link to="/services/window-tinting" style={{ textDecoration: 'underline' }}>Window Tinting</Link>, <Link to="/services/paint-correction" style={{ textDecoration: 'underline' }}>Paint Correction</Link>, <Link to="/services/vinyl-wrap-chrome-deletion" style={{ textDecoration: 'underline' }}>Vinyl Wrap & Chrome Deletion</Link>, <Link to="/services/additional-services" style={{ textDecoration: 'underline' }}>and much more</Link>. Our certified professional detailers are committed to delivering superior care, we guarantee your vehicle will leave with a showroom quality finish.
+            Our comprehensive offerings include <Link to="/services/detailing" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>Auto Detailing</Link>, <Link to="/services/paint-protection-film" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>Paint Protection Film</Link>, <Link to="/services/ceramic-coatings" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>Ceramic Coating</Link>, <Link to="/services/window-tinting" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>Window Tinting</Link>, <Link to="/services/paint-correction" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>Paint Correction</Link>, <Link to="/services/vinyl-wrap-chrome-deletion" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>Vinyl Wrap & Chrome Deletion</Link>, <Link to="/services/additional-services" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}>and much more</Link>. Our certified professional detailers are committed to delivering superior care, we guarantee your vehicle will leave with a showroom quality finish.
           </Text>
         </Container>
 

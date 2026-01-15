@@ -43,12 +43,12 @@ const useStyles = createStyles((theme) => ({
     },
   },
   description: {
-    fontFamily: 'SceneProRg, sans-serif',
+    fontFamily: "'Montserrat', sans-serif",
     color: 'rgba(255, 255, 255, 0.95)',
     fontSize: '18px',
     textAlign: 'center',
     lineHeight: 1.8,
-    maxWidth: '850px',
+    maxWidth: '800px',
     margin: '0 auto',
     [theme.fn.smallerThan('md')]: {
       fontSize: '16px',
