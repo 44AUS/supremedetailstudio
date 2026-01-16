@@ -162,52 +162,20 @@ const TrustedBrands = () => {
 
         </div>
 
-      <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="mx-auto mt-10 grid max-w-lg grid-cols-4 items-center gap-x-8 gap-y-10 sm:max-w-xl sm:grid-cols-4 sm:gap-x-10 lg:mx-0 lg:max-w-none lg:grid-cols-4 content-center">
-          <img
-            className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-            src={KochChemie}
-            alt="KochChemie"
-            width={158}
-            height={48}
-          />
-          <img
-            className="col-span-2 max-h-14 w-full object-contain lg:col-span-1"
-            src={Meguiars}
-            alt="Meguiars"
-            width={158}
-            height={48}
-          />
-          <img
-            className="col-span-2 max-h-12 w-full object-contain lg:col-span-1"
-            src={PandS}
-            alt="PandS"
-            width={158}
-            height={48}
-          />
-          <img
-            className="col-span-2 max-h-14 w-full object-contain lg:col-span-1"
-            src={Superior}
-            alt="Superior"
-            width={158}
-            height={48}
-          />
-          {/* <img
-            className="col-span-2 max-h-12 w-full object-contain sm:col-start-2 lg:col-span-1"
-            src={Onyx}
-            alt="Onyx"
-            width={158}
-            height={48}
-          />
-          <img
-            className="col-span-2 col-start-2 max-h-12 w-full object-contain sm:col-start-auto lg:col-span-1"
-            src={Onyx}
-            alt="Onyx"
-            width={158}
-            height={48}
-          /> */}
-        </div>
-      </div>
+<Container size="lg">
+  <SimpleGrid
+    cols={4}
+    spacing="xl"
+    breakpoints={[
+      { maxWidth: 'md', cols: 2 },
+    ]}
+  >
+    <Image src={KochChemie} alt="KochChemie" fit="contain" height={50} />
+    <Image src={Meguiars} alt="Meguiars" fit="contain" height={50} />
+    <Image src={PandS} alt="PandS" fit="contain" height={50} />
+    <Image src={Superior} alt="Superior" fit="contain" height={50} />
+  </SimpleGrid>
+</Container>
 
         {/* <div className={classes.partner}>
           <Container size="lg">
