@@ -44,7 +44,7 @@ const useStyles = createStyles((theme) => ({
   },
   carImage: {
     width: '100%',
-    maxWidth: '500px',
+    maxWidth: '700px',
     padding: '1rem',
     margin: 'auto',
     animation: 'fadein 1s',
