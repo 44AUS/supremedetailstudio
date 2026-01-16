@@ -1,7 +1,5 @@
-import React from 'react'
-import { Parallax } from 'react-scroll-parallax';
-import { Title, Text, Container, createStyles } from '@mantine/core';
-import {Button, ButtonGroup} from "@nextui-org/button";
+import React from 'react';
+import { Title, createStyles } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import TRX from '../../assets/images/details/trx.avif';
 
@@ -53,31 +51,6 @@ const useStyles = createStyles((theme) => ({
       paddingRight: '15px',
     },
   },
-  description: {
-    fontFamily: `SceneProRg`,
-    color: '#FFF',
-    fontSize: '22px',
-    textAlign: 'center',
-    [theme.fn.smallerThan('md')]: {
-      fontSize: '18px',
-    },
-  },
-  controls: {
-    marginTop: '30px',
-    display: 'flex',
-    justifyContent: 'center',
-    paddingLeft: '100px',
-    paddingRight: '100px',
-    [theme.fn.smallerThan('md')]: {
-      display: 'block',
-    },
-  },
-  control: {
-    marginLeft: '10px',
-    [theme.fn.smallerThan('md')]: {
-      marginTop: '10px',
-    },
-  },
   overlay: {
     backgroundImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 0), #000)',
     position: 'absolute',
@@ -85,29 +58,6 @@ const useStyles = createStyles((theme) => ({
     bottom: '0%',
     left: '0%',
     right: '0%',
-  },
-  partnerLogo: {
-    float:'none',
-    top: '0px',
-    left:0,
-    width:'calc(100% - 668px)',
-    position:'relative',
-    height:'auto',
-    paddingTop:'0px',
-    paddingLeft:'0px',
-    paddingBottom:'0px',
-    maxWidth:'152px',
-    paddingRight:'0px',
-    minWidth:'25px',
-    textAlign:'start',
-    display:'block',
-    marginRight:'auto',
-    marginLeft:'auto',
-    marginTop:'14px',
-    marginBottom:'15px',
-    [theme.fn.smallerThan('md')]: {
-      maxWidth:'152px',
-    },
   },
   buttonContainer: {
     marginTop: '40px',
@@ -165,48 +115,44 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-
-const AboutHero = () => {
+const SandySpringsHero = () => {
   const { classes } = useStyles();
 
   return (
     <div className={classes.wrapper}>
       <div className={classes.overlay}></div>
-
       <div className={classes.inner}>
-
-      <Title className={classes.smallTitle}>
-      MIDDLETOWN, KY'S MOST TRUSTED CAR DETAILER
-      </Title>
-
-        <Title className={classes.title}>
-        BEST CAR DETAILING IN MIDDLETOWN, KY
+        <Title className={classes.smallTitle}>
+          SANDY SPRINGS, GA'S MOST TRUSTED AUTO DETAILER
         </Title>
-
-        {/* <Container>
-          <Text size="lg" className={classes.description}>
-          We at Supreme Detail Studio live by the golden rule of treating others how you wish to be treated and to take care of your vehicle as if it were one of our own. Our focus is providing high quality and honest service that is tailored to each of your needs.
-          </Text>
-        </Container> */}
-
-       
+        <Title className={classes.title}>
+          AUTO DETAILING IN SANDY SPRINGS, GA
+        </Title>
         <div className="mx-auto mt-10 flex items-center justify-center max-w-2xl lg:mx-0 lg:max-w-none">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-6">
-
-          <div className={classes.buttonContainer}>
-                                                    <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
-                                                      Book Appointment
-                                                    </Link>
-                                                    <Link to="tel:5024170690" className={classes.secondaryButton}>
-                                                      Call (502) 417-0690
-                                                    </Link>
-                                                  </div>
-
+          <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-6">
+            <div className={classes.buttonContainer}>
+              <Link 
+                to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className={classes.primaryButton}
+                aria-label="Book auto detailing appointment in Sandy Springs GA"
+              >
+                Book Appointment
+              </Link>
+              <Link 
+                to="tel:5024170690" 
+                className={classes.secondaryButton}
+                aria-label="Call Supreme Detail Studio"
+              >
+                Call (502) 417-0690
+              </Link>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default AboutHero;
+export default SandySpringsHero;
