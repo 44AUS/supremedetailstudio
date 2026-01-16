@@ -258,8 +258,8 @@ const Footer2 = () => {
         <div className={classes.addressColumn}>
           <div className={classes.footerLabel}>Business info</div>
           <div className={classes.businessInfo}>
-            <div class="contact-details-wrapper">
-              <a href="https://maps.app.goo.gl/QFjgzaEzVkWFQyQw6" target="_blank" className={classes.contactDetailsText}>
+            <div className="contact-details-wrapper">
+              <a href="https://maps.app.goo.gl/QFjgzaEzVkWFQyQw6" target="_blank" rel="noopener noreferrer" className={classes.contactDetailsText}>
                 <strong>Address:</strong> Marietta, GA USA
               </a>
               <a href="tel:(502)417-0690" className={classes.contactDetailsText}>
@@ -274,8 +274,8 @@ const Footer2 = () => {
       </div>
     </div>
     <div className={classes.footerContainer2}>
-      <a href="http://www.flattdevelopment.com" target="_blank" className={classes.credits}>
-        <img src="https://www.flattdevelopment.com/images/logo-time.png" loading="lazy" width="100" alt="" className={classes.flogo} />
+      <a href="http://www.flattdevelopment.com" target="_blank" rel="noopener noreferrer" className={classes.credits}>
+        <img src="https://www.flattdevelopment.com/images/logo-time.png" loading="lazy" width="100" alt="Flatt Development" className={classes.flogo} />
         {/* <div className={classes.footerBottomText}>Website by <span className={classes.textSpan}>Flatt Development</span></div> */}
       </a>
         <div className={classes.footerBottomText}>Copyright 2024 All Rights Reserved</div>
