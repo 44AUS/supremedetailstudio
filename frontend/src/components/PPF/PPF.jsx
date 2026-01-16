@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, Tabs, Container, createStyles } from '@mantine/core';
+import { Image, Tabs, createStyles } from '@mantine/core';
 import PackageCard from '../PackageCard';
 import styling from './Ppf.module.css';
 import partialFrontPpf from '../../assets/images/ppf/partial-front.png';
@@ -16,10 +16,43 @@ const useStyles = createStyles((theme) => ({
     paddingBottom: '4rem',
     position: 'relative',
   },
+  tabLayout: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '40px',
+    alignItems: 'center',
+    padding: '2rem 0',
+    [theme.fn.smallerThan('md')]: {
+      gridTemplateColumns: '1fr',
+      gap: '20px',
+    },
+  },
+  infoColumn: {
+    order: 1,
+    [theme.fn.smallerThan('md')]: {
+      order: 2,
+    },
+  },
+  imageColumn: {
+    order: 2,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    [theme.fn.smallerThan('md')]: {
+      order: 1,
+    },
+  },
+  carImage: {
+    width: '100%',
+    maxWidth: '500px',
+    padding: '1rem',
+    margin: 'auto',
+    animation: 'fadein 1s',
+  },
 }));
 
 const PPFComponent = () => {
-  const { classes, theme } = useStyles();
+  const { classes } = useStyles();
 
   const partialFront = [
     'Front bumper',
@@ -61,119 +94,102 @@ const PPFComponent = () => {
     <div>
       <Tabs variant="pills" defaultValue="partial" classNames={styling} style={{ gap: '16px' }}>
       <Tabs.List grow>
-        <Tabs.Tab
-          value="partial"
-        >
+        <Tabs.Tab value="partial">
           Partial Front
         </Tabs.Tab>
-        <Tabs.Tab
-          value="frontend"
-          
-        >
+        <Tabs.Tab value="frontend">
           Full Front End
         </Tabs.Tab>
-        <Tabs.Tab
-          value="track"
-          
-        >
+        <Tabs.Tab value="track">
           Track Package
         </Tabs.Tab>
-        <Tabs.Tab
-          value="fullbody"
-          
-        >
+        <Tabs.Tab value="fullbody">
           Full Body
         </Tabs.Tab>
-        {/* <Tabs.Tab
-          value="colored"
-          
-        >
-          Satin Or Colored PPF
-        </Tabs.Tab> */}
       </Tabs.List>
 
       <Tabs.Panel value="partial" style={{ transition: 'opacity 1200ms ease 0s' }}>
-      <div className='tab-layout'>
-      <div>
-        <Image src={partialFrontPpf} style={{ width: '100%', padding: '3rem', margin: 'auto', animation: 'fadein 1s', }} />
-        </div>
-        <div>
-      <PackageCard
-        packageTitle="Partial Front"
-        packageDuration="3 - 4 Days"
-        included={partialFront}
-        price="Starting at $1,450"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
-        />
-        </div>
+        <div className={classes.tabLayout}>
+          <div className={classes.infoColumn}>
+            <PackageCard
+              packageTitle="Partial Front"
+              packageDuration="3 - 4 Days"
+              included={partialFront}
+              price="Starting at $1,450"
+              bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+            />
+          </div>
+          <div className={classes.imageColumn}>
+            <Image src={partialFrontPpf} alt="Partial Front PPF" className={classes.carImage} />
+          </div>
         </div>
       </Tabs.Panel>
 
       <Tabs.Panel value="frontend">
-      <div className='tab-layout'>
-      <div>
-        <Image src={fullFrontPpf} style={{ width: '100%', padding: '3rem', margin: 'auto', animation: 'fadein 1s', }} />
+        <div className={classes.tabLayout}>
+          <div className={classes.infoColumn}>
+            <PackageCard
+              packageTitle="Full Front End"
+              packageDuration="3 - 4 Days"
+              included={fullFrontEnd}
+              price="Starting at $1,850"
+              bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+            />
+          </div>
+          <div className={classes.imageColumn}>
+            <Image src={fullFrontPpf} alt="Full Front End PPF" className={classes.carImage} />
+          </div>
         </div>
-        <div>
-      <PackageCard
-        packageTitle="Full Front End"
-        packageDuration="3 - 4 Days"
-        included={fullFrontEnd}
-        price="Starting at $1,850"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
-        />
-        </div>
-      </div>
       </Tabs.Panel>
 
       <Tabs.Panel value="track">
-      <div className='tab-layout'>
-      <div>
-        <Image src={trackPpf} style={{ width: '100%', padding: '3rem', margin: 'auto', animation: 'fadein 1s', }} />
-        </div>
-        <div>
-      <PackageCard
-        packageTitle="Track Package"
-        packageDuration="3 - 4 Days"
-        included={trackPackage}
-        price="Starting at $2,750"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
-        />
-        </div>
+        <div className={classes.tabLayout}>
+          <div className={classes.infoColumn}>
+            <PackageCard
+              packageTitle="Track Package"
+              packageDuration="3 - 4 Days"
+              included={trackPackage}
+              price="Starting at $2,750"
+              bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+            />
+          </div>
+          <div className={classes.imageColumn}>
+            <Image src={trackPpf} alt="Track Package PPF" className={classes.carImage} />
+          </div>
         </div>
       </Tabs.Panel>
 
       <Tabs.Panel value="fullbody">
-      <div className='tab-layout'>
-      <div>
-        <Image src={fullPpf} style={{ width: '100%', padding: '3rem', margin: 'auto', animation: 'fadein 1s', }} />
-        </div>
-        <div>
-      <PackageCard
-        packageTitle="Full Body In Gloss Or Satin PPF"
-        packageDuration="4 - 5 Days"
-        included={fullBody}
-        price="Starting at $5,500"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
-        />
-        </div>
+        <div className={classes.tabLayout}>
+          <div className={classes.infoColumn}>
+            <PackageCard
+              packageTitle="Full Body In Gloss Or Satin PPF"
+              packageDuration="4 - 5 Days"
+              included={fullBody}
+              price="Starting at $5,500"
+              bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+            />
+          </div>
+          <div className={classes.imageColumn}>
+            <Image src={fullPpf} alt="Full Body PPF" className={classes.carImage} />
+          </div>
         </div>
       </Tabs.Panel>
 
       <Tabs.Panel value="colored">
-      <div className='tab-layout'>
-      <div>
-        <Image src={fullPpf} style={{ width: '100%', padding: '3rem', margin: 'auto', animation: 'fadein 1s', }} />
-        </div>
-        <div>
-      <PackageCard
-        packageTitle="Full Body In Satin or Colored PPF"
-        packageDuration="4 - 5 Days"
-        included={satinOrColor}
-        price="Call us for a quote"
-        bookingLink="/contact-us"
-        />
-        </div>
+        <div className={classes.tabLayout}>
+          <div className={classes.infoColumn}>
+            <PackageCard
+              packageTitle="Full Body In Satin or Colored PPF"
+              packageDuration="4 - 5 Days"
+              included={satinOrColor}
+              price="Call us for a quote"
+              bookingLink="/contact-us"
+            />
+          </div>
+          <div className={classes.imageColumn}>
+            <Image src={fullPpf} alt="Colored PPF" className={classes.carImage} />
+          </div>
         </div>
       </Tabs.Panel>
 
