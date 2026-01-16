@@ -115,16 +115,7 @@ const VideoIntroduction = (props) => {
       <Container size="xl">
         <div className={classes.wrapper}>
           <div className={classes.twoColumnLayout}>
-            {/* Text Column */}
-            <div className={classes.textColumn}>
-              <Title className={classes.introductionTitle}>{props.titleProp}</Title>
-              <p className={classes.whatIsIt}>{props.descriptionProp}</p>
-              <Link to={props.buttonLink} target="_blank" rel="noopener noreferrer" className={classes.primaryButton}>
-                {props.buttonText}
-              </Link>
-            </div>
-
-            {/* Video Column */}
+            {/* Video Column - Left */}
             <div className={classes.videoColumn}>
               <iframe 
                 className={classes.video} 
@@ -134,6 +125,15 @@ const VideoIntroduction = (props) => {
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
                 allowFullScreen
               ></iframe>
+            </div>
+
+            {/* Text Column - Right */}
+            <div className={classes.textColumn}>
+              <Title className={classes.introductionTitle}>{props.titleProp}</Title>
+              <p className={classes.whatIsIt}>{props.descriptionProp}</p>
+              <Link to={props.buttonLink} target="_blank" rel="noopener noreferrer" className={classes.primaryButton}>
+                {props.buttonText}
+              </Link>
             </div>
           </div>
         </div>
