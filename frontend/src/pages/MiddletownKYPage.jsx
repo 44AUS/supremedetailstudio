@@ -1,22 +1,12 @@
-import React, { useRef } from 'react';
-import { useNavigate } from "react-router-dom";
+import React from 'react';
 import 'react-toastify/dist/ReactToastify.css';
-import data from '../data/why.json';
-import { ToastContainer, toast } from 'react-toastify';
 import { Container, SimpleGrid, Text, Title, createStyles } from '@mantine/core';
-import {Button, ButtonGroup} from "@nextui-org/button";
-import {Input, Textarea} from "@nextui-org/react";
-import ContactUsHero from '../components/Heroes/ContactUsHero';
 import { Helmet } from 'react-helmet';
 import { Link } from 'react-router-dom';
-import Map from '../components/Map';
-import MiddletownKYHero from '../components/Heroes/MiddletownKYHero';
-import CertifiedInstaller from '../components/BenefitsAndImportance/CertifiedInstaller';
-import curingLamp from '../assets/images/details/curing-lamp.jpg';
-import TeslaInterior from '../assets/images/details/tesla-interior.jpg';
+import SandySpringsHero from '../components/Heroes/MiddletownKYHero';
 import BMWExterior from '../assets/images/details/bmw-760i.jpg';
 import BMWSteeringWheel from '../assets/images/details/bmw-steering-wheel.jpg';
-import TeslaPlaid from '../assets/images/details/tesla-paint-correction.jpg';
+import TeslaInterior from '../assets/images/details/tesla-interior.jpg';
 import Services from '../components/Services/Services';
 import Connecting from '../components/BenefitsAndImportance/Connecting';
 
@@ -27,7 +17,9 @@ const useStyles = createStyles((theme) => ({
     position: 'relative',
   },
   img: {
-    borderRadius: '20px'
+    borderRadius: '20px',
+    width: '100%',
+    height: 'auto',
   },
   h1: {
     marginTop: '15px',
@@ -45,18 +37,17 @@ const useStyles = createStyles((theme) => ({
       textAlign: 'center',
     },
   },
-  h1Why: {
+  h2: {
     marginTop: 0,
     fontFamily: 'SceneProUltBlkIt',
-    textAlign: 'center',
     color: '#fff',
-    fontSize: '22px',
+    fontSize: '28px',
     textTransform: 'uppercase',
     lineHeight: 1.2,
-    fontWeight: 800,
+    fontWeight: 700,
     animation: 'fadein 1s',
     '@media (max-width: 520px)': {
-      fontSize: 20,
+      fontSize: 22,
       textAlign: 'center',
     },
   },
@@ -66,7 +57,6 @@ const useStyles = createStyles((theme) => ({
     fontSize: '15px',
     lineHeight: 1.8,
     fontWeight: 500,
-    // marginTop: '1.25rem',
     marginBottom: '1.25rem',
     animation: 'fadein 1s',
     '@media (max-width: 520px)': {
@@ -79,164 +69,391 @@ const useStyles = createStyles((theme) => ({
     fontSize: '15px',
     fontWeight: 500,
     lineHeight: 1.8,
-    fontWeight: 500,
-    // marginTop: '1.25rem',
     animation: 'fadein 1s',
+    marginTop: '20px',
     '@media (max-width: 520px)': {
       textAlign: 'center',
     },
   },
-  desc: {
+  servicesList: {
+    listStyle: 'disc',
+    paddingLeft: '20px',
+    color: '#fff',
     fontFamily: 'SceneProRg',
-    color: '#e80200',
-    fontSize: '1.25rem',
-    lineHeight: 1.6,
-    fontWeight: 500,
-    textTransform: 'uppercase',
-    // marginBottom: '10px',
-    animation: 'fadein 1s',
-    '@media (max-width: 520px)': {
-      fontSize: '16px',
-      textAlign: 'center',
-    },
-  },
-  benefitIcon: {
-    fontFamily: `SceneProRg`, 
-    fontSize: '16px',
-    fontWeight: 800,
-    color: '#FFF',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
-    margin: 'auto',
-    display: 'flex',
-    width: '48px',
-    height: '48px',
-    border: '2px solid #fff',
-    borderRadius: '100%',
-    marginBottom: '24px',
-    '@media (max-width: 520px)': {
-      width: '38px',
-      height: '38px',
-    },
-  },
-  cityList: {
-    listStyle: 'inside',
-    listStyleType: 'disc',
-    padding: '10px',
-  },
-  li: {
-    display: 'list-item',
-    // lineHeight: 1.8,
-    fontWeight: 500,
     fontSize: '15px',
-    '@media (max-width: 520px)': {
-      textAlign: 'center',
-      display: 'list-item',
-      // lineHeight: 1.8,
-      fontWeight: 500,
-      fontSize: '15px',
+    lineHeight: 2,
+    marginBottom: '20px',
+  },
+  buttonContainer: {
+    marginTop: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '20px',
+    flexWrap: 'wrap',
+  },
+  primaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#e80200',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '18px 40px',
+    textDecoration: 'none',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: '0 4px 20px rgba(232, 2, 0, 0.4)',
+    '&:hover': {
+      backgroundColor: '#ff1a1a',
+      transform: 'translateY(-3px)',
+      boxShadow: '0 8px 30px rgba(232, 2, 0, 0.6)',
+    },
+  },
+  secondaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '16px 38px',
+    textDecoration: 'none',
+    border: '2px solid rgba(255, 255, 255, 0.8)',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderColor: '#fff',
+      transform: 'translateY(-3px)',
     },
   },
 }));
 
-const AboutPage = () => {
+const SandySpringsGAPage = () => {
   const { classes } = useStyles();
-  const form = useRef();
-  const navigate = useNavigate();
+
+  // Structured Data for Local Business SEO
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "AutoRepair",
+    "name": "Supreme Detail Studio - Sandy Springs, GA",
+    "description": "Professional auto detailing, ceramic coating, paint protection film, and window tinting services in Sandy Springs, GA. Serving North Atlanta and Fulton County.",
+    "url": "https://supremedetailstudio.com/service-areas/sandy-springs",
+    "telephone": "+1-502-417-0690",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Sandy Springs",
+      "addressRegion": "GA",
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": "33.9304",
+      "longitude": "-84.3733"
+    },
+    "areaServed": [
+      {
+        "@type": "City",
+        "name": "Sandy Springs",
+        "addressRegion": "GA"
+      },
+      {
+        "@type": "City",
+        "name": "Atlanta",
+        "addressRegion": "GA"
+      },
+      {
+        "@type": "City",
+        "name": "Dunwoody",
+        "addressRegion": "GA"
+      },
+      {
+        "@type": "City",
+        "name": "Roswell",
+        "addressRegion": "GA"
+      },
+      {
+        "@type": "City",
+        "name": "Buckhead",
+        "addressRegion": "GA"
+      }
+    ],
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+        "opens": "08:30",
+        "closes": "18:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Saturday",
+        "opens": "10:00",
+        "closes": "16:00"
+      }
+    ],
+    "priceRange": "$$",
+    "image": "https://supremedetailstudio.com/preview.png",
+    "sameAs": [
+      "https://www.facebook.com/supremedetailstudio",
+      "https://www.instagram.com/supremedetailstudio"
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Auto Detailing Services",
+      "itemListElement": [
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Auto Detailing in Sandy Springs, GA"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Ceramic Coating in Sandy Springs, GA"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Paint Protection Film in Sandy Springs, GA"
+          }
+        },
+        {
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": "Window Tinting in Sandy Springs, GA"
+          }
+        }
+      ]
+    }
+  };
 
   return (
     <>
       <Helmet>
-      <title>Auto Detailing Services in Middletown, KY | Varying Ceramic Coating Packages Available | Supreme Detail Studio</title>
-      <meta name='title' content='Auto Detailing Services in Middletown, KY | Varying Ceramic Coating Packages Available | Supreme Detail Studio' />
-      <meta name='description' content='Supreme Detail Studio is a reputable car detailer in Middletown, KY. Our car care experts provide top quality auto detailing services. Contact our team today to schedule an appointment!' />
-      <meta name='keywords' content='louisville ky ppf, supreme detail studio, louisville mobile car detailing, louisville window tinting, louisville paint protection film, stek louisville, louisville paint correction, louisville mobile detail new albany,' />
-      <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
+        {/* Primary Meta Tags */}
+        <title>Auto Detailing Sandy Springs GA | Car Detailing, Ceramic Coating & PPF | Supreme Detail Studio</title>
+        <meta name="title" content="Auto Detailing Sandy Springs GA | Car Detailing, Ceramic Coating & PPF | Supreme Detail Studio" />
+        <meta name="description" content="Premium auto detailing in Sandy Springs, GA. Professional car detailing, ceramic coating, paint protection film & window tinting for luxury vehicles. Serving North Atlanta. Call (502) 417-0690!" />
+        <meta name="keywords" content="auto detailing sandy springs ga, car detailing sandy springs, ceramic coating sandy springs ga, ppf sandy springs, paint protection film sandy springs ga, window tinting sandy springs, mobile detailing sandy springs, luxury car detailing atlanta, supreme detail studio sandy springs" />
+        
+        {/* Canonical URL */}
+        <link rel="canonical" href="https://supremedetailstudio.com/service-areas/sandy-springs" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://supremedetailstudio.com/service-areas/sandy-springs" />
+        <meta property="og:title" content="Auto Detailing Sandy Springs GA | Ceramic Coating & PPF | Supreme Detail Studio" />
+        <meta property="og:description" content="Premium auto detailing in Sandy Springs, GA. Professional ceramic coating, PPF & window tinting for luxury vehicles. Call (502) 417-0690!" />
+        <meta property="og:image" content="https://supremedetailstudio.com/preview.png" />
+        <meta property="og:locale" content="en_US" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content="https://supremedetailstudio.com/service-areas/sandy-springs" />
+        <meta name="twitter:title" content="Auto Detailing Sandy Springs GA | Luxury Car Detailing" />
+        <meta name="twitter:description" content="Premium auto detailing in Sandy Springs, GA. Professional ceramic coating, PPF & window tinting. Call (502) 417-0690!" />
+        <meta name="twitter:image" content="https://supremedetailstudio.com/preview.png" />
+        
+        {/* Geo Tags for Local SEO */}
+        <meta name="geo.region" content="US-GA" />
+        <meta name="geo.placename" content="Sandy Springs" />
+        <meta name="geo.position" content="33.9304;-84.3733" />
+        <meta name="ICBM" content="33.9304, -84.3733" />
+        
+        {/* Structured Data */}
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
+      </Helmet>
 
-      <meta property="og:title" content='Auto Detailing Services in Middletown, KY | Varying Ceramic Coating Packages Available | Supreme Detail Studio' />
-      <meta property="og:description" content='Supreme Detail Studio is a reputable car detailer in Middletown, KY. Our car care experts provide top quality auto detailing services. Contact our team today to schedule an appointment!' />
-      <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
-    </Helmet>
-    <MiddletownKYHero />
-    <Container size="xl">
-      <div className={classes.wrapper}>
-      <SimpleGrid
-        cols={2}
-        spacing="xl"
-        breakpoints={[
-          { maxWidth: 980, cols: 2, spacing: 'md' },
-          { maxWidth: 755, cols: 1, spacing: 'sm' },
-          { maxWidth: 600, cols: 1, spacing: 'sm' },
-        ]}
-        >
-         <div>
-          <Text className={classes.WhyDesc}>Sports cars, high-end vehicles, and luxury cars are significant investments, and it makes sense to protect them as best as you can. Leaving your luxury vehicle to be waxed, shined, and detailed yourself isn't always possible. When it comes to detailing luxury automobiles, Supreme Detail Studio treats them like our own. Cars are a passion that pervades everything we do, and you'll see it in the small details. The attention we pay to each detail on your car and the way we do it makes us one of the best car detail companies in Middletown, KY. In Middletown, KY, we are proud to serve.</Text>
-         </div>
-         <div>
-          <img src={BMWExterior} />
-          </div>
-        </SimpleGrid>
-        <Title className={classes.h1}>Trained Car Detailers In Middletown, KY</Title>
-        <SimpleGrid
-        cols={2}
-        spacing="xl"
-        breakpoints={[
-          { maxWidth: 980, cols: 2, spacing: 'md' },
-          { maxWidth: 755, cols: 1, spacing: 'sm' },
-          { maxWidth: 600, cols: 1, spacing: 'sm' },
-        ]}
-        >
-          <div>
-          <img src={BMWSteeringWheel} />
-          </div>
-         <div>
-          <Text className={classes.WhyDesc}>Do you want to have your car ready for the showroom? Our exterior detailing services in Middletown, KY will give you the head-turning experience you have always wanted. We offer top-quality exterior auto detailing in Marietta, GA and Middletown, KY to make your car look new from the inside out. You can also add premium add-ons, such as scratch removal and ceramic coating if you want that next level of detail. Call us today for a ride that shines like no other!</Text>
-          <Text className={classes.WhyDesc}>Here’s what’s included in our car detailing services:</Text>
-          <Text className={classes.ulTitle}>EXTERIOR CAR CLEANING</Text>
-          <ul role='list' className={classes.cityList}>
-          <SimpleGrid
-        cols={1}
-        spacing="sm"
-        breakpoints={[
-          { maxWidth: 980, cols: 1, spacing: 'md' },
-          { maxWidth: 755, cols: 1, spacing: 'sm' },
-          { maxWidth: 600, cols: 1, spacing: 'sm' },
-        ]}
-        >
-            <li className={classes.li}>Exterior wash and dry</li>
-            <li className={classes.li}>Paint claying</li>
-            <li className={classes.li}>Polishing</li>
-            <li className={classes.li}>Sealing or Waxing</li>
+      <SandySpringsHero />
+      
+      <main>
+        <Container size="xl">
+          <article className={classes.wrapper}>
+            <SimpleGrid
+              cols={2}
+              spacing="xl"
+              breakpoints={[
+                { maxWidth: 980, cols: 2, spacing: 'md' },
+                { maxWidth: 755, cols: 1, spacing: 'sm' },
+                { maxWidth: 600, cols: 1, spacing: 'sm' },
+              ]}
+            >
+              <div>
+                <Text className={classes.WhyDesc}>
+                  <strong>Sports cars, high-end vehicles, and luxury automobiles</strong> are significant investments, and it makes sense to protect them with the best care possible. When it comes to detailing luxury vehicles in Sandy Springs, GA, Supreme Detail Studio treats every car like our own.
+                </Text>
+                <Text className={classes.WhyDesc}>
+                  Cars are our passion, and you'll see it in every detail. The meticulous attention we pay to each vehicle makes us one of the <strong>best auto detailing companies in Sandy Springs, GA</strong>. We're proud to serve Sandy Springs, Buckhead, Dunwoody, and the greater North Atlanta area.
+                </Text>
+                <Text className={classes.WhyDesc}>
+                  Whether you drive a Tesla, BMW, Mercedes, Porsche, or any luxury vehicle, our <Link to="/services/detailing" style={{ textDecoration: 'underline', color: '#e80200' }}>professional detailing services</Link> will exceed your expectations.
+                </Text>
+              </div>
+              <div>
+                <img 
+                  src={BMWExterior} 
+                  alt="BMW 760i professional detailing in Sandy Springs, GA - Supreme Detail Studio" 
+                  className={classes.img}
+                  loading="lazy"
+                />
+              </div>
             </SimpleGrid>
-          </ul>
-          <Text className={classes.ulTitle}>INTERIOR CAR CLEANING</Text>
-          <ul role='list' className={classes.cityList}>
-          <SimpleGrid
-        cols={1}
-        spacing="sm"
-        breakpoints={[
-          { maxWidth: 980, cols: 1, spacing: 'md' },
-          { maxWidth: 755, cols: 1, spacing: 'sm' },
-          { maxWidth: 600, cols: 1, spacing: 'sm' },
-        ]}
-        >
-            <li className={classes.li}>Vacuuming</li>
-            <li className={classes.li}>Scrubbing and Brushing</li>
-            <li className={classes.li}>Steam Cleaning</li>
-            <li className={classes.li}>Glass Cleaning</li>
-            <li className={classes.li}>Leather Deep Clean and Conditioning</li>
-            <li className={classes.li}>Perfuming</li>
-            </SimpleGrid>
-          </ul>
-         </div>
-        </SimpleGrid>
-      </div>
-    </Container>
-    <Connecting />
-    <Services />
+
+            <section>
+              <Title order={2} className={classes.h1}>Expert Car Detailers in Sandy Springs, GA</Title>
+              <SimpleGrid
+                cols={2}
+                spacing="xl"
+                breakpoints={[
+                  { maxWidth: 980, cols: 2, spacing: 'md' },
+                  { maxWidth: 755, cols: 1, spacing: 'sm' },
+                  { maxWidth: 600, cols: 1, spacing: 'sm' },
+                ]}
+              >
+                <div>
+                  <img 
+                    src={BMWSteeringWheel} 
+                    alt="BMW interior detailing Sandy Springs - steering wheel and dashboard cleaning" 
+                    className={classes.img}
+                    loading="lazy"
+                  />
+                </div>
+                <div>
+                  <Text className={classes.WhyDesc}>
+                    Want your car to look showroom-ready? Our <strong>exterior detailing services in Sandy Springs, GA</strong> will give you the head-turning results you've always wanted. We provide top-quality auto detailing to make your car look new from the inside out.
+                  </Text>
+                  <Text className={classes.WhyDesc}>
+                    Enhance your detail with premium add-ons like <Link to="/services/paint-correction" style={{ textDecoration: 'underline', color: '#e80200' }}>paint correction</Link>, <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline', color: '#e80200' }}>ceramic coating</Link>, and <Link to="/services/paint-protection-film" style={{ textDecoration: 'underline', color: '#e80200' }}>paint protection film</Link> for the ultimate protection.
+                  </Text>
+                  
+                  <Text className={classes.ulTitle}>EXTERIOR CAR DETAILING</Text>
+                  <ul className={classes.servicesList}>
+                    <li>Hand wash and dry with premium products</li>
+                    <li>Clay bar paint decontamination</li>
+                    <li>Machine polishing for swirl removal</li>
+                    <li>Paint sealant or carnauba wax application</li>
+                    <li>Wheel and tire detailing</li>
+                    <li>Trim restoration</li>
+                  </ul>
+                  
+                  <Text className={classes.ulTitle}>INTERIOR CAR DETAILING</Text>
+                  <ul className={classes.servicesList}>
+                    <li>Full interior vacuuming</li>
+                    <li>Leather cleaning and conditioning</li>
+                    <li>Steam cleaning and sanitization</li>
+                    <li>Glass cleaning (interior and exterior)</li>
+                    <li>Dashboard and trim protection</li>
+                    <li>Odor elimination</li>
+                  </ul>
+                </div>
+              </SimpleGrid>
+            </section>
+
+            <section>
+              <Title order={2} className={classes.h1}>Why Choose Supreme Detail Studio in Sandy Springs?</Title>
+              <SimpleGrid
+                cols={2}
+                spacing="xl"
+                breakpoints={[
+                  { maxWidth: 980, cols: 2, spacing: 'md' },
+                  { maxWidth: 755, cols: 1, spacing: 'sm' },
+                  { maxWidth: 600, cols: 1, spacing: 'sm' },
+                ]}
+              >
+                <div>
+                  <Text className={classes.WhyDesc}>
+                    <strong>Sandy Springs residents trust Supreme Detail Studio</strong> because we deliver exceptional results with every vehicle. Our certified technicians use only professional-grade products and techniques to ensure your car receives the best care possible.
+                  </Text>
+                  <ul className={classes.servicesList}>
+                    <li><strong>Certified Installers</strong> – ONYX & STEK certified professionals</li>
+                    <li><strong>Premium Products</strong> – Industry-leading ceramic coatings and PPF</li>
+                    <li><strong>Attention to Detail</strong> – We treat every car like it's our own</li>
+                    <li><strong>Convenient Location</strong> – Serving all of North Atlanta</li>
+                    <li><strong>Satisfaction Guaranteed</strong> – Your happiness is our priority</li>
+                  </ul>
+                  <div className={classes.buttonContainer}>
+                    <Link 
+                      to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className={classes.primaryButton}
+                      aria-label="Book auto detailing in Sandy Springs GA"
+                    >
+                      Book Appointment
+                    </Link>
+                    <Link 
+                      to="tel:5024170690" 
+                      className={classes.secondaryButton}
+                      aria-label="Call Supreme Detail Studio"
+                    >
+                      Call (502) 417-0690
+                    </Link>
+                  </div>
+                </div>
+                <div>
+                  <img 
+                    src={TeslaInterior} 
+                    alt="Tesla interior detailing in Sandy Springs GA - premium leather care" 
+                    className={classes.img}
+                    loading="lazy"
+                  />
+                </div>
+              </SimpleGrid>
+            </section>
+
+            <section>
+              <Title order={2} className={classes.h1}>Serving Sandy Springs & Surrounding Areas</Title>
+              <Text className={classes.WhyDesc} style={{ textAlign: 'center', maxWidth: '800px', margin: '0 auto' }}>
+                Supreme Detail Studio proudly provides auto detailing services to Sandy Springs and the greater Atlanta metro area:
+              </Text>
+              <SimpleGrid
+                cols={4}
+                spacing="lg"
+                breakpoints={[
+                  { maxWidth: 980, cols: 3, spacing: 'md' },
+                  { maxWidth: 755, cols: 2, spacing: 'sm' },
+                  { maxWidth: 600, cols: 2, spacing: 'sm' },
+                ]}
+                style={{ marginTop: '20px', textAlign: 'center' }}
+              >
+                <Link to="/service-areas/atlanta-ga" style={{ color: '#fff', textDecoration: 'underline' }}>Atlanta, GA</Link>
+                <Link to="/service-areas/marietta-ga" style={{ color: '#fff', textDecoration: 'underline' }}>Marietta, GA</Link>
+                <Link to="/service-areas/kennesaw-ga" style={{ color: '#fff', textDecoration: 'underline' }}>Kennesaw, GA</Link>
+                <span style={{ color: '#fff' }}>Buckhead, GA</span>
+                <span style={{ color: '#fff' }}>Dunwoody, GA</span>
+                <span style={{ color: '#fff' }}>Roswell, GA</span>
+                <span style={{ color: '#fff' }}>Alpharetta, GA</span>
+                <span style={{ color: '#fff' }}>Brookhaven, GA</span>
+              </SimpleGrid>
+            </section>
+          </article>
+        </Container>
+
+        <Connecting />
+        <Services />
+      </main>
     </>
-  )
-}
+  );
+};
 
-export default AboutPage;
+export default SandySpringsGAPage;
