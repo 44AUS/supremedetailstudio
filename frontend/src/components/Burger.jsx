@@ -66,10 +66,10 @@ const BurgerMenu = () => {
   },[open]);
 
   return (
-    <div class="menu-wrap">
-      <input type="checkbox" id="close-button" onClick={()=> setOpen(true)} class="toggler" />
-      <div class="hamburger"><div></div></div>
-      <div class="menu">
+    <div className="menu-wrap">
+      <input type="checkbox" id="close-button" onClick={()=> setOpen(true)} className="toggler" />
+      <div className="hamburger"><div></div></div>
+      <div className="menu">
         <div>
           <div>
             <ul>
