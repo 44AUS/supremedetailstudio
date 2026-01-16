@@ -6,8 +6,8 @@ import LeatherSeats from '../../assets/images/details/leather-seats.jpg';
 const useStyles = createStyles((theme) => ({
   wrapper: {
     position: 'relative',
-    paddingTop: '160px',
-    paddingBottom: '160px',
+    // paddingTop: '160px',
+    // paddingBottom: '160px',
     backgroundImage: `url(${LeatherSeats})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',

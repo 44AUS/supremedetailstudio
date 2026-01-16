@@ -7,8 +7,8 @@ import STEK from '../../assets/images/partners/stek--white-red.webp';
 const useStyles = createStyles((theme) => ({
   wrapper: {
     position: 'relative',
-    paddingTop: '160px',
-    paddingBottom: '160px',
+    // paddingTop: '160px',
+    // paddingBottom: '160px',
     backgroundImage: `url(${PPF})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',

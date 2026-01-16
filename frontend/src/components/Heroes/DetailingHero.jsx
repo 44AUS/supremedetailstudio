@@ -6,8 +6,8 @@ import SubaruInterior from '../../assets/images/details/subaru-interior.jpg';
 const useStyles = createStyles((theme) => ({
   wrapper: {
     position: 'relative',
-    paddingTop: '160px',
-    paddingBottom: '160px',
+    // paddingTop: '160px',
+    // paddingBottom: '160px',
     backgroundImage: `url(${SubaruInterior})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',

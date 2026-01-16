@@ -7,8 +7,8 @@ import GeoShield from '../../assets/images/partners/Geoshield_Logo_White.png';
 const useStyles = createStyles((theme) => ({
   wrapper: {
     position: 'relative',
-    paddingTop: '160px',
-    paddingBottom: '160px',
+    // paddingTop: '160px',
+    // paddingBottom: '160px',
     backgroundImage: `url(${WindowTinting})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
@@ -30,14 +30,14 @@ const useStyles = createStyles((theme) => ({
   },
   title: {
     fontFamily: 'SceneProUltBlkIt, sans-serif',
-    fontSize: '56px',
+    fontSize: '52px',
     letterSpacing: '2px',
     color: '#FFF',
     marginBottom: '24px',
     textAlign: 'center',
     textShadow: '2px 4px 8px rgba(0,0,0,0.6)',
     [theme.fn.smallerThan('md')]: {
-      fontSize: '32px',
+      fontSize: '28px',
       paddingLeft: '15px',
       paddingRight: '15px',
     },
@@ -64,12 +64,12 @@ const useStyles = createStyles((theme) => ({
     right: '0%',
   },
   partnerLogo: {
-    maxWidth: '150px',
+    maxWidth: '220px',
     height: 'auto',
-    margin: '0 auto 20px auto',
+    margin: '0 auto 24px auto',
     display: 'block',
   },
-buttonContainer: {
+  buttonContainer: {
     marginTop: '40px',
     display: 'flex',
     justifyContent: 'center',
