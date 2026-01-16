@@ -51,7 +51,7 @@ const ReviewsNoTitle = () => {
     <div className={classes.bgBody}>
     <Container size="xl">
       <div className={classes.wrapper}>
-        <div class="elfsight-app-7c3dc92f-6bcb-4d34-b73f-40a2382b27bc"></div>
+        <div className="elfsight-app-7c3dc92f-6bcb-4d34-b73f-40a2382b27bc"></div>
       </div>
     </Container>
     </div>
