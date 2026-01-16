@@ -189,14 +189,14 @@ const Footer2 = () => {
                 </Title>
               </Link>
           <div className={classes.socialContainer}>
-            <a href="https://www.facebook.com/supremedetailstudio" target="_blank" className={classes.footerSocialLink}>
-              <img src="https://assets-global.website-files.com/62713babd7c7761ea531ece1/62713babd7c77685f331ed4a_FacebookIconWhite.svg" loading="lazy" width="20" alt="" class="footer-social-icon" />
+            <a href="https://www.facebook.com/supremedetailstudio" target="_blank" rel="noopener noreferrer" className={classes.footerSocialLink}>
+              <img src="https://assets-global.website-files.com/62713babd7c7761ea531ece1/62713babd7c77685f331ed4a_FacebookIconWhite.svg" loading="lazy" width="20" alt="Facebook" className="footer-social-icon" />
             </a>
-            <a href="https://www.instagram.com/supremedetailstudio/?hl=en" target="_blank" class="footer-social-link w-inline-block">
-              <img src="https://assets-global.website-files.com/62713babd7c7761ea531ece1/62713babd7c77650b431ed49_InstaIcon.svg" loading="lazy" width="20" alt="" className={classes.iconInverted} />
+            <a href="https://www.instagram.com/supremedetailstudio/?hl=en" target="_blank" rel="noopener noreferrer" className={classes.footerSocialLink}>
+              <img src="https://assets-global.website-files.com/62713babd7c7761ea531ece1/62713babd7c77650b431ed49_InstaIcon.svg" loading="lazy" width="20" alt="Instagram" className={classes.iconInverted} />
             </a>
-            <a href="https://maps.app.goo.gl/QFjgzaEzVkWFQyQw6" target="_blank" class="footer-social-link w-inline-block">
-              <img src="https://assets-global.website-files.com/613f61814858fe0764bc22a2/61a791ed5e5d6b6bc70caf9e_GoogleIcon.svg" loading="lazy" width="20" alt="" className={classes.iconInverted} />
+            <a href="https://maps.app.goo.gl/QFjgzaEzVkWFQyQw6" target="_blank" rel="noopener noreferrer" className={classes.footerSocialLink}>
+              <img src="https://assets-global.website-files.com/613f61814858fe0764bc22a2/61a791ed5e5d6b6bc70caf9e_GoogleIcon.svg" loading="lazy" width="20" alt="Google Maps" className={classes.iconInverted} />
             </a>
           </div>
         </div>
