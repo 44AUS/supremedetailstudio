@@ -82,7 +82,7 @@ const BurgerMenu2 = () => {
   return (
     <>
     <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
-    <div class="menu-wrap">
+    <div className="menu-wrap">
       <Drawer
         opened={drawerOpened}
         onClose={closeDrawer}
