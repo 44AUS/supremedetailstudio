@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Link, NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import Logo from '../assets/logo.png';
 
 export default function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const location = useLocation();
 
   const services = [
     { name: 'Auto Detailing', path: '/services/detailing' },
@@ -28,6 +29,16 @@ export default function NavBar() {
 
   const closeMenu = () => setIsMenuOpen(false);
 
+  // Check if current route is in services
+  const isServiceActive = services.some(service => location.pathname === service.path) || 
+                          location.pathname.startsWith('/services/');
+  
+  // Check if current route is in more links
+  const isMoreActive = moreLinks.some(link => location.pathname === link.path);
+
+  // Active style color
+  const activeColor = '#e80200';
+
   const navLinkStyle = {
     color: '#fff',
     fontFamily: "'Oswald', sans-serif",
@@ -38,6 +49,11 @@ export default function NavBar() {
     textDecoration: 'none',
     transition: 'color 0.3s ease',
     fontWeight: 500,
+  };
+
+  const navLinkActiveStyle = {
+    ...navLinkStyle,
+    color: activeColor,
   };
 
   const dropdownItemStyle = {
@@ -52,6 +68,35 @@ export default function NavBar() {
     transition: 'all 0.3s ease',
     backgroundColor: 'transparent',
     fontWeight: 400,
+  };
+
+  const dropdownItemActiveStyle = {
+    ...dropdownItemStyle,
+    color: activeColor,
+    backgroundColor: 'rgba(232, 2, 0, 0.1)',
+    paddingLeft: '28px',
+  };
+
+  // Mobile link styles
+  const mobileLinkStyle = {
+    display: 'block',
+    padding: '14px 5px',
+    color: '#fff',
+    textDecoration: 'none',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '16px',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+    fontWeight: 400,
+  };
+
+  const mobileLinkActiveStyle = {
+    ...mobileLinkStyle,
+    color: activeColor,
+    fontWeight: 600,
+    borderLeft: `3px solid ${activeColor}`,
+    paddingLeft: '12px',
   };
 
   return (
@@ -99,16 +144,17 @@ export default function NavBar() {
             >
               <button 
                 style={{
-                  ...navLinkStyle,
+                  ...(isServiceActive ? navLinkActiveStyle : navLinkStyle),
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
+                  borderBottom: isServiceActive ? `2px solid ${activeColor}` : '2px solid transparent',
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
+                onMouseEnter={(e) => { if (!isServiceActive) e.currentTarget.style.color = activeColor; }}
+                onMouseLeave={(e) => { if (!isServiceActive) e.currentTarget.style.color = '#fff'; }}
               >
                 Services
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{
@@ -135,34 +181,45 @@ export default function NavBar() {
                 transition: 'all 0.3s ease',
                 boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
               }}>
-                {services.map((service, index) => (
-                  <Link
-                    key={index}
-                    to={service.path}
-                    style={dropdownItemStyle}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = '#e80200';
-                      e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.1)';
-                      e.currentTarget.style.paddingLeft = '28px';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = '#fff';
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.paddingLeft = '20px';
-                    }}
-                  >
-                    {service.name}
-                  </Link>
-                ))}
+                {services.map((service, index) => {
+                  const isActive = location.pathname === service.path;
+                  return (
+                    <NavLink
+                      key={index}
+                      to={service.path}
+                      style={isActive ? dropdownItemActiveStyle : dropdownItemStyle}
+                      onMouseEnter={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.color = activeColor;
+                          e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.1)';
+                          e.currentTarget.style.paddingLeft = '28px';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.color = '#fff';
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.paddingLeft = '20px';
+                        }
+                      }}
+                    >
+                      {service.name}
+                    </NavLink>
+                  );
+                })}
               </div>
             </div>
 
             {/* About */}
             <NavLink 
               to='/about'
-              style={navLinkStyle}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
+              style={({ isActive }) => ({
+                ...navLinkStyle,
+                color: isActive ? activeColor : '#fff',
+                borderBottom: isActive ? `2px solid ${activeColor}` : '2px solid transparent',
+              })}
+              onMouseEnter={(e) => { if (location.pathname !== '/about') e.currentTarget.style.color = activeColor; }}
+              onMouseLeave={(e) => { if (location.pathname !== '/about') e.currentTarget.style.color = '#fff'; }}
             >
               About
             </NavLink>
@@ -170,9 +227,13 @@ export default function NavBar() {
             {/* Reviews */}
             <NavLink 
               to='/reviews'
-              style={navLinkStyle}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
+              style={({ isActive }) => ({
+                ...navLinkStyle,
+                color: isActive ? activeColor : '#fff',
+                borderBottom: isActive ? `2px solid ${activeColor}` : '2px solid transparent',
+              })}
+              onMouseEnter={(e) => { if (location.pathname !== '/reviews') e.currentTarget.style.color = activeColor; }}
+              onMouseLeave={(e) => { if (location.pathname !== '/reviews') e.currentTarget.style.color = '#fff'; }}
             >
               Reviews
             </NavLink>
@@ -180,9 +241,13 @@ export default function NavBar() {
             {/* Blog */}
             <NavLink 
               to='/blog'
-              style={navLinkStyle}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
+              style={({ isActive }) => ({
+                ...navLinkStyle,
+                color: isActive ? activeColor : '#fff',
+                borderBottom: isActive ? `2px solid ${activeColor}` : '2px solid transparent',
+              })}
+              onMouseEnter={(e) => { if (location.pathname !== '/blog') e.currentTarget.style.color = activeColor; }}
+              onMouseLeave={(e) => { if (location.pathname !== '/blog') e.currentTarget.style.color = '#fff'; }}
             >
               Blog
             </NavLink>
@@ -195,16 +260,17 @@ export default function NavBar() {
             >
               <button 
                 style={{
-                  ...navLinkStyle,
+                  ...(isMoreActive ? navLinkActiveStyle : navLinkStyle),
                   background: 'transparent',
                   border: 'none',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
+                  borderBottom: isMoreActive ? `2px solid ${activeColor}` : '2px solid transparent',
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
-                onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
+                onMouseEnter={(e) => { if (!isMoreActive) e.currentTarget.style.color = activeColor; }}
+                onMouseLeave={(e) => { if (!isMoreActive) e.currentTarget.style.color = '#fff'; }}
               >
                 More
                 <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{
@@ -231,34 +297,45 @@ export default function NavBar() {
                 transition: 'all 0.3s ease',
                 boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
               }}>
-                {moreLinks.map((link, index) => (
-                  <Link
-                    key={index}
-                    to={link.path}
-                    style={dropdownItemStyle}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.color = '#e80200';
-                      e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.1)';
-                      e.currentTarget.style.paddingLeft = '28px';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.color = '#fff';
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.paddingLeft = '20px';
-                    }}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
+                {moreLinks.map((link, index) => {
+                  const isActive = location.pathname === link.path;
+                  return (
+                    <NavLink
+                      key={index}
+                      to={link.path}
+                      style={isActive ? dropdownItemActiveStyle : dropdownItemStyle}
+                      onMouseEnter={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.color = activeColor;
+                          e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.1)';
+                          e.currentTarget.style.paddingLeft = '28px';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.color = '#fff';
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.paddingLeft = '20px';
+                        }
+                      }}
+                    >
+                      {link.name}
+                    </NavLink>
+                  );
+                })}
               </div>
             </div>
 
             {/* Contact */}
             <NavLink 
               to='/contact-us'
-              style={navLinkStyle}
-              onMouseEnter={(e) => e.currentTarget.style.color = '#e80200'}
-              onMouseLeave={(e) => e.currentTarget.style.color = '#fff'}
+              style={({ isActive }) => ({
+                ...navLinkStyle,
+                color: isActive ? activeColor : '#fff',
+                borderBottom: isActive ? `2px solid ${activeColor}` : '2px solid transparent',
+              })}
+              onMouseEnter={(e) => { if (location.pathname !== '/contact-us') e.currentTarget.style.color = activeColor; }}
+              onMouseLeave={(e) => { if (location.pathname !== '/contact-us') e.currentTarget.style.color = '#fff'; }}
             >
               Contact
             </NavLink>
@@ -268,6 +345,7 @@ export default function NavBar() {
           <Link 
             to='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD' 
             target="_blank"
+            rel="noopener noreferrer"
             className="desktop-nav"
             style={{
               backgroundColor: '#e80200',
@@ -369,27 +447,19 @@ export default function NavBar() {
               }}>
                 Services
               </div>
-              {services.map((service, index) => (
-                <Link
-                  key={index}
-                  to={service.path}
-                  onClick={closeMenu}
-                  style={{
-                    display: 'block',
-                    padding: '14px 5px',
-                    color: '#fff',
-                    textDecoration: 'none',
-                    fontFamily: "'Oswald', sans-serif",
-                    fontSize: '16px',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                    fontWeight: 400,
-                  }}
-                >
-                  {service.name}
-                </Link>
-              ))}
+              {services.map((service, index) => {
+                const isActive = location.pathname === service.path;
+                return (
+                  <NavLink
+                    key={index}
+                    to={service.path}
+                    onClick={closeMenu}
+                    style={isActive ? mobileLinkActiveStyle : mobileLinkStyle}
+                  >
+                    {service.name}
+                  </NavLink>
+                );
+              })}
             </div>
 
             {/* Other Links */}
@@ -409,35 +479,31 @@ export default function NavBar() {
               {[
                 { name: 'About', path: '/about' },
                 { name: 'Reviews', path: '/reviews' },
+                { name: 'Blog', path: '/blog' },
                 { name: 'Gallery', path: '/gallery' },
+                { name: 'Before & After', path: '/before-and-after' },
+                { name: 'FAQs', path: '/faq' },
                 { name: 'Contact Us', path: '/contact-us' },
-              ].map((link, index) => (
-                <Link
-                  key={index}
-                  to={link.path}
-                  onClick={closeMenu}
-                  style={{
-                    display: 'block',
-                    padding: '14px 5px',
-                    color: '#fff',
-                    textDecoration: 'none',
-                    fontFamily: "'Oswald', sans-serif",
-                    fontSize: '16px',
-                    letterSpacing: '1px',
-                    textTransform: 'uppercase',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-                    fontWeight: 400,
-                  }}
-                >
-                  {link.name}
-                </Link>
-              ))}
+              ].map((link, index) => {
+                const isActive = location.pathname === link.path;
+                return (
+                  <NavLink
+                    key={index}
+                    to={link.path}
+                    onClick={closeMenu}
+                    style={isActive ? mobileLinkActiveStyle : mobileLinkStyle}
+                  >
+                    {link.name}
+                  </NavLink>
+                );
+              })}
             </div>
 
             {/* Book Button */}
             <Link
               to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
               target="_blank"
+              rel="noopener noreferrer"
               onClick={closeMenu}
               style={{
                 display: 'block',
