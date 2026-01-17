@@ -53,7 +53,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   whatIsIt: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif",
     color: '#fff',
     fontSize: '15px',
     lineHeight: 1.8,

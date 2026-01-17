@@ -10,7 +10,7 @@ const useStyles = createStyles((theme) => ({
   },
   h1: {
     marginTop: 0,
-    fontFamily: `Evogria, ${theme.fontFamily}`,
+    fontFamily: "'Montserrat', sans-serif",
     textAlign: 'center',
     color: '#fff',
     fontSize: '3.13rem',
@@ -54,12 +54,12 @@ const useStyles = createStyles((theme) => ({
   },
   listItem: {
     color: '#FFF',
-    fontFamily: `Outfit, ${theme.fontFamily}`,
+    fontFamily: "'Montserrat', sans-serif",
     fontSize: '18px',
     margin: 'auto'
   },
   smallHeading: {
-    fontFamily: `Evogria, ${theme.fontFamily}`,
+    fontFamily: "'Montserrat', sans-serif",
     color: '#ebebeb',
     fontSize: '2rem',
     lineHeight: '1.28125',
@@ -67,7 +67,7 @@ const useStyles = createStyles((theme) => ({
     marginBottom: '1.25rem',
   },
   desc: {
-    fontFamily: `Evogria, ${theme.fontFamily}`,
+    fontFamily: "'Montserrat', sans-serif",
     color: '#ababab',
     fontSize: '1.25rem',
     lineHeight: 1.6,
@@ -79,7 +79,7 @@ const useStyles = createStyles((theme) => ({
   control: {
 		paddingLeft: 50,
 		paddingRight: 50,
-		fontFamily: `Outfit, ${theme.fontFamily}`,
+		fontFamily: "'Montserrat', sans-serif",
 		fontSize: '1.125rem',
 		fontWeight: 600,
 		transition: 'color .25s,border-color .25s,background-color .25s',
@@ -121,6 +121,7 @@ const useStyles = createStyles((theme) => ({
     width: '100%',
   },
   li: {
+    fontFamily: "'Montserrat', sans-serif",
     display: 'list-item',
     backgroundColor: '#0f0f0f',
     [theme.fn.smallerThan('md')]: {
@@ -156,10 +157,10 @@ export default function PackageCard(props) {
   return (
     <Card className={classes.card}>
         <div>
-          <Text fz="lg" fw={500} style={{ fontFamily: `SceneProBold`, fontSize: '20px', fontWeight: 800, textTransform: 'uppercase', textAlign: 'center'  }}>{props.packageTitle}</Text>
+          <Text fz="lg" fw={500} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '20px', fontWeight: 800, textTransform: 'uppercase', textAlign: 'center'  }}>{props.packageTitle}</Text>
         </div>
         <div>
-          <Text fz="sm" c="dimmed" fw={500} style={{ fontFamily: `SceneProRg`, fontSize: '14px', fontWeight: 400, color: '#a1a1a1', lineHeight: 1.8, textAlign: 'center', alignItems: 'center', justifyContent: 'center' }} mt={3}>
+          <Text fz="sm" c="dimmed" fw={500} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '14px', fontWeight: 400, color: '#a1a1a1', lineHeight: 1.8, textAlign: 'center', alignItems: 'center', justifyContent: 'center' }} mt={3}>
               {props.packageDuration}
             </Text>
           </div>
@@ -179,7 +180,7 @@ export default function PackageCard(props) {
       </Card.Section>
 
       <Card.Section className={classes.section} mt="md">
-      <Text fz="sm" c="dimmed" fw={500} style={{ fontFamily: `SceneProRg`, fontSize: '22px', fontWeight: 400, color: '#ffffff', lineHeight: 1, textAlign: 'center', alignItems: 'center', justifyContent: 'center' }} mt={3}>
+      <Text fz="sm" c="dimmed" fw={500} style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '22px', fontWeight: 400, color: '#ffffff', lineHeight: 1, textAlign: 'center', alignItems: 'center', justifyContent: 'center' }} mt={3}>
               {props.price}
             </Text>
       </Card.Section>
@@ -195,7 +196,7 @@ export default function PackageCard(props) {
                 paddingTop: '17px',
                 paddingBottom: '17px',
                 backgroundColor: '#e80200',
-                fontFamily: 'SceneProRg',
+                fontFamily: "'Montserrat', sans-serif",
                 textTransform: 'uppercase',
                 fontSize: '15px',
                 fontWeight: 500,

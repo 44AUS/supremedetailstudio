@@ -14,7 +14,7 @@ const useStyles = createStyles((theme) => ({
   },
   h1: {
     marginTop: 0,
-    fontFamily: 'SceneProUltBlkIt',
+    fontFamily: "'Montserrat', sans-serif",
     textAlign: 'center',
     color: '#fff',
     fontSize: '36px',
@@ -29,7 +29,7 @@ const useStyles = createStyles((theme) => ({
   },
   h1Why: {
     marginTop: 0,
-    fontFamily: 'SceneProUltBlkIt',
+    fontFamily: "'Montserrat', sans-serif",
     textAlign: 'center',
     color: '#fff',
     fontSize: '22px',
@@ -43,7 +43,7 @@ const useStyles = createStyles((theme) => ({
 	  },
   },
   WhyDesc: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif",
     color: '#fff',
     fontSize: '18px',
     lineHeight: 1.8,
@@ -54,7 +54,7 @@ const useStyles = createStyles((theme) => ({
     animation: 'fadein 1s',
   },
   desc: {
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     color: '#e80200',
     fontSize: '1.25rem',
     lineHeight: 1.6,
@@ -69,7 +69,7 @@ const useStyles = createStyles((theme) => ({
 	  },
   },
   benefitIcon: {
-    fontFamily: `SceneProRg`, 
+    fontFamily: "'Montserrat', sans-serif",
     fontSize: '16px',
     fontWeight: 800,
     color: '#FFF',
