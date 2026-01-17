@@ -77,7 +77,8 @@ const useStyles = createStyles((theme) => ({
     position: 'relative',
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    alignItems: 'center',
     zIndex: 1,
   },
   panel: {
