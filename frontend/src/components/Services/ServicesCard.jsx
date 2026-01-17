@@ -17,7 +17,8 @@ const useStyles = createStyles((theme) => ({
     border: '1px solid #494949',
     padding: '15px',
     [theme.fn.smallerThan('sm')]: {
-      height: '100%'
+      minHeight: '280px',
+      height: '280px',
     },
   },
   image: {
