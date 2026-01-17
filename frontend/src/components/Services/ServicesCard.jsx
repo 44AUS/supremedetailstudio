@@ -81,6 +81,10 @@ const useStyles = createStyles((theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1,
+    [theme.fn.smallerThan('sm')]: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
   },
   panel: {
     width: '100%',
