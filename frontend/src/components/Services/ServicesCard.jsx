@@ -65,7 +65,7 @@ const useStyles = createStyles((theme) => ({
     marginTop: '23px',
   },
   overlay: {
-    backgroundImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 0), #000)',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
     position: 'absolute',
     top: '0%',
     bottom: '0%',
