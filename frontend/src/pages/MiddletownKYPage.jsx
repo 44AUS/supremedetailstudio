@@ -52,7 +52,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   WhyDesc: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif",
     color: '#fff',
     fontSize: '15px',
     lineHeight: 1.8,
@@ -64,7 +64,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   ulTitle: {
-    fontFamily: `SceneProBold`,
+    fontFamily: "'Montserrat', sans-serif",
     color: '#e80200',
     fontSize: '15px',
     fontWeight: 500,
@@ -79,7 +79,7 @@ const useStyles = createStyles((theme) => ({
     listStyle: 'disc',
     paddingLeft: '20px',
     color: '#fff',
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     fontSize: '15px',
     lineHeight: 2,
     marginBottom: '20px',
@@ -306,7 +306,7 @@ const SandySpringsGAPage = () => {
                   Cars are our passion, and you'll see it in every detail. The meticulous attention we pay to each vehicle makes us one of the <strong>best auto detailing companies in Sandy Springs, GA</strong>. We're proud to serve Sandy Springs, Buckhead, Dunwoody, and the greater North Atlanta area.
                 </Text>
                 <Text className={classes.WhyDesc}>
-                  Whether you drive a Tesla, BMW, Mercedes, Porsche, or any luxury vehicle, our <Link to="/services/detailing" style={{ textDecoration: 'underline', color: '#e80200' }}>professional detailing services</Link> will exceed your expectations.
+                  Whether you drive a Tesla, BMW, Mercedes, Porsche, or any luxury vehicle, our <Link to="/services/detailing" style={{ textDecoration: 'underline', color: '#FFF' }}>professional detailing services</Link> will exceed your expectations.
                 </Text>
               </div>
               <div>
@@ -343,7 +343,7 @@ const SandySpringsGAPage = () => {
                     Want your car to look showroom-ready? Our <strong>exterior detailing services in Sandy Springs, GA</strong> will give you the head-turning results you've always wanted. We provide top-quality auto detailing to make your car look new from the inside out.
                   </Text>
                   <Text className={classes.WhyDesc}>
-                    Enhance your detail with premium add-ons like <Link to="/services/paint-correction" style={{ textDecoration: 'underline', color: '#e80200' }}>paint correction</Link>, <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline', color: '#e80200' }}>ceramic coating</Link>, and <Link to="/services/paint-protection-film" style={{ textDecoration: 'underline', color: '#e80200' }}>paint protection film</Link> for the ultimate protection.
+                    Enhance your detail with premium add-ons like <Link to="/services/paint-correction" style={{ textDecoration: 'underline', color: '#FFF' }}>paint correction</Link>, <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline', color: '#e80200' }}>ceramic coating</Link>, and <Link to="/services/paint-protection-film" style={{ textDecoration: 'underline', color: '#e80200' }}>paint protection film</Link> for the ultimate protection.
                   </Text>
                   
                   <Text className={classes.ulTitle}>EXTERIOR CAR DETAILING</Text>
@@ -436,14 +436,14 @@ const SandySpringsGAPage = () => {
                 ]}
                 style={{ marginTop: '20px', textAlign: 'center' }}
               >
-                <Link to="/service-areas/atlanta-ga" style={{ color: '#fff', textDecoration: 'underline' }}>Atlanta, GA</Link>
-                <Link to="/service-areas/marietta-ga" style={{ color: '#fff', textDecoration: 'underline' }}>Marietta, GA</Link>
-                <Link to="/service-areas/kennesaw-ga" style={{ color: '#fff', textDecoration: 'underline' }}>Kennesaw, GA</Link>
-                <span style={{ color: '#fff' }}>Buckhead, GA</span>
-                <span style={{ color: '#fff' }}>Dunwoody, GA</span>
-                <span style={{ color: '#fff' }}>Roswell, GA</span>
-                <span style={{ color: '#fff' }}>Alpharetta, GA</span>
-                <span style={{ color: '#fff' }}>Brookhaven, GA</span>
+                <Link to="/service-areas/atlanta-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline' }}>Atlanta, GA</Link>
+                <Link to="/service-areas/marietta-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline' }}>Marietta, GA</Link>
+                <Link to="/service-areas/kennesaw-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline' }}>Kennesaw, GA</Link>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Buckhead, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Dunwoody, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Roswell, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Alpharetta, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Brookhaven, GA</span>
               </SimpleGrid>
             </section>
           </article>

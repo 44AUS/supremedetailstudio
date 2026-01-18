@@ -222,7 +222,7 @@ import Zoom from 'react-medium-image-zoom'
             <li className={classes.li}>Smyrna, GA</li>
             <li className={classes.li}>Roswell, GA</li>
             <Link to="/service-areas/atlanta-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Atlanta, GA</li></Link>
-            <Link to="/service-areas/sandy-springs-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Sandy Springs, GA</li></Link>
+            <Link to="/service-areas/sandy-springs" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Sandy Springs, GA</li></Link>
             <li className={classes.li}>Alpharetta, GA</li>
             <li className={classes.li}>Acworth, GA</li>
             <li className={classes.li}>Woodstock, GA</li>

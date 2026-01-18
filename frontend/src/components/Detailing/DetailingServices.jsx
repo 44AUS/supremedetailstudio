@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import Tesla from '../../assets/images/details/tesla-front.jpg';
 import BMWInterior from '../../assets/images/details/bmw-steering-wheel.jpg';
 import ServicesCard from '../Services/ServicesCard';
+import TeslaFoam from '../../assets/images/details/tesla-foam-bath.jpg'
 
 const useStyles = createStyles((theme) => ({
 }));
@@ -28,7 +29,7 @@ const DetailingServices = () => {
           <ServicesCard
           titleProp='Full Detail'
           linkProp='/services/full-detail'
-          imageProp="/images/details/piano-black-trim.jpg"
+          imageProp={TeslaFoam}
           reccomendedProp={false}
           descriptionProp='If you are looking to get your exterior and interior cleaned this package is for you'
           />

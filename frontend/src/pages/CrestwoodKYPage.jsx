@@ -67,7 +67,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   desc: {
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     color: '#e80200',
     fontSize: '1.25rem',
     lineHeight: 1.6,
@@ -80,7 +80,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   WhyDesc: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif",
     color: '#fff',
     fontSize: '15px',
     lineHeight: 1.8,
@@ -96,7 +96,7 @@ const useStyles = createStyles((theme) => ({
     listStyle: 'disc',
     paddingLeft: '20px',
     color: '#fff',
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     fontSize: '15px',
     lineHeight: 2.2,
   },
@@ -385,7 +385,7 @@ const AtlantaGAPage = () => {
                   <li>Climate-controlled clean room environment</li>
                 </ul>
                 <Text className={classes.WhyDesc}>
-                  No imperfection goes undetected. This ensures our <Link to="/services/detailing" style={{ textDecoration: 'underline', color: '#e80200' }}>Atlanta auto detailing</Link> work is flawless prior to delivery.
+                  No imperfection goes undetected. This ensures our <Link to="/services/detailing" style={{ textDecoration: 'underline', color: '#FFF' }}>Atlanta auto detailing</Link> work is flawless prior to delivery.
                 </Text>
               </div>
             </SimpleGrid>
@@ -415,12 +415,12 @@ const AtlantaGAPage = () => {
                     <strong>Our Atlanta auto detailing services include:</strong>
                   </Text>
                   <ul className={classes.servicesList}>
-                    <li><Link to="/services/detailing" style={{ color: '#e80200' }}>Full Interior & Exterior Detailing</Link></li>
-                    <li><Link to="/services/ceramic-coatings" style={{ color: '#e80200' }}>Ceramic Coating Protection</Link></li>
-                    <li><Link to="/services/paint-protection-film" style={{ color: '#e80200' }}>Paint Protection Film (PPF/Clear Bra)</Link></li>
-                    <li><Link to="/services/paint-correction" style={{ color: '#e80200' }}>Paint Correction & Swirl Removal</Link></li>
-                    <li><Link to="/services/window-tinting" style={{ color: '#e80200' }}>Professional Window Tinting</Link></li>
-                    <li><Link to="/services/headlight-restoration" style={{ color: '#e80200' }}>Headlight Restoration</Link></li>
+                    <li><Link to="/services/detailing" style={{ color: '#FFF' }}>Full Interior & Exterior Detailing</Link></li>
+                    <li><Link to="/services/ceramic-coatings" style={{ color: '#FFF' }}>Ceramic Coating Protection</Link></li>
+                    <li><Link to="/services/paint-protection-film" style={{ color: '#FFF' }}>Paint Protection Film (PPF/Clear Bra)</Link></li>
+                    <li><Link to="/services/paint-correction" style={{ color: '#FFF' }}>Paint Correction & Swirl Removal</Link></li>
+                    <li><Link to="/services/window-tinting" style={{ color: '#FFF' }}>Professional Window Tinting</Link></li>
+                    <li><Link to="/services/headlight-restoration" style={{ color: '#FFF' }}>Headlight Restoration</Link></li>
                   </ul>
                 </div>
                 <div>
@@ -505,14 +505,14 @@ const AtlantaGAPage = () => {
                 ]}
                 style={{ marginTop: '20px', textAlign: 'center' }}
               >
-                <span style={{ color: '#fff' }}>Buckhead, GA</span>
-                <span style={{ color: '#fff' }}>Midtown Atlanta</span>
-                <Link to="/service-areas/sandy-springs" style={{ color: '#fff', textDecoration: 'underline' }}>Sandy Springs, GA</Link>
-                <Link to="/service-areas/marietta-ga" style={{ color: '#fff', textDecoration: 'underline' }}>Marietta, GA</Link>
-                <Link to="/service-areas/kennesaw-ga" style={{ color: '#fff', textDecoration: 'underline' }}>Kennesaw, GA</Link>
-                <span style={{ color: '#fff' }}>Decatur, GA</span>
-                <span style={{ color: '#fff' }}>Dunwoody, GA</span>
-                <span style={{ color: '#fff' }}>Alpharetta, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Buckhead, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Midtown Atlanta</span>
+                <Link to="/service-areas/sandy-springs" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline' }}>Sandy Springs, GA</Link>
+                <Link to="/service-areas/marietta-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline' }}>Marietta, GA</Link>
+                <Link to="/service-areas/kennesaw-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline' }}>Kennesaw, GA</Link>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Decatur, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Dunwoody, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Alpharetta, GA</span>
               </SimpleGrid>
             </section>
           </article>

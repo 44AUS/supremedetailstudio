@@ -70,7 +70,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   desc: {
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     color: '#e80200',
     fontSize: '1.25rem',
     lineHeight: 1.6,
@@ -83,7 +83,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   WhyDesc: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif",
     color: '#fff',
     fontSize: '15px',
     lineHeight: 1.8,
@@ -99,7 +99,7 @@ const useStyles = createStyles((theme) => ({
     listStyle: 'disc',
     paddingLeft: '20px',
     color: '#fff',
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     fontSize: '15px',
     lineHeight: 2.2,
     marginTop: '15px',
@@ -366,7 +366,7 @@ const KennesawGAPage = () => {
                   Looking for the <strong>best ceramic coating in Kennesaw, GA</strong>? Supreme Detail Studio is your trusted ONYX certified installer, providing premium ceramic coating services that protect and enhance your vehicle's appearance.
                 </Text>
                 <Text className={classes.WhyDesc}>
-                  Our professional <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline', color: '#e80200' }}>ceramic coating services</Link> create a durable, hydrophobic layer that shields your paint from UV damage, bird droppings, tree sap, and harsh Georgia weather conditions. Experience the difference of professional-grade protection!
+                  Our professional <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline', color: '#FFF' }}>ceramic coating services</Link> create a durable, hydrophobic layer that shields your paint from UV damage, bird droppings, tree sap, and harsh Georgia weather conditions. Experience the difference of professional-grade protection!
                 </Text>
                 <div className={classes.buttonContainer}>
                   <Link 
@@ -462,14 +462,14 @@ const KennesawGAPage = () => {
                 ]}
                 style={{ marginTop: '20px', textAlign: 'center' }}
               >
-                <Link to="/service-areas/marietta-ga" style={{ color: '#fff', textDecoration: 'underline' }}>Marietta, GA</Link>
-                <Link to="/service-areas/atlanta-ga" style={{ color: '#fff', textDecoration: 'underline' }}>Atlanta, GA</Link>
-                <Link to="/service-areas/sandy-springs" style={{ color: '#fff', textDecoration: 'underline' }}>Sandy Springs, GA</Link>
-                <span style={{ color: '#fff' }}>Acworth, GA</span>
-                <span style={{ color: '#fff' }}>Woodstock, GA</span>
-                <span style={{ color: '#fff' }}>Roswell, GA</span>
-                <span style={{ color: '#fff' }}>Canton, GA</span>
-                <span style={{ color: '#fff' }}>Alpharetta, GA</span>
+                <Link to="/service-areas/marietta-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline' }}>Marietta, GA</Link>
+                <Link to="/service-areas/atlanta-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline' }}>Atlanta, GA</Link>
+                <Link to="/service-areas/sandy-springs" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline' }}>Sandy Springs, GA</Link>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Acworth, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Woodstock, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Roswell, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Canton, GA</span>
+                <span style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff' }}>Alpharetta, GA</span>
               </SimpleGrid>
             </div>
           </Container>

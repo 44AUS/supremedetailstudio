@@ -49,7 +49,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   WhyDesc: {
-    fontFamily: `SceneProRg`,
+    fontFamily: "'Montserrat', sans-serif",
     color: '#fff',
     fontSize: '15px',
     lineHeight: 1.8,
@@ -119,7 +119,7 @@ const useStyles = createStyles((theme) => ({
     listStyle: 'disc',
     paddingLeft: '20px',
     color: '#fff',
-    fontFamily: 'SceneProRg',
+    fontFamily: "'Montserrat', sans-serif",
     fontSize: '15px',
     lineHeight: 2,
   },
@@ -295,17 +295,17 @@ const MariettaGAPage = () => {
                   Looking for the <strong>best auto detailing in Marietta, GA</strong>? Supreme Detail Studio is Cobb County's premier destination for professional car care services. Our experienced team specializes in luxury vehicle detailing, ensuring your prized automobile receives the meticulous attention it deserves.
                 </Text>
                 <Text className={classes.WhyDesc}>
-                  Whether you drive a Tesla, BMW, Mercedes, or any high-end vehicle, our <Link to="/services/detailing" style={{ textDecoration: 'underline', color: '#e80200' }}>professional auto detailing services</Link> will restore and protect your investment. We combine industry-leading products with expert techniques to deliver showroom-quality results every time.
+                  Whether you drive a Tesla, BMW, Mercedes, or any high-end vehicle, our <Link to="/services/detailing" style={{ textDecoration: 'underline', color: '#FFF' }}>professional auto detailing services</Link> will restore and protect your investment. We combine industry-leading products with expert techniques to deliver showroom-quality results every time.
                 </Text>
                 <Text className={classes.WhyDesc}>
                   <strong>Our Marietta auto detailing services include:</strong>
                 </Text>
                 <ul className={classes.servicesList}>
                   <li>Full interior and exterior detailing</li>
-                  <li><Link to="/services/ceramic-coatings" style={{ color: '#e80200' }}>Ceramic coating protection</Link></li>
-                  <li><Link to="/services/paint-protection-film" style={{ color: '#e80200' }}>Paint protection film (PPF/Clear Bra)</Link></li>
-                  <li><Link to="/services/window-tinting" style={{ color: '#e80200' }}>Professional window tinting</Link></li>
-                  <li><Link to="/services/paint-correction" style={{ color: '#e80200' }}>Paint correction & swirl removal</Link></li>
+                  <li><Link to="/services/ceramic-coatings" style={{ color: '#FFF' }}>Ceramic coating protection</Link></li>
+                  <li><Link to="/services/paint-protection-film" style={{ color: '#FFF' }}>Paint protection film (PPF/Clear Bra)</Link></li>
+                  <li><Link to="/services/window-tinting" style={{ color: '#FFF' }}>Professional window tinting</Link></li>
+                  <li><Link to="/services/paint-correction" style={{ color: '#FFF' }}>Paint correction & swirl removal</Link></li>
                 </ul>
               </div>
               
@@ -321,7 +321,7 @@ const MariettaGAPage = () => {
                   <strong>Interior Detailing:</strong> Deep cleaning of all surfaces including leather conditioning, carpet shampooing, dashboard protection, and odor elimination. We ensure your cabin is as pristine as the day you bought your vehicle.
                 </Text>
                 <Text className={classes.WhyDesc}>
-                  <strong>Additional Services:</strong> We also offer <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline', color: '#e80200' }}>ceramic coating</Link>, <Link to="/services/window-tinting" style={{ textDecoration: 'underline', color: '#e80200' }}>window tinting</Link>, and wheel restoration to complete your vehicle's transformation.
+                  <strong>Additional Services:</strong> We also offer <Link to="/services/ceramic-coatings" style={{ textDecoration: 'underline', color: '#FFF' }}>ceramic coating</Link>, <Link to="/services/window-tinting" style={{ textDecoration: 'underline', color: '#FFF' }}>window tinting</Link>, and wheel restoration to complete your vehicle's transformation.
                 </Text>
               </div>
               <div>
@@ -347,9 +347,9 @@ const MariettaGAPage = () => {
                   Supreme Detail Studio proudly serves <strong>Marietta, GA</strong> and the greater Cobb County area. We also provide mobile detailing services to nearby communities including:
                 </Text>
                 <ul className={classes.servicesList}>
-                  <li><Link to="/service-areas/kennesaw-ga" style={{ color: '#e80200' }}>Kennesaw, GA</Link></li>
-                  <li><Link to="/service-areas/sandy-springs" style={{ color: '#e80200' }}>Sandy Springs, GA</Link></li>
-                  <li><Link to="/service-areas/atlanta-ga" style={{ color: '#e80200' }}>Atlanta, GA</Link></li>
+                  <li><Link to="/service-areas/kennesaw-ga" style={{ color: '#FFF' }}>Kennesaw, GA</Link></li>
+                  <li><Link to="/service-areas/sandy-springs" style={{ color: '#FFF' }}>Sandy Springs, GA</Link></li>
+                  <li><Link to="/service-areas/atlanta-ga" style={{ color: '#FFF' }}>Atlanta, GA</Link></li>
                   <li>Smyrna, GA</li>
                   <li>Roswell, GA</li>
                   <li>Acworth, GA</li>
