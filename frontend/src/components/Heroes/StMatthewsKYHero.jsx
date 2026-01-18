@@ -176,7 +176,7 @@ const StMatthewsHero = () => {
       <div className={classes.inner}>
 
       <Title className={classes.smallTitle}>
-      St. Matthews Top Rated Vehicle Protection Specialists
+      Kennesaw, GA's Top Rated Vehicle Protection Specialists
       </Title>
 
         <Title className={classes.title}>
