@@ -172,8 +172,8 @@ const WindowTintPage = () => {
           titleProp='TINT INSTALLATION THAT EXCEEDS ALL EXPECTATIONS'
           descriptionProp='The expectation that customers have about window tinting installation is something that should be addressed. When a customer trusts an installer with their automobile, tinting their home’s windows, or adding window tint film products to a commercial property of any kind, ultimate care for the property, products used and the installation process is paramount. At Supreme Detail Studio, you get all of this without worry!'
           videoProp='Pz8x_kA7Ypc'
-          buttonText='VIew Our Packages'
-          buttonLink='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/'
+          buttonText='View Our Packages'
+          buttonLink='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD'
           />
     {/* <BenefitsOfPPF /> */}
     <CertifiedTintComponent />

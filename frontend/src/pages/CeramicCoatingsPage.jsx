@@ -174,7 +174,7 @@ const CeramicCoatings = () => {
           descriptionProp={`Ceramic Coating your paint is the next generation in Paint Protection. It has been designed to form a semi-permanent crystal layer that will make conventional car waxes and sealants obsolete, due their high strength as well an extraordinary levels of gloss. All created by superior cross linking abilities made possible by condensed nanoparticles, leaving you with the aesthetic and performance you've always wanted for you car!`}
           videoProp='dpqVKHSZFYs'
           buttonText='View Our Packages'
-          buttonLink='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv'
+          buttonLink='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD'
           />
     <BenefitsOfCeramic />
     <ComparisonComponent />

@@ -175,8 +175,8 @@ const VehicleWindowTintingPage = () => {
           titleProp='TRUE INTERIOR PROTECTION FOR YOUR VEHICLE'
           descriptionProp={`If you're looking for maximum performance & protection from your window tint, look no further than the window films we offer here at Supreme Detail Studio. With the latest in Infared Ceramic Window Films, you can see better than ever before without sacrificing your safety. The nano tint utilizes precious metals and rare earth materials to allow for maximum light absorption while rejecting heat from up close or far away allowing a high level of reflectivity that will keep drivers safer on our roads.`}
           videoProp='Pz8x_kA7Ypc'
-          buttonText='VIew Our Packages'
-          buttonLink='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI'
+          buttonText='View Our Packages'
+          buttonLink='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD'
           />
     <IsAutoTintForYou />
     {/* <TintComparison /> */}

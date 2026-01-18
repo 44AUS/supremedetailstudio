@@ -140,7 +140,7 @@ const WindshieldProtectionFilmPage = () => {
           descriptionProp={`At Supreme Detail Studio we understand the frustration of dealing with rock chips and damage to your windshield caused by everyday driving. That’s why we proudly offer ClearPlex®, a 4-Mil windshield protection film manufactured by Madico®, to keep your windshield safe and sound. With ClearPlex®, you can enjoy a crystal-clear view while shielding your windshield from sandblasting and rock chips, whether you’re driving on the street or hitting the race track.`}
           videoProp='8o3LertVGHM'
           buttonText='Book Appointment'
-          buttonLink='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv'
+          buttonLink='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD'
           />
     <BenefitsOfWPF />
     <CertifiedWindshieldComponent />

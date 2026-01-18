@@ -136,7 +136,7 @@ const MobileDetailing = () => {
           descriptionProp={`Looking for a professional detailing package that will give your car the TLC it deserves? Look no further! Our exterior and interior detailing packages were designed with enthusiasts in mind, and will effectively deep clean and decontaminate your vehicle. Plus, our top-of-the-line reconditioning system will leave your car looking better than ever!`}
           videoProp='jj'
           buttonText='View Our Packages'
-          buttonLink='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw'
+          buttonLink='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD'
           />
     <Importance />
     <TrustedBrands />

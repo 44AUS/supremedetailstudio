@@ -145,7 +145,7 @@ const PaintCorrection = () => {
           descriptionProp={`If you want to take your car from a good grade of paint, all the way up to completely defect and swirl free in direct sunlight with extreme smoothness then this process is for you. Paint Correction utilizes nanotechnology refinishing tools that will remove any defects or swirl marks leaving you the brilliant shine you have always been looking for. Paint Correction is required in preparation for application of Ceramic Coating.`}
           videoProp='dpqVKHSZFYs'
           buttonText='View Our Packages'
-          buttonLink='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/joHM8Dxh2Y2E9HsOXeF2'
+          buttonLink='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD'
           />
     <WhatIsPaintCorrection />
     <TrustedBrands />
