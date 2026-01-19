@@ -78,16 +78,19 @@ Fix web app and make everything, including city pages and other pages as SEO ric
 - Luxury vehicle owners searching for ceramic coating/PPF
 - Residents searching for window tinting services
 
-## Current Service Areas (9 total)
+## Current Service Areas (12 total)
 1. Marietta, GA (primary)
 2. Atlanta, GA
 3. Kennesaw, GA
 4. Sandy Springs, GA
-5. Smyrna, GA (NEW)
-6. Roswell, GA (NEW)
-7. Alpharetta, GA (NEW)
-8. Acworth, GA (NEW)
-9. Woodstock, GA (NEW)
+5. Smyrna, GA
+6. Roswell, GA
+7. Alpharetta, GA
+8. Acworth, GA
+9. Woodstock, GA
+10. Dunwoody, GA (NEW)
+11. Johns Creek, GA (NEW)
+12. Canton, GA (NEW)
 
 ## Test Results
 - All 9 city pages loading correctly
@@ -97,7 +100,6 @@ Fix web app and make everything, including city pages and other pages as SEO ric
 - Navigation working correctly
 
 ## Backlog / Future Enhancements
-- P1: Add city pages for Dunwoody, Johns Creek, Canton
 - P1: Add blog posts with local SEO keywords
 - P2: Implement review schema on Reviews page
 - P2: Add service-specific landing pages with local modifiers
@@ -105,7 +107,15 @@ Fix web app and make everything, including city pages and other pages as SEO ric
 - P3: Add LocalBusiness schema to all service pages
 
 ## Next Action Items
-1. Submit sitemap to Google Search Console
+1. Submit sitemap to Google Search Console (see instructions below)
 2. Set up Google Business Profile verification
-3. Consider adding more city pages for expanded coverage
-4. Add customer reviews to city pages for social proof
+3. Add customer reviews to city pages for social proof
+
+## Google Search Console Submission Instructions
+1. Go to https://search.google.com/search-console
+2. Add your property (supremedetailstudio.com)
+3. Verify ownership via DNS, HTML file, or Google Analytics
+4. Navigate to Sitemaps in the left menu
+5. Enter: sitemap.xml
+6. Click Submit
+7. Monitor indexing status over the next few days
