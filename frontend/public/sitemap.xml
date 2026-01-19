@@ -3,69 +3,167 @@
   <!-- Homepage -->
   <url>
     <loc>https://supremedetailstudio.com/</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
-  <!-- Services -->
+  <!-- Service Area Pages - High Priority -->
+  <url>
+    <loc>https://supremedetailstudio.com/service-areas/marietta-ga</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/service-areas/atlanta-ga</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/service-areas/kennesaw-ga</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/service-areas/sandy-springs</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/service-areas/smyrna-ga</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/service-areas/roswell-ga</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/service-areas/alpharetta-ga</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/service-areas/acworth-ga</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/service-areas/woodstock-ga</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Services - High Priority -->
   <url>
     <loc>https://supremedetailstudio.com/services/detailing</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/services/mobile-detailing</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/services/ceramic-coatings</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/services/paint-protection-film</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/services/window-tinting</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/services/paint-correction</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/services/automotive-tinting</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/services/residential-tinting</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/services/commercial-tinting</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/services/exterior-detail</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/services/interior-detail</loc>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/services/full-detail</loc>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/services/light-protection-film</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/services/windshield-protection-film</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supremedetailstudio.com/services/interior-protection-film</loc>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/services/headlight-restoration</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/services/additional-services</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -73,52 +171,44 @@
   <!-- Main Pages -->
   <url>
     <loc>https://supremedetailstudio.com/about</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/contact-us</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/reviews</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/gallery</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/before-and-after</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/blog</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://supremedetailstudio.com/faq</loc>
-    <lastmod>2025-01-11</lastmod>
+    <lastmod>2025-01-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-  </url>
-  
-  <!-- Service Areas -->
-  <url>
-    <loc>https://supremedetailstudio.com/service-areas/marietta-ga</loc>
-    <lastmod>2025-01-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
   </url>
 </urlset>
