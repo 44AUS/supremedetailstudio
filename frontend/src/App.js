@@ -27,6 +27,11 @@ import CrestwoodKYPage from './pages/CrestwoodKYPage';
 import MiddletownKYPage from './pages/MiddletownKYPage';
 import JeffersontownKYPage from './pages/JeffersontownKYPage';
 import StMatthewsKYPage from './pages/StMatthewsKYPage';
+import SmyrnaGAPage from './pages/SmyrnaGAPage';
+import RoswellGAPage from './pages/RoswellGAPage';
+import AlpharettaGAPage from './pages/AlpharettaGAPage';
+import AcworthGAPage from './pages/AcworthGAPage';
+import WoodstockGAPage from './pages/WoodstockGAPage';
 import Contact from './pages/ContactPage';
 import ReviewsPage from './pages/ReviewsPage';
 import GalleryPage from './pages/GalleryPage';
@@ -85,6 +90,11 @@ function App() {
             <Route path='/service-areas/atlanta-ga' element={<CrestwoodKYPage />} />
             <Route path='/service-areas/kennesaw-ga' element={<StMatthewsKYPage />} />
             <Route path='/service-areas/sandy-springs' element={<MiddletownKYPage />} />
+            <Route path='/service-areas/smyrna-ga' element={<SmyrnaGAPage />} />
+            <Route path='/service-areas/roswell-ga' element={<RoswellGAPage />} />
+            <Route path='/service-areas/alpharetta-ga' element={<AlpharettaGAPage />} />
+            <Route path='/service-areas/acworth-ga' element={<AcworthGAPage />} />
+            <Route path='/service-areas/woodstock-ga' element={<WoodstockGAPage />} />
 
             <Route path='/about' element={<AboutPage />} />
             <Route path='/gallery' element={<GalleryPage />} />
