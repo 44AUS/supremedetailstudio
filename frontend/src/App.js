@@ -42,6 +42,7 @@ import NavBar from './components/NavigationBar';
 import BlogPage from './pages/BlogPage';
 import MobileDetailing from './pages/MobileDetailingPage';
 import AboutPage from './pages/AboutPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
 
@@ -104,6 +105,7 @@ function App() {
             <Route path='/before-and-after' element={<BeforeAndAfterPage />} />
             <Route path='/blog' element={<BlogPage />} />
             <Route path='/' element={<Landing />} />
+            <Route path='*' element={<NotFoundPage />} />
           </Routes>
         <Footer />
         </ScrollToTop>
