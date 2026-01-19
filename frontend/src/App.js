@@ -32,6 +32,9 @@ import RoswellGAPage from './pages/RoswellGAPage';
 import AlpharettaGAPage from './pages/AlpharettaGAPage';
 import AcworthGAPage from './pages/AcworthGAPage';
 import WoodstockGAPage from './pages/WoodstockGAPage';
+import DunwoodyGAPage from './pages/DunwoodyGAPage';
+import JohnsCreekGAPage from './pages/JohnsCreekGAPage';
+import CantonGAPage from './pages/CantonGAPage';
 import Contact from './pages/ContactPage';
 import ReviewsPage from './pages/ReviewsPage';
 import GalleryPage from './pages/GalleryPage';
@@ -96,6 +99,9 @@ function App() {
             <Route path='/service-areas/alpharetta-ga' element={<AlpharettaGAPage />} />
             <Route path='/service-areas/acworth-ga' element={<AcworthGAPage />} />
             <Route path='/service-areas/woodstock-ga' element={<WoodstockGAPage />} />
+            <Route path='/service-areas/dunwoody-ga' element={<DunwoodyGAPage />} />
+            <Route path='/service-areas/johns-creek-ga' element={<JohnsCreekGAPage />} />
+            <Route path='/service-areas/canton-ga' element={<CantonGAPage />} />
 
             <Route path='/about' element={<AboutPage />} />
             <Route path='/gallery' element={<GalleryPage />} />
