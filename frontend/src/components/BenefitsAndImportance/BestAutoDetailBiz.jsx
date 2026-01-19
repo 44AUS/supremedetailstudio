@@ -219,17 +219,17 @@ import Zoom from 'react-medium-image-zoom'
         ]}
         >
             <Link to="/service-areas/marietta-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Marietta, GA</li></Link>
-            <li className={classes.li}>Smyrna, GA</li>
-            <li className={classes.li}>Roswell, GA</li>
+            <Link to="/service-areas/smyrna-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Smyrna, GA</li></Link>
+            <Link to="/service-areas/roswell-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Roswell, GA</li></Link>
             <Link to="/service-areas/atlanta-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Atlanta, GA</li></Link>
             <Link to="/service-areas/sandy-springs" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Sandy Springs, GA</li></Link>
-            <li className={classes.li}>Alpharetta, GA</li>
-            <li className={classes.li}>Acworth, GA</li>
-            <li className={classes.li}>Woodstock, GA</li>
-            <li className={classes.li}>Austell, GA</li>
+            <Link to="/service-areas/alpharetta-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Alpharetta, GA</li></Link>
+            <Link to="/service-areas/acworth-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Acworth, GA</li></Link>
+            <Link to="/service-areas/woodstock-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Woodstock, GA</li></Link>
             <Link to="/service-areas/kennesaw-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Kennesaw, GA</li></Link>
-            <li className={classes.li}>Lithia Springs, GA</li>
-            <li className={classes.li}>Douglasville, GA</li>
+            <Link to="/service-areas/dunwoody-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Dunwoody, GA</li></Link>
+            <Link to="/service-areas/johns-creek-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Johns Creek, GA</li></Link>
+            <Link to="/service-areas/canton-ga" style={{ fontFamily: "'Montserrat', sans-serif", color: '#fff', textDecoration: 'underline', borderBottom: '1px solid transparent', transition: 'all 0.3s ease', }}><li className={classes.li}>Canton, GA</li></Link>
             </SimpleGrid>
           </ul>
           <div className="mx-auto mt-10 flex items-center justify-center max-w-2xl lg:mx-0 lg:max-w-none">
