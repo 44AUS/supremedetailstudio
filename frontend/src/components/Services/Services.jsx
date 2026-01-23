@@ -11,7 +11,7 @@ import FashionPPF from '../../assets/images/ppf/dynostorm.jpeg';
 import Tinting from '../../assets/images/tint/vette-tint.jpg';
 import VinylWrap from '../../assets/images/details/porsche.jpg';
 import WheelRepair from '../../assets/images/details/wheels.jpg';
-import DentRepair from '../../assets/images/details/steam-clean.jpg';
+import DentRepair from '../../assets/images/dent-repair/pdr.jpg'
 import PaintChipRepair from '../../assets/images/details/headlight-restoration.jpg';
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
@@ -173,7 +173,7 @@ const Services = () => {
 
         <div className={classes.serviceBox}>
         <ServicesCard
-          titleProp='Paint Protection Film (PPF)'
+          titleProp='Paint Protection Film'
           linkProp='/services/paint-protection-film'
           imageProp={PPF}
           comingSoonProp={true}
@@ -228,7 +228,7 @@ const Services = () => {
         </div> */}
         <div>
         <ServicesCard
-          titleProp='Wheel Repair (Coming Soon)'
+          titleProp='Wheel Repair'
           linkProp='/services/wheel-repair'
           imageProp={WheelRepair}
           popularProp={true}
@@ -246,7 +246,7 @@ const Services = () => {
         </div> */}
         <div>
         <ServicesCard
-          titleProp='Paintless Dent Repair (Coming Soon)'
+          titleProp='Paintless Dent Repair'
           linkProp='/services/paintless-dent-repair'
           imageProp={DentRepair}
           popularProp={true}
