@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Check, Star } from 'lucide-react';
 import OnyxLogo from '../../assets/images/partners/onyx-logo@2x.webp';
 import HeroVideo from '../../assets/images/hero-video.mov';
+import HeroImage from '../../assets/images/hero-image.png';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -309,7 +310,7 @@ const Hero = () => {
         loop
         muted
         playsInline
-        poster="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=1920&q=80"
+        poster={HeroImage}
       >
         <source
           src={HeroVideo}

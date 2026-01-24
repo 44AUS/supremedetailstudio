@@ -3,7 +3,8 @@ import { Title, Text, Container, createStyles } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { Check, Star } from 'lucide-react';
 import OnyxLogo from '../../assets/images/partners/onyx-logo@2x.webp';
-import HeroVideo from '../../assets/images/hero-video.mov';
+import HeroVideo from '../../assets/images/coating-hero.mov';
+import CoatingImage from '../../assets/images/coating-image.png';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -308,7 +309,7 @@ const CeramicHero = () => {
         loop
         muted
         playsInline
-        poster="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=1920&q=80"
+        poster={CoatingImage}
       >
         <source
           src={HeroVideo}
