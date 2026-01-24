@@ -3,6 +3,7 @@ import { Title, Text, Container, createStyles } from '@mantine/core';
 import { Link } from 'react-router-dom';
 import { Check, Star } from 'lucide-react';
 import OnyxLogo from '../../assets/images/partners/onyx-logo@2x.webp';
+import HeroVideo from '../../assets/images/hero-video.mov';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -99,6 +100,7 @@ const useStyles = createStyles((theme) => ({
     textTransform: 'uppercase',
     fontWeight: 700,
     maxWidth: '900px',
+    textShadow: '2px 4px 8px rgba(0,0,0,0.6)',
     [theme.fn.smallerThan('md')]: {
       fontSize: '38px',
       marginBottom: '20px',
@@ -123,6 +125,16 @@ const useStyles = createStyles((theme) => ({
     [theme.fn.smallerThan('md')]: {
       fontSize: '15px',
       marginBottom: '28px',
+    },
+  },
+    buttonContainer: {
+    marginTop: '40px',
+    display: 'flex',
+    gap: '20px',
+    flexWrap: 'wrap',
+    [theme.fn.smallerThan('md')]: {
+      justifyContent: 'center',
+      gap: '16px',
     },
   },
   primaryButton: {
@@ -153,6 +165,34 @@ const useStyles = createStyles((theme) => ({
       padding: '16px 36px',
       fontSize: '14px',
       marginBottom: '40px',
+    },
+  },
+    secondaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '16px 38px',
+    textDecoration: 'none',
+    border: '2px solid rgba(255, 255, 255, 0.8)',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderColor: '#fff',
+      transform: 'translateY(-3px)',
+      boxShadow: '0 8px 30px rgba(255, 255, 255, 0.2)',
+    },
+    [theme.fn.smallerThan('md')]: {
+      padding: '14px 30px',
+      fontSize: '14px',
     },
   },
   statsContainer: {
@@ -254,7 +294,7 @@ const Hero = () => {
   const { classes } = useStyles();
 
   const stats = [
-    { number: '3+', label: 'Years Experience' },
+    { number: '10+', label: 'Years Experience' },
     { number: '1,000+', label: 'Vehicles Serviced' },
     { number: '64+', label: '5-Star Reviews' },
     { number: '5.0', label: 'Satisfaction', hasStar: true },
@@ -272,7 +312,7 @@ const Hero = () => {
         poster="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=1920&q=80"
       >
         <source
-          src="https://videos.pexels.com/video-files/3126460/3126460-uhd_2560_1440_30fps.mp4"
+          src={HeroVideo}
           type="video/mp4"
         />
       </video>
@@ -286,32 +326,26 @@ const Hero = () => {
         <div className={classes.topBadge} data-testid="hero-top-badge">
           <span className={classes.badgeHighlight}>Vehicle Protection Specialists</span>
           <div className={classes.badgeDivider} />
-          <span className={classes.badgeText}>Factory Certified</span>
+          <span className={classes.badgeText}>Certified Installer</span>
           <div className={classes.badgeDivider} />
           <span className={classes.badgeText}>Marietta, GA</span>
         </div>
 
         {/* Main Title */}
         <Title className={classes.title} data-testid="hero-title">
-          Marietta's <span className={classes.titleAccent}>Premier</span><br />
-          Auto Detailing
+          Marietta's <span className={classes.titleAccent}>Best</span><br />
+          Auto Detailing Services
         </Title>
 
         {/* Description */}
         <Text className={classes.description} data-testid="hero-description">
-          Professional auto detailing, ceramic coatings, paint protection film,
-          and window tinting. Premium services with exceptional results.
+          Professional auto detailing, ceramic coatings, paint protection film, automotive, residential, and commercial window tinting. Premium services with exceptional results.
         </Text>
 
         {/* CTA Button */}
-        <Link
-          to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
-          target="_blank"
-          className={classes.primaryButton}
-          data-testid="hero-cta-button"
-        >
-          Get Your Free Quote
-        </Link>
+                                <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
+                                  Book Appointment
+                                </Link>
 
         {/* Stats Row */}
         <div className={classes.statsContainer} data-testid="hero-stats">
@@ -332,7 +366,7 @@ const Hero = () => {
             <Check size={14} color="#fff" strokeWidth={3} />
           </div>
           <span className={classes.certificationText}>
-            Proud <span className={classes.certificationHighlight}>Onyx Coating</span> Certified Dealer
+            Proud <span className={classes.certificationHighlight}>Onyx Coating</span> Certified Installer
           </span>
         </div>
       </div>
