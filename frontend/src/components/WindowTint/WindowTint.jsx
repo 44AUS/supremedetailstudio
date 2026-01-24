@@ -25,14 +25,14 @@ const WindowTintComponent = () => {
           descriptionProp='We offer a variety of automotive film installations such as deep dyed, nano ceramic, and multi layered nano ceramic.'
           />
           <ServicesCard
-          titleProp='Residential Tinting (Coming Soon)'
+          titleProp='Residential Tinting'
           linkProp='/services/residential-tinting'
           imageProp={ResidentialTint}
           reccomendedProp={false}
           descriptionProp='We offer a variety of residential film installations such as solar, security, and decorative.'
           />
           <ServicesCard
-          titleProp='Commercial Tinting (Coming Soon)'
+          titleProp='Commercial Tinting'
           linkProp='/services/commercial-tinting'
           imageProp={CommercialTint}
           reccomendedProp={false}

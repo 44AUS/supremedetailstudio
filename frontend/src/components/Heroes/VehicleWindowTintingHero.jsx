@@ -9,47 +9,37 @@ import {Button, ButtonGroup} from "@nextui-org/button";
 const useStyles = createStyles((theme) => ({
   wrapper: {
     position: 'relative',
-    paddingTop: '150px',
-    paddingBottom: '150px',
+    // paddingTop: '160px',
+    // paddingBottom: '160px',
     backgroundImage: `url(${WindowTinting})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
+    backgroundAttachment: 'fixed',
+    minHeight: '70vh',
+    display: 'flex',
+    alignItems: 'center',
     [theme.fn.smallerThan('md')]: {
       paddingTop: '100px',
       paddingBottom: '100px',
+      backgroundAttachment: 'scroll',
     },
   },
   inner: {
     position: 'relative',
     zIndex: 1,
+    textAlign: 'center',
+    width: '100%',
   },
   title: {
-    fontFamily: 'SceneProBold',
-    fontSize: '70px',
-    letterSpacing: '3px',
-    paddingLeft: '60px',
-    paddingRight: '60px',
+    fontFamily: 'SceneProUltBlkIt, sans-serif',
+    fontSize: '52px',
+    letterSpacing: '2px',
     color: '#FFF',
-    marginBottom: '10px',
+    marginBottom: '24px',
     textAlign: 'center',
+    textShadow: '2px 4px 8px rgba(0,0,0,0.6)',
     [theme.fn.smallerThan('md')]: {
-      fontSize: '30px',
-      paddingLeft: '15px',
-      paddingRight: '15px',
-    },
-  },
-  smallTitle: {
-    fontFamily: 'SceneProBold',
-    fontSize: '14px',
-    letterSpacing: '3px',
-    paddingLeft: '60px',
-    paddingRight: '60px',
-    color: '#FFF',
-    marginBottom: '10px',
-    textAlign: 'center',
-    textTransform: 'uppercase',
-    [theme.fn.smallerThan('md')]: {
-      fontSize: '14px',
+      fontSize: '28px',
       paddingLeft: '15px',
       paddingRight: '15px',
     },
@@ -67,24 +57,8 @@ const useStyles = createStyles((theme) => ({
       padding: '0 20px',
     },
   },
-  controls: {
-    marginTop: '20px',
-    display: 'flex',
-    justifyContent: 'center',
-    paddingLeft: '100px',
-    paddingRight: '100px',
-    [theme.fn.smallerThan('md')]: {
-      flexDirection: 'column',
-    },
-  },
-  control: {
-    marginLeft: '10px',
-    [theme.fn.smallerThan('md')]: {
-      marginTop: '10px',
-    },
-  },
   overlay: {
-    backgroundImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 0), #000)',
+    background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.9))',
     position: 'absolute',
     top: '0%',
     bottom: '0%',
@@ -92,26 +66,63 @@ const useStyles = createStyles((theme) => ({
     right: '0%',
   },
   partnerLogo: {
-    float:'none',
-    top: '0px',
-    left:0,
-    width:'calc(100% - 668px)',
-    position:'relative',
-    height:'auto',
-    paddingTop:'0px',
-    paddingLeft:'0px',
-    paddingBottom:'0px',
-    maxWidth:'152px',
-    paddingRight:'0px',
-    minWidth:'25px',
-    textAlign:'start',
-    display:'block',
-    marginRight:'auto',
-    marginLeft:'auto',
-    marginTop:'14px',
-    marginBottom:'15px',
-    [theme.fn.smallerThan('md')]: {
-      maxWidth:'152px',
+    maxWidth: '220px',
+    height: 'auto',
+    margin: '0 auto 24px auto',
+    display: 'block',
+  },
+  buttonContainer: {
+    marginTop: '40px',
+    display: 'flex',
+    justifyContent: 'center',
+    gap: '20px',
+    flexWrap: 'wrap',
+  },
+  primaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#e80200',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '18px 40px',
+    textDecoration: 'none',
+    border: 'none',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    boxShadow: '0 4px 20px rgba(232, 2, 0, 0.4)',
+    '&:hover': {
+      backgroundColor: '#ff1a1a',
+      transform: 'translateY(-3px)',
+      boxShadow: '0 8px 30px rgba(232, 2, 0, 0.6)',
+    },
+  },
+  secondaryButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '15px',
+    letterSpacing: '2px',
+    textTransform: 'uppercase',
+    padding: '16px 38px',
+    textDecoration: 'none',
+    border: '2px solid rgba(255, 255, 255, 0.8)',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontWeight: 500,
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    '&:hover': {
+      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+      borderColor: '#fff',
+      transform: 'translateY(-3px)',
     },
   },
 }));
@@ -137,26 +148,14 @@ const VehicleWindowTintingHero = () => {
           </Text>
         </Container>
 
-        <div className="mx-auto mt-10 flex items-center justify-center max-w-2xl lg:mx-0 lg:max-w-none">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-6">
-
-          <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI" target="_blank"  style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
-          <Button 
-          radius="none" size="md" variant="shadow" style={{ backgroundColor: 'rgb(232, 2, 0)', fontFamily: 'SceneProRg', letterSpacing: '3px', textTransform: 'uppercase' }}
-          >
-            Book Appointment
-          </Button>
-          </Link>
-          <Link to="tel:(502) 417-0690" style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
-          <Button 
-          radius="none" size="md" variant="shadow" style={{ backgroundColor: 'rgb(232, 2, 0)', fontFamily: 'SceneProRg', letterSpacing: '3px', textTransform: 'uppercase' }}
-          >
-            CALL (502) 417-0690
-          </Button>
-          </Link>
-
-          </div>
-        </div>
+                         <div className={classes.buttonContainer}>
+                                                                   <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
+                                                                     Book Appointment
+                                                                   </Link>
+                                                                   <Link to="tel:5024170690" className={classes.secondaryButton}>
+                                                                     Call (502) 417-0690
+                                                                   </Link>
+                                                                 </div>
       </div>
     </div>
   )

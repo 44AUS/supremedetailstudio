@@ -1,12 +1,12 @@
 import React from 'react';
 import { Title, Text, Container, createStyles } from '@mantine/core';
 import { Link } from 'react-router-dom';
-import LeatherSeats from '../../assets/images/details/leather-seats.jpg';
+import Hellcat from '../../assets/images/details/hellcat.jpg';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
     position: 'relative',
-    backgroundImage: `url(${LeatherSeats})`,
+    backgroundImage: `url(${Hellcat})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundAttachment: 'fixed',
