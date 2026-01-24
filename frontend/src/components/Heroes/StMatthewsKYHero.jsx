@@ -1,120 +1,141 @@
 import React from 'react'
-import { Parallax } from 'react-scroll-parallax';
 import { Title, Text, Container, createStyles } from '@mantine/core';
-import {Button, ButtonGroup} from "@nextui-org/button";
 import { Link } from 'react-router-dom';
-import Coating from '../../assets/images/ceramic-coatings/onyx-coating-show.jpg';
+import { Check, Star } from 'lucide-react';
+import OnyxLogo from '../../assets/images/partners/onyx-logo@2x.webp';
+import HeroVideo from '../../assets/images/hero-video.mov';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
     position: 'relative',
-    paddingTop: '150px',
-    paddingBottom: '150px',
-    backgroundImage: `url(${Coating})`,
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    [theme.fn.smallerThan('md')]: {
-      paddingTop: '100px',
-      paddingBottom: '100px',
-    },
-  },
-  inner: {
-    position: 'relative',
-    zIndex: 1,
-  },
-  title: {
-    fontFamily: 'SceneProBold',
-    fontSize: '70px',
-    letterSpacing: '3px',
-    paddingLeft: '60px',
-    paddingRight: '60px',
-    color: '#FFF',
-    marginBottom: '10px',
-    textAlign: 'center',
-    [theme.fn.smallerThan('md')]: {
-      fontSize: '30px',
-      paddingLeft: '15px',
-      paddingRight: '15px',
-    },
-  },
-  smallTitle: {
-    fontFamily: 'SceneProBold',
-    fontSize: '14px',
-    letterSpacing: '3px',
-    paddingLeft: '60px',
-    paddingRight: '60px',
-    color: '#FFF',
-    marginBottom: '10px',
-    textAlign: 'center',
-    textTransform: 'uppercase',
-    [theme.fn.smallerThan('md')]: {
-      fontSize: '14px',
-      paddingLeft: '15px',
-      paddingRight: '15px',
-    },
-  },
-  description: {
-    fontFamily: `SceneProRg`,
-    color: '#FFF',
-    fontSize: '22px',
-    textAlign: 'center',
-    [theme.fn.smallerThan('md')]: {
-      fontSize: '18px',
-    },
-  },
-  controls: {
-    marginTop: '30px',
+    minHeight: '100vh',
     display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
     justifyContent: 'center',
-    paddingLeft: '100px',
-    paddingRight: '100px',
+    overflow: 'hidden',
     [theme.fn.smallerThan('md')]: {
-      display: 'block',
+      minHeight: '100vh',
     },
   },
-  control: {
-    marginLeft: '10px',
-    [theme.fn.smallerThan('md')]: {
-      marginTop: '10px',
-    },
+  videoBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    zIndex: 0,
   },
   overlay: {
-    backgroundImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 0), #000)',
     position: 'absolute',
-    top: '0%',
-    bottom: '0%',
-    left: '0%',
-    right: '0%',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: 'linear-gradient(to bottom, rgba(139, 0, 0, 0.45) 0%, rgba(80, 0, 0, 0.55) 50%, rgba(0, 0, 0, 0.95) 100%)',
+    zIndex: 1,
   },
-  partnerLogo: {
-    float:'none',
-    top: '0px',
-    left:0,
-    width:'calc(100% - 668px)',
-    position:'relative',
-    height:'auto',
-    paddingTop:'0px',
-    paddingLeft:'0px',
-    paddingBottom:'0px',
-    maxWidth:'152px',
-    paddingRight:'0px',
-    minWidth:'25px',
-    textAlign:'start',
-    display:'block',
-    marginRight:'auto',
-    marginLeft:'auto',
-    marginTop:'14px',
-    marginBottom:'15px',
+  content: {
+    position: 'relative',
+    zIndex: 10,
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    width: '100%',
+    padding: '120px 20px 60px',
     [theme.fn.smallerThan('md')]: {
-      maxWidth:'152px',
+      padding: '100px 16px 40px',
     },
   },
-  buttonContainer: {
+  topBadge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '16px',
+    backgroundColor: 'rgba(30, 30, 30, 0.85)',
+    backdropFilter: 'blur(10px)',
+    padding: '12px 28px',
+    borderRadius: '50px',
+    marginBottom: '40px',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    [theme.fn.smallerThan('md')]: {
+      flexDirection: 'column',
+      gap: '8px',
+      padding: '12px 20px',
+      marginBottom: '30px',
+    },
+  },
+  badgeHighlight: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '13px',
+    fontWeight: 700,
+    color: '#e80200',
+    letterSpacing: '0.5px',
+  },
+  badgeDivider: {
+    width: '1px',
+    height: '16px',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    [theme.fn.smallerThan('md')]: {
+      display: 'none',
+    },
+  },
+  badgeText: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '13px',
+    fontWeight: 500,
+    color: 'rgba(255, 255, 255, 0.9)',
+    letterSpacing: '0.5px',
+  },
+  title: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '72px',
+    letterSpacing: '2px',
+    color: '#FFF',
+    marginBottom: '24px',
+    textAlign: 'center',
+    lineHeight: 1.05,
+    textTransform: 'uppercase',
+    fontWeight: 700,
+    maxWidth: '1000px',
+    textShadow: '2px 4px 8px rgba(0,0,0,0.6)',
+    [theme.fn.smallerThan('md')]: {
+      fontSize: '38px',
+      marginBottom: '20px',
+    },
+    [theme.fn.smallerThan('sm')]: {
+      fontSize: '32px',
+    },
+  },
+  titleAccent: {
+    color: '#e80200',
+    fontStyle: 'italic',
+  },
+  description: {
+    fontFamily: "'Montserrat', sans-serif",
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: '17px',
+    textAlign: 'center',
+    lineHeight: 1.7,
+    maxWidth: '650px',
+    fontWeight: 400,
+    marginBottom: '36px',
+    [theme.fn.smallerThan('md')]: {
+      fontSize: '15px',
+      marginBottom: '28px',
+    },
+  },
+    buttonContainer: {
     marginTop: '40px',
     display: 'flex',
-    justifyContent: 'center',
     gap: '20px',
     flexWrap: 'wrap',
+    [theme.fn.smallerThan('md')]: {
+      justifyContent: 'center',
+      gap: '16px',
+    },
   },
   primaryButton: {
     display: 'inline-flex',
@@ -123,24 +144,30 @@ const useStyles = createStyles((theme) => ({
     backgroundColor: '#e80200',
     color: '#fff',
     fontFamily: "'Oswald', sans-serif",
-    fontSize: '15px',
-    letterSpacing: '2px',
+    fontSize: '16px',
+    letterSpacing: '1.5px',
     textTransform: 'uppercase',
-    padding: '18px 40px',
+    padding: '18px 48px',
     textDecoration: 'none',
     border: 'none',
     borderRadius: '4px',
     cursor: 'pointer',
     fontWeight: 500,
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    boxShadow: '0 4px 20px rgba(232, 2, 0, 0.4)',
+    boxShadow: '0 4px 24px rgba(232, 2, 0, 0.5)',
+    marginBottom: '60px',
     '&:hover': {
       backgroundColor: '#ff1a1a',
       transform: 'translateY(-3px)',
-      boxShadow: '0 8px 30px rgba(232, 2, 0, 0.6)',
+      boxShadow: '0 8px 32px rgba(232, 2, 0, 0.7)',
+    },
+    [theme.fn.smallerThan('md')]: {
+      padding: '16px 36px',
+      fontSize: '14px',
+      marginBottom: '40px',
     },
   },
-  secondaryButton: {
+    secondaryButton: {
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -161,48 +188,181 @@ const useStyles = createStyles((theme) => ({
       backgroundColor: 'rgba(255, 255, 255, 0.1)',
       borderColor: '#fff',
       transform: 'translateY(-3px)',
+      boxShadow: '0 8px 30px rgba(255, 255, 255, 0.2)',
+    },
+    [theme.fn.smallerThan('md')]: {
+      padding: '14px 30px',
+      fontSize: '14px',
     },
   },
+  statsContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '48px',
+    marginBottom: '40px',
+    flexWrap: 'wrap',
+    [theme.fn.smallerThan('md')]: {
+      gap: '24px',
+    },
+    [theme.fn.smallerThan('sm')]: {
+      gap: '16px',
+    },
+  },
+  statItem: {
+    textAlign: 'center',
+    minWidth: '120px',
+    [theme.fn.smallerThan('sm')]: {
+      minWidth: '70px',
+    },
+  },
+  statNumber: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '42px',
+    fontWeight: 700,
+    color: '#fff',
+    lineHeight: 1,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '4px',
+    [theme.fn.smallerThan('md')]: {
+      fontSize: '32px',
+    },
+    [theme.fn.smallerThan('sm')]: {
+      fontSize: '26px',
+    },
+  },
+  statStar: {
+    color: '#e80200',
+    fill: '#e80200',
+  },
+  statLabel: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '11px',
+    fontWeight: 600,
+    color: 'rgba(255, 255, 255, 0.7)',
+    letterSpacing: '1.5px',
+    textTransform: 'uppercase',
+    marginTop: '8px',
+    [theme.fn.smallerThan('sm')]: {
+      fontSize: '9px',
+      letterSpacing: '1px',
+    },
+  },
+  certificationBadge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '12px',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backdropFilter: 'blur(10px)',
+    padding: '14px 28px',
+    borderRadius: '50px',
+    border: '1px solid rgba(255, 255, 255, 0.15)',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)',
+    [theme.fn.smallerThan('md')]: {
+      padding: '12px 20px',
+      gap: '10px',
+    },
+  },
+  certificationCheck: {
+    width: '24px',
+    height: '24px',
+    borderRadius: '50%',
+    backgroundColor: '#e80200',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
+  certificationText: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    fontWeight: 500,
+    color: '#fff',
+    [theme.fn.smallerThan('md')]: {
+      fontSize: '12px',
+    },
+  },
+  certificationHighlight: {
+    color: '#e80200',
+    fontWeight: 700,
+  },
 }));
-
 
 const StMatthewsHero = () => {
   const { classes } = useStyles();
 
+    const stats = [
+    { number: '500+', label: 'Vehicles Coated' },
+    { number: '64+', label: '5-Star Reviews' },
+    { number: '5.0', label: 'Satisfaction', hasStar: true },
+  ];
+
   return (
-    <div className={classes.wrapper}>
-      <div className={classes.overlay}></div>
+    <div className={classes.wrapper} data-testid="hero-section">
+      {/* Video Background */}
+      <video
+        className={classes.videoBackground}
+        autoPlay
+        loop
+        muted
+        playsInline
+        poster="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?w=1920&q=80"
+      >
+        <source
+          src={HeroVideo}
+          type="video/mp4"
+        />
+      </video>
 
-      <div className={classes.inner}>
+      {/* Red Tinted Overlay with Bottom Fade */}
+      <div className={classes.overlay} />
 
-      <Title className={classes.smallTitle}>
-      Kennesaw, GA's Top Rated Vehicle Protection Specialists
-      </Title>
+      {/* Content */}
+      <div className={classes.content}>
+        {/* Top Badge Bar */}
+        <div className={classes.topBadge} data-testid="hero-top-badge">
+          <span className={classes.badgeText}>Kennesaw, GA's Top Rated Vehicle Protection Specialists</span>
+        </div>
 
-        <Title className={classes.title}>
-        CERAMIC COATING SERVICES IN KENNESAW, GA
+        {/* Main Title */}
+        <Title className={classes.title} data-testid="hero-title">
+          Kennesaw, GA's <span className={classes.titleAccent}>Best</span><br />
+          Ceramic Coating Installers
         </Title>
 
-        {/* <Container>
-          <Text size="lg" className={classes.description}>
-          We at Supreme Detail Studio live by the golden rule of treating others how you wish to be treated and to take care of your vehicle as if it were one of our own. Our focus is providing high quality and honest service that is tailored to each of your needs.
-          </Text>
-        </Container> */}
+        {/* Description */}
+        <Text className={classes.description} data-testid="hero-description">
+          At Supreme Detail Studio, we offer various ceramic coating packages that will leave your car with a showroom quality finish. Enjoy the unrivaled gloss, superior hydrophobic protection, and improved scratch resistance with our ceramic coating packages.
+        </Text>
 
-       
-        <div className="mx-auto mt-10 flex items-center justify-center max-w-2xl lg:mx-0 lg:max-w-none">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-6">
+        {/* CTA Button */}
+                                <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
+                                  Book Appointment
+                                </Link>
 
-           <div className={classes.buttonContainer}>
-                                          <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
-                                            Book Appointment
-                                          </Link>
-                                          <Link to="tel:5024170690" className={classes.secondaryButton}>
-                                            Call (502) 417-0690
-                                          </Link>
-                                        </div>
+        {/* Stats Row */}
+        <div className={classes.statsContainer} data-testid="hero-stats">
+          {stats.map((stat, index) => (
+            <div key={index} className={classes.statItem}>
+              <div className={classes.statNumber}>
+                {stat.number}
+                {stat.hasStar && <Star size={24} className={classes.statStar} />}
+              </div>
+              <div className={classes.statLabel}>{stat.label}</div>
+            </div>
+          ))}
+        </div>
 
+        {/* Certification Badge */}
+        <div className={classes.certificationBadge} data-testid="hero-certification">
+          <div className={classes.certificationCheck}>
+            <Check size={14} color="#fff" strokeWidth={3} />
           </div>
+          <span className={classes.certificationText}>
+            Proud <span className={classes.certificationHighlight}>Onyx Coating</span> Certified Installer
+          </span>
         </div>
       </div>
     </div>
