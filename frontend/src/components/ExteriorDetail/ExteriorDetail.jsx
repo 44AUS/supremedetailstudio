@@ -52,21 +52,21 @@ const ExteriorDetail = () => {
         packageDuration="1.5 - 2 Hours"
         included={basicExterior}
         price="Starting at $75"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/W7VhhrqoAFHJ6GutJHqd"
+        bookingLink="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
         />
         <PackageCard
         packageTitle="Deluxe Exterior Detail"
         packageDuration="2 - 3 Hours"
         included={deluxeExterior}
         price="Starting at $200"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/W7VhhrqoAFHJ6GutJHqd"
+        bookingLink="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
         />
         <PackageCard
         packageTitle="Supreme Exterior Detail"
         packageDuration="3 - 4 Hours"
         included={supremeExterior}
         price="Starting at $250"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/W7VhhrqoAFHJ6GutJHqd"
+        bookingLink="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
         />
 
       </SimpleGrid>

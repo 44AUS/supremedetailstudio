@@ -5,6 +5,7 @@ import Logo from '../assets/logo.png';
 export default function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
+  const [serviceAreaOpen, setServiceAreaOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const location = useLocation();
 
@@ -21,6 +22,20 @@ export default function NavBar() {
     { name: 'Additional Services', path: '/services/additional-services' },
   ];
 
+    const serviceArea = [
+    { name: 'Atlanta, GA', path: '/service-areas/atlanta-ga' },
+    { name: 'Marietta, GA', path: '/service-areas/marietta-ga' },
+    { name: 'Smyrna, GA', path: '/service-areas/smyrna-ga' },
+    { name: 'Sandy Springs, GA', path: '/service-areas/sandy-springs' },
+    { name: 'Alpharetta, GA', path: '/service-areas/alpharetta-ga' },
+    { name: 'Acworth, GA', path: '/service-areas/acworth-ga' },
+    { name: 'Roswell, GA', path: '/service-areas/roswell-ga' },
+    { name: 'Woodstock, GA', path: '/service-areas/woodstock-ga' },
+    { name: 'Kennesaw, GA', path: '/service-areas/kennesaw-ga' },
+    { name: 'Johns Creek, GA', path: '/service-areas/johns-creek-ga' },
+    { name: 'Canton, GA', path: '/service-areas/canton-ga' },
+  ];
+
   const moreLinks = [
     { name: 'Before & After', path: '/before-and-after' },
     { name: 'Gallery', path: '/gallery' },
@@ -32,6 +47,10 @@ export default function NavBar() {
   // Check if current route is in services
   const isServiceActive = services.some(service => location.pathname === service.path) || 
                           location.pathname.startsWith('/services/');
+
+                            // Check if current route is in services
+  const isServiceAreaActive = serviceArea.some(serviceArea => location.pathname === serviceArea.path) || 
+                          location.pathname.startsWith('/service-areas/');
   
   // Check if current route is in more links
   const isMoreActive = moreLinks.some(link => location.pathname === link.path);
@@ -204,6 +223,80 @@ export default function NavBar() {
                       }}
                     >
                       {service.name}
+                    </NavLink>
+                  );
+                })}
+              </div>
+            </div>
+
+             {/* Service Areas Dropdown */}
+            <div 
+              style={{ position: 'relative' }}
+              onMouseEnter={() => setServiceAreaOpen(true)}
+              onMouseLeave={() => setServiceAreaOpen(false)}
+            >
+              <button 
+                style={{
+                  ...(isServiceAreaActive ? navLinkActiveStyle : navLinkStyle),
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  borderBottom: isServiceAreaActive ? `2px solid ${activeColor}` : '2px solid transparent',
+                }}
+                onMouseEnter={(e) => { if (!isServiceAreaActive) e.currentTarget.style.color = activeColor; }}
+                onMouseLeave={(e) => { if (!isServiceAreaActive) e.currentTarget.style.color = '#fff'; }}
+              >
+                Service Areas
+                <svg width="10" height="6" viewBox="0 0 10 6" fill="currentColor" style={{
+                  transform: serviceAreaOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.3s ease'
+                }}>
+                  <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" fill="none"/>
+                </svg>
+              </button>
+              
+              {/* Services Dropdown Menu */}
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: '0',
+                backgroundColor: 'rgba(10, 10, 10, 0.98)',
+                border: '1px solid rgba(255, 255, 255, 0.1)',
+                borderRadius: '8px',
+                padding: '8px 0',
+                minWidth: '280px',
+                opacity: serviceAreaOpen ? 1 : 0,
+                visibility: serviceAreaOpen ? 'visible' : 'hidden',
+                transform: serviceAreaOpen ? 'translateY(0)' : 'translateY(-10px)',
+                transition: 'all 0.3s ease',
+                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
+              }}>
+                {serviceArea.map((serviceArea, index) => {
+                  const isActive = location.pathname === serviceArea.path;
+                  return (
+                    <NavLink
+                      key={index}
+                      to={serviceArea.path}
+                      style={isActive ? dropdownItemActiveStyle : dropdownItemStyle}
+                      onMouseEnter={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.color = activeColor;
+                          e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.1)';
+                          e.currentTarget.style.paddingLeft = '28px';
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          e.currentTarget.style.color = '#fff';
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                          e.currentTarget.style.paddingLeft = '20px';
+                        }
+                      }}
+                    >
+                      {serviceArea.name}
                     </NavLink>
                   );
                 })}
@@ -457,6 +550,35 @@ export default function NavBar() {
                     style={isActive ? mobileLinkActiveStyle : mobileLinkStyle}
                   >
                     {service.name}
+                  </NavLink>
+                );
+              })}
+            </div>
+
+            {/* Service Area Section */}
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{
+                color: '#e80200',
+                fontFamily: "'Oswald', sans-serif",
+                fontSize: '12px',
+                letterSpacing: '3px',
+                textTransform: 'uppercase',
+                marginBottom: '10px',
+                paddingLeft: '5px',
+                fontWeight: 600,
+              }}>
+                Service Areas
+              </div>
+              {serviceArea.map((serviceArea, index) => {
+                const isActive = location.pathname === serviceArea.path;
+                return (
+                  <NavLink
+                    key={index}
+                    to={serviceArea.path}
+                    onClick={closeMenu}
+                    style={isActive ? mobileLinkActiveStyle : mobileLinkStyle}
+                  >
+                    {serviceArea.name}
                   </NavLink>
                 );
               })}
