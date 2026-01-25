@@ -6,17 +6,14 @@ import Hellcat from '../../assets/images/details/hellcat.jpg';
 const useStyles = createStyles((theme) => ({
   wrapper: {
     position: 'relative',
+    paddingTop: '150px',
+    paddingBottom: '150px',
     backgroundImage: `url(${Hellcat})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    backgroundAttachment: 'fixed',
-    minHeight: '70vh',
-    display: 'flex',
-    alignItems: 'center',
     [theme.fn.smallerThan('md')]: {
       paddingTop: '100px',
       paddingBottom: '100px',
-      backgroundAttachment: 'scroll',
     },
   },
   inner: {
@@ -70,7 +67,7 @@ const useStyles = createStyles((theme) => ({
     },
   },
   overlay: {
-    background: 'linear-gradient(to bottom, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.9))',
+    backgroundImage: 'linear-gradient(to bottom, rgba(0, 0, 0, 0), #000)',
     position: 'absolute',
     top: '0%',
     bottom: '0%',

@@ -1,20 +1,21 @@
 import React from 'react';
-import { createStyles, Container, Text, Group } from '@mantine/core';
+import { createStyles, Container, Text, Button, Group } from '@mantine/core';
 import { IconTruckDelivery } from '@tabler/icons-react';
 
 const useStyles = createStyles(() => ({
-  wrapper: {
-    background: 'linear-gradient(135deg, #0b1020, #1b2a4a)',
-    borderRadius: '18px',
-    padding: '32px 40px',
+  bar: {
+    backgroundColor: '#e80200', // matches screenshot blue
+    padding: '18px 0',
+  },
+
+  inner: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    boxShadow: '0 0 40px rgba(0,0,0,0.6)',
-    color: '#fff',
+    gap: 20,
+
     '@media (max-width: 768px)': {
       flexDirection: 'column',
-      gap: '24px',
       textAlign: 'center',
     },
   },
@@ -22,54 +23,32 @@ const useStyles = createStyles(() => ({
   left: {
     display: 'flex',
     alignItems: 'center',
-    gap: '18px',
+    gap: 14,
   },
 
-  iconBox: {
-    width: 54,
-    height: 54,
-    borderRadius: '12px',
-    background: 'linear-gradient(135deg, #4da3ff, #6be1ff)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    boxShadow: '0 0 25px rgba(77,163,255,0.45)',
+  icon: {
+    color: '#fff',
   },
 
-  title: {
-    fontSize: '22px',
-    fontWeight: 700,
-    letterSpacing: '0.3px',
+  text: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: 600,
+    letterSpacing: '1.5px',
+    textTransform: 'uppercase',
   },
 
-  subtitle: {
-    fontSize: '16px',
-    color: '#c7d6ff',
-    marginTop: '4px',
-  },
+  button: {
+    borderColor: 'rgba(255,255,255,0.7)',
+    color: '#fff',
+    fontWeight: 600,
+    letterSpacing: '2px',
+    paddingLeft: 26,
+    paddingRight: 26,
 
-  right: {
-    textAlign: 'right',
-    '@media (max-width: 768px)': {
-      textAlign: 'center',
+    '&:hover': {
+      backgroundColor: 'rgba(255,255,255,0.1)',
     },
-  },
-
-  small: {
-    fontSize: '14px',
-    color: '#9bb6ff',
-  },
-
-  price: {
-    fontSize: '34px',
-    fontWeight: 800,
-    color: '#5da9ff',
-    lineHeight: 1.1,
-  },
-
-  serviceText: {
-    fontSize: '14px',
-    color: '#9bb6ff',
   },
 }));
 
@@ -77,27 +56,28 @@ const PickUpDeliveryService = () => {
   const { classes } = useStyles();
 
   return (
-    <Container size="xl" my="xl">
-      <div className={classes.wrapper}>
-        {/* LEFT */}
-        <div className={classes.left}>
-          <div className={classes.iconBox}>
-            <IconTruckDelivery size={28} color="#fff" />
+    <div className={classes.bar}>
+      <Container size="xl">
+        <div className={classes.inner}>
+          {/* LEFT */}
+          <div className={classes.left}>
+            <IconTruckDelivery size={22} className={classes.icon} />
+            <Text className={classes.text}>
+              Pickup & Delivery Service Starts at $50
+            </Text>
           </div>
-          <div>
-            <Text className={classes.title}>FREE Pickup & Delivery Service</Text>
-            <Text className={classes.subtitle}>Convenient, fast, and contactless service for your vehicle</Text>
-          </div>
-        </div>
 
-        {/* RIGHT */}
-        {/* <div className={classes.right}>
-          <Text className={classes.small}>Starting at</Text>
-          <Text className={classes.price}>$59/mo</Text>
-          <Text className={classes.serviceText}>for a $350 service</Text>
-        </div> */}
-      </div>
-    </Container>
+          {/* RIGHT */}
+          <Button
+            variant="outline"
+            radius="md"
+            className={classes.button}
+          >
+            Learn More
+          </Button>
+        </div>
+      </Container>
+    </div>
   );
 };
 

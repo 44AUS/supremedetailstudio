@@ -46,6 +46,9 @@ import BlogPage from './pages/BlogPage';
 import MobileDetailing from './pages/MobileDetailingPage';
 import AboutPage from './pages/AboutPage';
 import NotFoundPage from './pages/NotFoundPage';
+import HoursStatusBar from './components/HoursStatusBar';
+import GetQuote from './pages/GetQuotePage';
+import BookAppointment from './pages/BookingPage';
 
 function App() {
 
@@ -70,6 +73,7 @@ function App() {
       {/* <ScrollToTop> */}
         {/* <AlertMessage /> */}
         {/* <HeaderMenu /> */}
+        <HoursStatusBar />
         <NavBar />
           <Routes>
             <Route path='/services/detailing' element={<Detailing />} />
@@ -103,6 +107,8 @@ function App() {
             <Route path='/service-areas/johns-creek-ga' element={<JohnsCreekGAPage />} />
             <Route path='/service-areas/canton-ga' element={<CantonGAPage />} />
 
+            <Route path='/get-quote' element={<GetQuote />} />
+            <Route path='/book-appointment' element={<BookAppointment />} />
             <Route path='/about' element={<AboutPage />} />
             <Route path='/gallery' element={<GalleryPage />} />
             <Route path='/reviews' element={<ReviewsPage />} />

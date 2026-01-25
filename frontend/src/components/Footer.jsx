@@ -1,6 +1,6 @@
 import React from 'react';
 import { createStyles, Container, Group, Title, SimpleGrid } from '@mantine/core';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import Logo from '../assets/logo.png';
 
 const useStyles = createStyles((theme) => ({
@@ -178,9 +178,14 @@ const useStyles = createStyles((theme) => ({
 
 const Footer2 = () => {
   const { classes } = useStyles();
+  const location = useLocation();
+
+  const minimalNavRoutes = ['/get-quote', '/book-appointment'];
+  const isMinimalNav = minimalNavRoutes.includes(location.pathname);
 
   return (
     <div className={classes.footer2}>
+      {!isMinimalNav && (
       <div className={classes.footerContainer}>
         <div className={classes.footerLeftColumn}>
         <Link to="/" style={{ textDecoration: 'none' }}>
@@ -273,6 +278,8 @@ const Footer2 = () => {
         </div>
       </div>
     </div>
+    )}
+    {!isMinimalNav && (
     <div className={classes.footerContainer2}>
       <a href="#" target="_blank" rel="noopener noreferrer" className={classes.credits}>
         {/* <img src="https://www.flattdevelopment.com/images/logo-time.png" loading="lazy" width="100" alt="Flatt Development" className={classes.flogo} /> */}
@@ -280,6 +287,16 @@ const Footer2 = () => {
       </a>
         <div className={classes.footerBottomText}>Copyright 2024 All Rights Reserved</div>
     </div>
+    )}
+    {isMinimalNav && (
+    <div className={classes.footerContainer2}>
+      <a href="#" target="_blank" rel="noopener noreferrer" className={classes.credits}>
+        {/* <img src="https://www.flattdevelopment.com/images/logo-time.png" loading="lazy" width="100" alt="Flatt Development" className={classes.flogo} /> */}
+        <div className={classes.footerBottomText}>Developed by <span className={classes.textSpan}>Flatt Development</span></div>
+      </a>
+        <div className={classes.footerBottomText}>Copyright 2026 All Rights Reserved</div>
+    </div>
+    )}
     </div>
   )
 }

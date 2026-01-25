@@ -9,6 +9,10 @@ export default function NavBar() {
   const [moreOpen, setMoreOpen] = useState(false);
   const location = useLocation();
 
+  const minimalNavRoutes = ['/get-quote', '/book-appointment'];
+  const isMinimalNav = minimalNavRoutes.includes(location.pathname);
+
+
   const services = [
     { name: 'Auto Detailing', path: '/services/detailing' },
     { name: 'Mobile Detailing', path: '/services/mobile-detailing' },
@@ -38,6 +42,7 @@ export default function NavBar() {
 
   const moreLinks = [
     { name: 'About', path: '/about' },
+    { name: 'Blog', path: '/blog' },
     { name: 'Before & After', path: '/before-and-after' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'FAQs', path: '/faq' },
@@ -149,7 +154,9 @@ export default function NavBar() {
             />
           </Link>
 
+
           {/* Desktop Navigation */}
+          {!isMinimalNav && (
           <div className="desktop-nav" style={{
             display: 'flex',
             alignItems: 'center',
@@ -313,20 +320,6 @@ export default function NavBar() {
               Reviews
             </NavLink>
 
-            {/* Blog */}
-            <NavLink 
-              to='/blog'
-              style={({ isActive }) => ({
-                ...navLinkStyle,
-                color: isActive ? activeColor : '#fff',
-                borderBottom: isActive ? `2px solid ${activeColor}` : '2px solid transparent',
-              })}
-              onMouseEnter={(e) => { if (location.pathname !== '/blog') e.currentTarget.style.color = activeColor; }}
-              onMouseLeave={(e) => { if (location.pathname !== '/blog') e.currentTarget.style.color = '#fff'; }}
-            >
-              Blog
-            </NavLink>
-
             {/* More Dropdown */}
             <div 
               style={{ position: 'relative' }}
@@ -413,40 +406,58 @@ export default function NavBar() {
               Contact
             </NavLink>
           </div>
+          )}
 
-          {/* Book Appointment Button - Desktop */}
-          <Link 
-            to='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD' 
-            target="_blank"
-            rel="noopener noreferrer"
-            className="desktop-nav"
-            style={{
-              backgroundColor: '#e80200',
-              color: '#fff',
-              fontFamily: "'Oswald', sans-serif",
-              fontSize: '14px',
-              letterSpacing: '2px',
-              textTransform: 'uppercase',
-              padding: '14px 28px',
-              textDecoration: 'none',
-              flexShrink: 0,
-              transition: 'all 0.3s ease',
-              boxShadow: '0 4px 15px rgba(232, 2, 0, 0.3)',
-              fontWeight: 500,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = '#ff1a1a';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-              e.currentTarget.style.boxShadow = '0 6px 25px rgba(232, 2, 0, 0.5)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = '#e80200';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 4px 15px rgba(232, 2, 0, 0.3)';
-            }}
-          >
-            Book Appointment
-          </Link>
+          {/* Phone Number and Book Appointment - Desktop */}
+          <div className="desktop-nav" style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+            <a 
+              href='tel:5024170690'
+              style={{
+                color: '#fff',
+                fontFamily: "'Oswald', sans-serif",
+                fontSize: '18px',
+                letterSpacing: '1px',
+                textDecoration: 'none',
+                fontWeight: 600,
+              }}
+            >
+              502-417-0690
+            </a>
+            
+            {!isMinimalNav && (
+            <Link 
+              to='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD' 
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                backgroundColor: '#e80200',
+                color: '#fff',
+                fontFamily: "'Oswald', sans-serif",
+                fontSize: '14px',
+                letterSpacing: '2px',
+                textTransform: 'uppercase',
+                padding: '14px 28px',
+                textDecoration: 'none',
+                flexShrink: 0,
+                transition: 'all 0.3s ease',
+                boxShadow: '0 4px 15px rgba(232, 2, 0, 0.3)',
+                fontWeight: 500,
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#ff1a1a';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 6px 25px rgba(232, 2, 0, 0.5)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#e80200';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(232, 2, 0, 0.3)';
+              }}
+            >
+              Book Appointment
+            </Link>
+            )}
+          </div>
 
           {/* Mobile Menu Button */}
           <button

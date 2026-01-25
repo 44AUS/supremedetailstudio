@@ -10,76 +10,120 @@ import TeslaPlaid from '../assets/images/details/tesla-paint-correction.jpg';
 import TeslaInterior from '../assets/images/details/tesla-interior.jpg';
 
 const useStyles = createStyles((theme) => ({
-  wrapper: { paddingTop: '15px', paddingBottom: 80, position: 'relative' },
+  /* ---------------- HERO ---------------- */
+
   heroWrapper: {
     position: 'relative',
+    isolation: 'isolate',
+    overflow: 'hidden',
     paddingTop: '150px',
     paddingBottom: '150px',
-    backgroundImage: `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.85)), url(${BMWInterior})`,
+    backgroundImage: `url(${BMWInterior})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
+    [theme.fn.smallerThan('md')]: {
+      paddingTop: '100px',
+      paddingBottom: '100px',
+    },
+  },
+
+  heroInner: {
+    position: 'relative',
+    zIndex: 1,
     textAlign: 'center',
-    [theme.fn.smallerThan('md')]: { paddingTop: '100px', paddingBottom: '100px' },
+    width: '100%',
   },
-  heroTitle: {
-    fontFamily: "'Oswald', sans-serif",
-    fontSize: '58px',
-    color: '#FFF',
-    textTransform: 'uppercase',
-    fontWeight: 700,
-    marginBottom: '16px',
-    [theme.fn.smallerThan('md')]: { fontSize: '32px', padding: '0 15px' },
-  },
+
   heroSubtitle: {
     fontFamily: "'Montserrat', sans-serif",
     fontSize: '14px',
     letterSpacing: '4px',
     color: '#e80200',
+    marginBottom: '16px',
     textTransform: 'uppercase',
     fontWeight: 600,
-    marginBottom: '16px',
+    [theme.fn.smallerThan('md')]: {
+      fontSize: '12px',
+      letterSpacing: '3px',
+    },
   },
-  img: { borderRadius: '20px', width: '100%', height: 'auto' },
+
+  heroTitle: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '58px',
+    letterSpacing: '2px',
+    color: '#FFF',
+    marginBottom: '24px',
+    textTransform: 'uppercase',
+    fontWeight: 700,
+    textShadow: '2px 4px 8px rgba(0,0,0,0.6)',
+    [theme.fn.smallerThan('md')]: {
+      fontSize: '34px',
+      paddingLeft: '15px',
+      paddingRight: '15px',
+    },
+  },
+
+  heroDescription: {
+    fontFamily: "'Montserrat', sans-serif",
+    color: 'rgba(255,255,255,0.95)',
+    fontSize: '17px',
+    lineHeight: 1.8,
+    maxWidth: '700px',
+    margin: '0 auto',
+    [theme.fn.smallerThan('md')]: {
+      fontSize: '16px',
+      padding: '0 20px',
+    },
+  },
+
+  overlay: {
+    position: 'absolute',
+    inset: 0,
+    backgroundImage: 'linear-gradient(to bottom, rgba(0,0,0,0), #000)',
+    zIndex: 0,
+    pointerEvents: 'none',
+  },
+
+  /* ---------------- CONTENT ---------------- */
+
+  wrapper: {
+    paddingTop: '15px',
+    paddingBottom: 80,
+    position: 'relative',
+  },
+
+  img: {
+    borderRadius: '20px',
+    width: '100%',
+    height: 'auto',
+  },
+
   h1: {
-    marginTop: 0,
     fontFamily: 'SceneProUltBlkIt',
     color: '#fff',
     fontSize: '32px',
     textTransform: 'uppercase',
-    lineHeight: 1.2,
     fontWeight: 800,
-    '@media (max-width: 520px)': { fontSize: 24, textAlign: 'center' },
   },
+
   h2: {
-    marginTop: 0,
     fontFamily: 'SceneProUltBlkIt',
     color: '#fff',
     fontSize: '28px',
     textTransform: 'uppercase',
-    lineHeight: 1.2,
     fontWeight: 700,
-    '@media (max-width: 520px)': { fontSize: 22, textAlign: 'center' },
   },
-  h1Center: {
-    marginTop: '15px',
-    marginBottom: '15px',
-    fontFamily: 'SceneProUltBlkIt',
-    color: '#fff',
-    fontSize: '32px',
-    textTransform: 'uppercase',
-    textAlign: 'center',
-    '@media (max-width: 520px)': { fontSize: 24 },
-  },
+
   WhyDesc: {
     fontFamily: "'Montserrat', sans-serif",
     color: '#fff',
     fontSize: '15px',
     lineHeight: 1.8,
-    fontWeight: 500,
     marginTop: '1.25rem',
     marginBottom: '1.25rem',
-    '@media (max-width: 520px)': { textAlign: 'center' },
   },
+
   servicesList: {
     listStyle: 'disc',
     paddingLeft: '20px',
@@ -88,6 +132,7 @@ const useStyles = createStyles((theme) => ({
     fontSize: '15px',
     lineHeight: 2,
   },
+
   buttonContainer: {
     marginTop: '40px',
     display: 'flex',
@@ -95,10 +140,8 @@ const useStyles = createStyles((theme) => ({
     gap: '20px',
     flexWrap: 'wrap',
   },
+
   primaryButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: '#e80200',
     color: '#fff',
     fontFamily: "'Oswald', sans-serif",
@@ -108,16 +151,15 @@ const useStyles = createStyles((theme) => ({
     padding: '18px 40px',
     textDecoration: 'none',
     borderRadius: '4px',
-    fontWeight: 500,
     transition: 'all 0.3s ease',
-    boxShadow: '0 4px 20px rgba(232, 2, 0, 0.4)',
-    '&:hover': { backgroundColor: '#ff1a1a', transform: 'translateY(-3px)' },
+    '&:hover': {
+      backgroundColor: '#ff1a1a',
+      transform: 'translateY(-3px)',
+    },
   },
+
   secondaryButton: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'transparent',
+    border: '2px solid rgba(255,255,255,0.8)',
     color: '#fff',
     fontFamily: "'Oswald', sans-serif",
     fontSize: '15px',
@@ -125,11 +167,12 @@ const useStyles = createStyles((theme) => ({
     textTransform: 'uppercase',
     padding: '16px 38px',
     textDecoration: 'none',
-    border: '2px solid rgba(255, 255, 255, 0.8)',
     borderRadius: '4px',
-    fontWeight: 500,
     transition: 'all 0.3s ease',
-    '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.1)', transform: 'translateY(-3px)' },
+    '&:hover': {
+      backgroundColor: 'rgba(255,255,255,0.1)',
+      transform: 'translateY(-3px)',
+    },
   },
 }));
 
@@ -204,14 +247,41 @@ const SmyrnaGAPage = () => {
         <script type="application/ld+json">{JSON.stringify(faqStructuredData)}</script>
       </Helmet>
 
+      {/* ---------------- HERO ---------------- */}
       <div className={classes.heroWrapper}>
-        <Title className={classes.heroSubtitle}>SMYRNA, GA'S TRUSTED AUTO DETAILING EXPERTS</Title>
-        <Title className={classes.heroTitle}>AUTO DETAILING IN SMYRNA, GA</Title>
-        <div className={classes.buttonContainer}>
-          <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" rel="noopener noreferrer" className={classes.primaryButton}>Book Appointment</Link>
-          <Link to="tel:5024170690" className={classes.secondaryButton}>Call (502) 417-0690</Link>
-        </div>
+        <div className={classes.overlay}></div>
+
+        <Container size="lg">
+          <div className={classes.heroInner}>
+            <Title className={classes.heroSubtitle}>
+              SMYRNA, GA'S TRUSTED AUTO DETAILING EXPERTS
+            </Title>
+
+            <Title className={classes.heroTitle}>
+              AUTO DETAILING IN SMYRNA, GA
+            </Title>
+
+            <div className={classes.buttonContainer}>
+              <Link
+                to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={classes.primaryButton}
+              >
+                Book Appointment
+              </Link>
+
+              <Link
+                to="tel:5024170690"
+                className={classes.secondaryButton}
+              >
+                Call (502) 417-0690
+              </Link>
+            </div>
+          </div>
+        </Container>
       </div>
+
 
       <main>
         <Container size="xl">
