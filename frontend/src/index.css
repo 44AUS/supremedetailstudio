@@ -60,3 +60,32 @@ code {
 ::-webkit-scrollbar-thumb:hover {
   background: #ff1a1a;
 }
+
+.slick-prev,
+.slick-next {
+  top: 45%;
+}
+
+.slick-prev {
+  left: -20px;
+}
+
+.slick-next {
+  right: -20px;
+}
+
+@media (max-width: 768px) {
+  .slick-prev {
+    left: 8px;
+  }
+  .slick-next {
+    right: 8px;
+  }
+}
+
+/* REMOVE DEFAULT SLICK ARROWS */
+.slick-prev:before,
+.slick-next:before {
+  content: '' !important;
+  display: none !important;
+}

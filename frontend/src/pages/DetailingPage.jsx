@@ -152,7 +152,7 @@ const Detailing = () => {
         <AddOnServices />
         </div>
       </div>
-      <PickUpDeliveryService />
+      {/* <PickUpDeliveryService /> */}
       <DetailingFAQ />
     </Container>
     </div>

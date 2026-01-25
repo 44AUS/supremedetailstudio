@@ -1,120 +1,104 @@
 import React from 'react';
-import { Container, Title, createStyles } from '@mantine/core';
-import TeslaSteeringWheel from '../assets/images/details/tesla-steering-wheel.jpg';
+import { createStyles, Container, Text, Group } from '@mantine/core';
+import { IconTruckDelivery } from '@tabler/icons-react';
 
-const useStyles = createStyles((theme) => ({
-    bgBody: {
-      backgroundColor: '#111',
-      backgroundImage: 'linear-gradient(45deg, #000, #2e2e2e)',
-    },
-    wrapper: {
-      paddingTop: '4rem',
-      paddingBottom: '4rem',
-      position: 'relative',
-    },
-    h1: {
-      marginTop: 0,
-      fontFamily: 'SceneProUltBlkIt',
-      textAlign: 'center',
-      color: '#fff',
-      fontSize: '36px',
-      textTransform: 'uppercase',
-      lineHeight: 1.2,
-      fontWeight: 800,
-      animation: 'fadein 1s',
-      '@media (max-width: 520px)': {
-        fontSize: 24,
-        textAlign: 'center',
-        },
-    },
-    h1Why: {
-      marginTop: 0,
-      fontFamily: 'SceneProUltBlkIt',
-      textAlign: 'center',
-      color: '#fff',
-      fontSize: '22px',
-      textTransform: 'uppercase',
-      lineHeight: 1.2,
-      fontWeight: 800,
-      animation: 'fadein 1s',
-      '@media (max-width: 520px)': {
-        fontSize: 20,
-        textAlign: 'center',
-        },
-    },
-    WhyDesc: {
-      fontFamily: `SceneProRg`,
-      color: '#fff',
-      fontSize: '18px',
-      lineHeight: 1.8,
-      fontWeight: 500,
-      textAlign: 'center',
-      marginTop: '1.25rem',
-      marginBottom: '1.25rem',
-      animation: 'fadein 1s',
-    },
-    desc: {
-      fontFamily: 'SceneProRg',
-      color: '#e80200',
-      fontSize: '1.25rem',
-      lineHeight: 1.6,
-      fontWeight: 500,
-      textTransform: 'uppercase',
-      textAlign: 'center',
-      marginBottom: '1.25rem',
-      animation: 'fadein 1s',
-      '@media (max-width: 520px)': {
-        fontSize: '16px',
-        textAlign: 'center',
-        },
-    },
-    benefitIcon: {
-      fontFamily: `SceneProRg`, 
-      fontSize: '16px',
-      fontWeight: 800,
-      color: '#FFF',
+const useStyles = createStyles(() => ({
+  wrapper: {
+    background: 'linear-gradient(135deg, #0b1020, #1b2a4a)',
+    borderRadius: '18px',
+    padding: '32px 40px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    boxShadow: '0 0 40px rgba(0,0,0,0.6)',
+    color: '#fff',
+    '@media (max-width: 768px)': {
       flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      margin: 'auto',
-      display: 'flex',
-      width: '48px',
-      height: '48px',
-      border: '2px solid #fff',
-      borderRadius: '100%',
-      marginBottom: '24px',
-      '@media (max-width: 520px)': {
-        width: '38px',
-        height: '38px',
-        },
+      gap: '24px',
+      textAlign: 'center',
     },
-  }));
+  },
+
+  left: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '18px',
+  },
+
+  iconBox: {
+    width: 54,
+    height: 54,
+    borderRadius: '12px',
+    background: 'linear-gradient(135deg, #4da3ff, #6be1ff)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0 0 25px rgba(77,163,255,0.45)',
+  },
+
+  title: {
+    fontSize: '22px',
+    fontWeight: 700,
+    letterSpacing: '0.3px',
+  },
+
+  subtitle: {
+    fontSize: '16px',
+    color: '#c7d6ff',
+    marginTop: '4px',
+  },
+
+  right: {
+    textAlign: 'right',
+    '@media (max-width: 768px)': {
+      textAlign: 'center',
+    },
+  },
+
+  small: {
+    fontSize: '14px',
+    color: '#9bb6ff',
+  },
+
+  price: {
+    fontSize: '34px',
+    fontWeight: 800,
+    color: '#5da9ff',
+    lineHeight: 1.1,
+  },
+
+  serviceText: {
+    fontSize: '14px',
+    color: '#9bb6ff',
+  },
+}));
 
 const PickUpDeliveryService = () => {
-
-    const { classes } = useStyles();
-
+  const { classes } = useStyles();
 
   return (
-    <></>
-    // <div>
-    // <div className="service-deal-container">
-    //     <div className="service-deal-bg-wrapper">
-    //         <img src={TeslaSteeringWheel} loading="lazy" className="service-deal-bg-image" />
-    //         <div className="service-deal-bg-overlay">
-    //             </div>
-    //             </div>
-    //             <div className="service-deal-text-container">
-    //                 <div id="w-node-_7f056b17-781e-f801-4f1d-df54f297b887-2931ecf3" className="service-deal-heading-container">
-    //                     <div id="w-node-_7f056b17-781e-f801-4f1d-df54f297b888-2931ecf3" className="subheading light">FREE PICKUP & DELIVERY SERVICE!</div>
-    //                     </div>
-    //                     <div id="w-node-_7f056b17-781e-f801-4f1d-df54f297b88c-2931ecf3" className="service-deal-paragraph-container">
-    //                         <p className="service-deal-paragraph w-dyn-bind-empty"></p>
-    //                         <div className="service-deal-link-container">
-    //                             <div className="service-deal-expiry-wrapper">
-    //                                 <div className="service-deal-expiry-text w-dyn-bind-empty"></div></div>
-    //                                 <a href="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/ESiDRkEcgVAtHaaJoMo4?productServiceId=jNZXrboI02c1kUC4sBcJ&sku=kTaQ0re3Re8KXkmKeIuZ" target="_blank" className="service-deal-link">Learn More</a></div></div></div></div></div>
-  )
-}
+    <Container size="xl" my="xl">
+      <div className={classes.wrapper}>
+        {/* LEFT */}
+        <div className={classes.left}>
+          <div className={classes.iconBox}>
+            <IconTruckDelivery size={28} color="#fff" />
+          </div>
+          <div>
+            <Text className={classes.title}>FREE Pickup & Delivery Service</Text>
+            <Text className={classes.subtitle}>Convenient, fast, and contactless service for your vehicle</Text>
+          </div>
+        </div>
+
+        {/* RIGHT */}
+        {/* <div className={classes.right}>
+          <Text className={classes.small}>Starting at</Text>
+          <Text className={classes.price}>$59/mo</Text>
+          <Text className={classes.serviceText}>for a $350 service</Text>
+        </div> */}
+      </div>
+    </Container>
+  );
+};
 
 export default PickUpDeliveryService;

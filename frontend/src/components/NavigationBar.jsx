@@ -37,6 +37,7 @@ export default function NavBar() {
   ];
 
   const moreLinks = [
+    { name: 'About', path: '/about' },
     { name: 'Before & After', path: '/before-and-after' },
     { name: 'Gallery', path: '/gallery' },
     { name: 'FAQs', path: '/faq' },
@@ -93,7 +94,6 @@ export default function NavBar() {
     ...dropdownItemStyle,
     color: activeColor,
     backgroundColor: 'rgba(232, 2, 0, 0.1)',
-    paddingLeft: '28px',
   };
 
   // Mobile link styles
@@ -211,14 +211,12 @@ export default function NavBar() {
                         if (!isActive) {
                           e.currentTarget.style.color = activeColor;
                           e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.1)';
-                          e.currentTarget.style.paddingLeft = '28px';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isActive) {
                           e.currentTarget.style.color = '#fff';
                           e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.paddingLeft = '20px';
                         }
                       }}
                     >
@@ -285,14 +283,12 @@ export default function NavBar() {
                         if (!isActive) {
                           e.currentTarget.style.color = activeColor;
                           e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.1)';
-                          e.currentTarget.style.paddingLeft = '28px';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isActive) {
                           e.currentTarget.style.color = '#fff';
                           e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.paddingLeft = '20px';
                         }
                       }}
                     >
@@ -302,20 +298,6 @@ export default function NavBar() {
                 })}
               </div>
             </div>
-
-            {/* About */}
-            <NavLink 
-              to='/about'
-              style={({ isActive }) => ({
-                ...navLinkStyle,
-                color: isActive ? activeColor : '#fff',
-                borderBottom: isActive ? `2px solid ${activeColor}` : '2px solid transparent',
-              })}
-              onMouseEnter={(e) => { if (location.pathname !== '/about') e.currentTarget.style.color = activeColor; }}
-              onMouseLeave={(e) => { if (location.pathname !== '/about') e.currentTarget.style.color = '#fff'; }}
-            >
-              About
-            </NavLink>
 
             {/* Reviews */}
             <NavLink 
@@ -401,14 +383,12 @@ export default function NavBar() {
                         if (!isActive) {
                           e.currentTarget.style.color = activeColor;
                           e.currentTarget.style.backgroundColor = 'rgba(232, 2, 0, 0.1)';
-                          e.currentTarget.style.paddingLeft = '28px';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isActive) {
                           e.currentTarget.style.color = '#fff';
                           e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.paddingLeft = '20px';
                         }
                       }}
                     >
