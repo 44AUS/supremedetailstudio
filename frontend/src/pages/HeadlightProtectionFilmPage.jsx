@@ -189,9 +189,9 @@ const HeadlightProtectionFilmPage = () => {
         </div>
         <LPFComponent />
       </div>
-      <PickUpDeliveryService />
     {/* <CeramicFAQ /> */}
     </Container>
+    <PickUpDeliveryService />
     </div>
     {/* <TellUs /> */}
     </>

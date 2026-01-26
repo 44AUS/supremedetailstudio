@@ -6,6 +6,8 @@ import WheelBefore from '../assets/images/before-after/wheel-before.webp';
 import WheelAfter from '../assets/images/before-after/wheel-after.webp';
 import FloorMatBefore from '../assets/images/before-after/floor-mat-before.webp';
 import FloorMatAfter from '../assets/images/before-after/floor-mat-after.webp';
+import CarpetBefore from '../assets/images/before-after/carpet-before.webp';
+import CarpetAfter from '../assets/images/before-after/carpet-after.webp';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -161,6 +163,18 @@ const BeforeAndAfterPage = () => {
     </div>
     </AspectRatio>
     <Title className={classes.h1}>FLOOR MAT CLEANING</Title>
+    </div>
+
+    <div>
+    <AspectRatio ratio={550 / 600}>
+    <div className={classes.beforeAndAfterWrapper}>
+    <ReactCompareSlider
+      itemOne={<ReactCompareSliderImage src={CarpetBefore} srcSet={CarpetBefore} alt="Carpet Before" />}
+      itemTwo={<ReactCompareSliderImage src={CarpetAfter} srcSet={CarpetAfter} alt="Carpet After" />}
+    />
+    </div>
+    </AspectRatio>
+    <Title className={classes.h1}>INTERIOR DEEP CLEAN</Title>
     </div>
 
     </SimpleGrid>

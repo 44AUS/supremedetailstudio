@@ -190,9 +190,9 @@ const CeramicCoatings = () => {
         </div>
         <CeramicTabs />
       </div>
-      <PickUpDeliveryService />
     <CeramicFAQ />
     </Container>
+    <PickUpDeliveryService />
     </div>
     {/* <TellUs /> */}
     </>

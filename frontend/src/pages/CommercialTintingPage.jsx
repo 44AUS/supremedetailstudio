@@ -8,6 +8,7 @@ import Geoshield from '../assets/images/partners/Geoshield_Logo_Color.png';
 import VideoIntroduction from '../components/BenefitsAndImportance/VideoIntroduction';
 import FlatGlassCertifiedComponent from '../components/BenefitsAndImportance/FlatGlassCertifiedInstaller';
 import BenefitsOfCommercialTint from '../components/BenefitsAndImportance/BenefitsOfCommercialTint';
+import TrustBar from '../components/TrustBar';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -164,6 +165,15 @@ const CommercialWindowTintPage = () => {
       <meta property="og:image" content='%PUBLIC_URL%/preview.png' />
     </Helmet>
     <CommercialWindowTintingHero />
+    <TrustBar
+    items={[
+      'Free Building Assessment',
+      'Minimal Business Disruption',
+      'Up to 30% HVAC Savings',
+      'GSA Approved Films',
+    ]}
+    />
+
     <VideoIntroduction
           titleProp='NOTHING OUTMATCHES SUPERIOR WINDOW TINT FOR COMMERCIAL PROPERTIES!'
           descriptionProp={`We specialize in providing top-notch commercial window tinting services that cater to the unique needs of all of our valued local businesses. Each business is unique, and so are its needs. That's why we offer customized window tinting solutions that align perfectly with your requirements. Whether you want to lower energy costs, improve employee comfort, or elevate your property’s aesthetic value, our high-quality tints are designed to deliver.`}

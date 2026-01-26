@@ -152,7 +152,6 @@ const MobileDetailing = () => {
         <AddOnServices />
         </div>
       </div>
-      <PickUpDeliveryService />
       <DetailingFAQ />
     </Container>
     </div>

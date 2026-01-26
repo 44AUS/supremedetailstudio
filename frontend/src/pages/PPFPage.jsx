@@ -202,8 +202,8 @@ const PPFPage = () => {
         </div>
         <PPFComponent />
       </div>
-      <PickUpDeliveryService />
     </Container>
+    <PickUpDeliveryService />
     </div>
     <StagesOfPPF />
     </>

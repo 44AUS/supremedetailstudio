@@ -12,6 +12,7 @@ import PickUpDeliveryService from '../components/PickUpDeliveryService';
 import AutoWindowFAQ from '../components/FAQs/AutoWindowFAQ';
 import IsAutoTintForYou from '../components/BenefitsAndImportance/IsAutoTintForYou';
 import TintComparison from '../components/BenefitsAndImportance/TintComparison';
+import TrustBar from '../components/TrustBar';
 
 const useStyles = createStyles((theme) => ({
   wrapper: {
@@ -171,6 +172,15 @@ const VehicleWindowTintingPage = () => {
 
     </Helmet>
     <VehicleWindowTintingHero />
+    <TrustBar
+    items={[
+      'Same-Day Service Available',
+      'Lifetime Warranty',
+      'Factory-Certified Installers',
+      'Georgia Legal Tint',
+    ]}
+    />
+
     <VideoIntroduction
           titleProp='TRUE INTERIOR PROTECTION FOR YOUR VEHICLE'
           descriptionProp={`If you're looking for maximum performance & protection from your window tint, look no further than the window films we offer here at Supreme Detail Studio. With the latest in Infared Ceramic Window Films, you can see better than ever before without sacrificing your safety. The nano tint utilizes precious metals and rare earth materials to allow for maximum light absorption while rejecting heat from up close or far away allowing a high level of reflectivity that will keep drivers safer on our roads.`}
@@ -188,9 +198,9 @@ const VehicleWindowTintingPage = () => {
         <AutoTintComponent />
       </div>
     {/* <CeramicFAQ /> */}
-    <PickUpDeliveryService />
     <AutoWindowFAQ />
     </Container>
+    <PickUpDeliveryService />
     </div>
     {/* <TellUs /> */}
     </>
