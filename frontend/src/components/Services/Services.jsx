@@ -11,6 +11,7 @@ import Tinting from '../../assets/images/tint/vette-tint.jpg';
 import WheelRepair from '../../assets/images/details/wheels.jpg';
 import DentRepair from '../../assets/images/dent-repair/pdr.jpg';
 import Starlights from '../../assets/images/starlights.jpg';
+import DodgeScreen from '../../assets/images/dodgescreen.jpg';
 
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -181,6 +182,12 @@ const Services = () => {
             titleProp="Starlight Headliner"
             linkProp="/services/starlight-headliners"
             imageProp={Starlights}
+          />
+
+          <ServicesCard
+            titleProp="Dodge Mopar Screens"
+            linkProp="/services/dodge-mopar"
+            imageProp={DodgeScreen}
           />
 
           <ServicesCard
