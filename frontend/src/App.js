@@ -54,7 +54,7 @@ function App() {
 
   return (
     <NextUIProvider>
-      <main className="dark text-foreground bg-background">
+      <main className="dark text-foreground" style={{ backgroundColor: '#000', width: '100%', minWidth: '100%', overflowX: 'hidden' }}>
     <ParallaxProvider>
     <Router>
     <Helmet>
