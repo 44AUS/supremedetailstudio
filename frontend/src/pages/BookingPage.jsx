@@ -951,6 +951,8 @@ export default function BookAppointment() {
     email: '',
   });
   const [serviceLocation, setServiceLocation] = useState(null);
+  const [pickupDelivery, setPickupDelivery] = useState(null); // null, 'yes', or 'no'
+  const [pickupDistance, setPickupDistance] = useState('under15'); // 'under15' or 'over15'
   const [vehicle, setVehicle] = useState({ year: '', make: '', model: '' });
   const [vehicleType, setVehicleType] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
