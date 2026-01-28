@@ -1176,7 +1176,7 @@ export default function BookAppointment() {
     : null;
 
   const progressSteps = [
-    { num: 1, label: 'Info', completed: formData.firstName && formData.email },
+    { num: 1, label: 'Info', completed: formData.firstName && formData.email && formData.address },
     { num: 2, label: 'Location', completed: serviceLocation !== null },
     { num: 3, label: 'Vehicle', completed: vehicleType !== null && vehicle.make && selectedColor },
     { num: 4, label: 'Service', completed: selectedService !== null },
