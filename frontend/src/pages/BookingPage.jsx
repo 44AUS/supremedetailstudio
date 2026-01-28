@@ -283,6 +283,7 @@ const styles = {
   },
   input: (hasIcon) => ({
     width: '100%',
+    boxSizing: 'border-box',
     padding: hasIcon ? '16px 16px 16px 48px' : '16px',
     borderRadius: '14px',
     background: 'rgba(255,255,255,0.03)',
