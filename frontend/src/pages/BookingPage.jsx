@@ -1370,6 +1370,7 @@ export default function BookAppointment() {
                 </div>
               );
             })}
+          </div>
         </motion.div>
       </div>
 
