@@ -1292,6 +1292,16 @@ export default function BookAppointment() {
               required
             />
           </div>
+          <div style={{ marginTop: '20px' }}>
+            <InputField 
+              label="Address" 
+              icon={MapPin}
+              value={formData.address}
+              onChange={(v) => setFormData({...formData, address: v})}
+              placeholder="123 Main St, Marietta, GA 30060"
+              required
+            />
+          </div>
         </motion.div>
 
         {/* STEP 2 – SERVICE LOCATION */}
