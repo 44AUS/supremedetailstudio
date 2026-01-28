@@ -1324,20 +1324,52 @@ export default function BookAppointment() {
           transition={{ duration: 0.6, delay: 0.2 }}
           style={styles.progressContainer}
         >
-          <div style={styles.progressLine}>
-            <div style={{ ...styles.progressFill, width: `${(completedSteps / 5) * 100}%` }} />
-          </div>
-          {progressSteps.map((step) => (
-            <div key={step.num} style={styles.progressStep}>
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                style={styles.progressCircle(step.completed, false)}
-              >
-                {step.completed ? <CheckCircle2 size={18} /> : step.num}
-              </motion.div>
-              <span style={styles.progressLabel(step.completed)}>{step.label}</span>
+          <div style={styles.progressWrapper}>
+            {/* Background Line */}
+            <div style={styles.progressLine}>
+              <motion.div 
+                style={styles.progressFill}
+                initial={{ width: '0%' }}
+                animate={{ width: `${(completedSteps / (progressSteps.length - 1)) * 100}%` }}
+                transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+              />
             </div>
-          ))}
+            
+            {/* Steps */}
+            {progressSteps.map((step, index) => {
+              const isActive = index === completedSteps && !step.completed;
+              return (
+                <div key={step.num} style={styles.progressStep}>
+                  <motion.div
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.05 }}
+                    style={styles.progressCircle(step.completed, isActive)}
+                  >
+                    {step.completed ? (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                      >
+                        <CheckCircle2 size={20} />
+                      </motion.div>
+                    ) : (
+                      step.num
+                    )}
+                  </motion.div>
+                  <motion.span 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 + 0.1 }}
+                    style={styles.progressLabel(step.completed, isActive)}
+                  >
+                    {step.label}
+                  </motion.span>
+                </div>
+              );
+            })}
         </motion.div>
       </div>
 
