@@ -62,14 +62,9 @@ const useStyles = createStyles((theme) => ({
     marginBottom: '40px',
     border: '1px solid rgba(255, 255, 255, 0.1)',
     [theme.fn.smallerThan('md')]: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'center',
-      gap: '6px 12px',
-      padding: '14px 24px',
+      gap: '10px',
+      padding: '10px 18px',
       marginBottom: '30px',
-      borderRadius: '12px',
-      maxWidth: '90%',
     },
   },
   badgeHighlight: {
