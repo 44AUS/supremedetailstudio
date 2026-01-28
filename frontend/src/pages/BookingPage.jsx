@@ -274,6 +274,7 @@ const styles = {
   },
   inputContainer: {
     position: 'relative',
+    width: '100%',
   },
   inputIcon: {
     position: 'absolute',
