@@ -1556,7 +1556,7 @@ export default function BookAppointment() {
           <div style={styles.serviceGrid}>
             {DETAIL_SERVICES.map((service) => {
               const price = vehicleType 
-                ? service.base + vehicleUpcharge + locationUpcharge
+                ? service.base + vehicleUpcharge + locationUpcharge + pickupDeliveryCharge
                 : 'Select vehicle';
               return (
                 <ServiceCard
@@ -1579,7 +1579,7 @@ export default function BookAppointment() {
               <ServiceCard
                 key={service.id}
                 service={service}
-                price={service.price + locationUpcharge}
+                price={service.price + locationUpcharge + pickupDeliveryCharge}
                 selected={selectedService?.id === service.id}
                 onClick={() => setSelectedService(service)}
               />
