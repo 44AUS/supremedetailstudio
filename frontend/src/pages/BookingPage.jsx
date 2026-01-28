@@ -1653,6 +1653,9 @@ export default function BookAppointment() {
                     <div style={styles.confirmDetail}>
                       <MapPin size={16} style={styles.confirmIcon} />
                       {serviceLocation?.label}
+                      {serviceLocation?.id === 'shop' && pickupDelivery === 'yes' && (
+                        <span style={{ color: '#ef4444' }}> + Pickup & Delivery ({pickupDistance === 'over15' ? '>15mi' : '<15mi'})</span>
+                      )}
                     </div>
                     <div style={styles.confirmDetail}>
                       <Calendar size={16} style={styles.confirmIcon} />
