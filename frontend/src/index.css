@@ -73,10 +73,11 @@ code {
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
+  background: #000;
 }
 
 ::-webkit-scrollbar-track {
-  background: #1a1a1a;
+  background: #000;
 }
 
 ::-webkit-scrollbar-thumb {
