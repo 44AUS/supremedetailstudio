@@ -1260,7 +1260,7 @@ export default function BookAppointment() {
 
   const progressSteps = [
     { num: 1, label: 'Info', completed: formData.firstName && formData.email && formData.address },
-    { num: 2, label: 'Location', completed: serviceLocation !== null },
+    { num: 2, label: 'Location', completed: serviceLocation !== null && (serviceLocation?.id !== 'mobile' || mobileUtilitiesConfirmed) },
     { num: 3, label: 'Vehicle', completed: vehicleType !== null && vehicle.make && selectedColor },
     { num: 4, label: 'Service', completed: selectedService !== null },
     { num: 5, label: 'Schedule', completed: selectedDate && selectedTime },
