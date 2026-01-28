@@ -5,7 +5,7 @@ import {
   ChevronRight, CheckCircle2, Sparkles, Shield, 
   Droplets, Sun, ArrowRight, ChevronLeft, MapPin,
   Building2, Truck, ChevronDown, Palette, Loader2,
-  CarFront, Info
+  CarFront, Info, Zap
 } from 'lucide-react';
 
 /* ---------------- DATA ---------------- */
