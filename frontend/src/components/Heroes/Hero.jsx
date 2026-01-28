@@ -74,8 +74,7 @@ const useStyles = createStyles((theme) => ({
     color: '#e80200',
     letterSpacing: '0.5px',
     [theme.fn.smallerThan('md')]: {
-      fontSize: '12px',
-      lineHeight: 1.4,
+      fontSize: '10px',
     },
   },
   badgeDivider: {
