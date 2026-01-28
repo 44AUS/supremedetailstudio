@@ -95,6 +95,10 @@ const useStyles = createStyles((theme) => ({
     fontWeight: 500,
     color: 'rgba(255, 255, 255, 0.9)',
     letterSpacing: '0.5px',
+    [theme.fn.smallerThan('md')]: {
+      fontSize: '12px',
+      lineHeight: 1.4,
+    },
   },
   title: {
     fontFamily: "'Oswald', sans-serif",
