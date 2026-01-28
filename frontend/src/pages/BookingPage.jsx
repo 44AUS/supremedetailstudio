@@ -1066,12 +1066,18 @@ export default function BookAppointment() {
   const locationUpcharge = serviceLocation?.upcharge || 0;
   const vehicleUpcharge = vehicleType?.upcharge || 0;
   
+  // Pickup & Delivery pricing
+  let pickupDeliveryCharge = 0;
+  if (serviceLocation?.id === 'shop' && pickupDelivery === 'yes') {
+    pickupDeliveryCharge = pickupDistance === 'over15' ? 75 : 50;
+  }
+  
   const totalPrice = selectedService
     ? selectedService.category === 'detail'
       ? vehicleType
-        ? selectedService.base + vehicleUpcharge + locationUpcharge
+        ? selectedService.base + vehicleUpcharge + locationUpcharge + pickupDeliveryCharge
         : null
-      : selectedService.price + locationUpcharge
+      : selectedService.price + locationUpcharge + pickupDeliveryCharge
     : null;
 
   const progressSteps = [
