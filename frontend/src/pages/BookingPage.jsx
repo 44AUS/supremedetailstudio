@@ -1334,6 +1334,10 @@ export default function BookAppointment() {
                       setPickupDelivery(null);
                       setPickupDistance('under15');
                     }
+                    // Reset mobile utilities when changing location
+                    if (location.id !== 'mobile') {
+                      setMobileUtilitiesConfirmed(false);
+                    }
                   }}
                   style={styles.locationCard(serviceLocation?.id === location.id)}
                   data-testid={`location-${location.id}`}
@@ -1353,6 +1357,59 @@ export default function BookAppointment() {
               );
             })}
           </div>
+
+          {/* Mobile Service Utilities Requirement - Only shows when Mobile is selected */}
+          <AnimatePresence>
+            {serviceLocation?.id === 'mobile' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ marginTop: '24px' }}
+              >
+                <div style={styles.utilitiesContainer}>
+                  <div style={styles.utilitiesHeader}>
+                    <Droplets size={20} style={{ color: '#3b82f6' }} />
+                    <span style={styles.utilitiesTitle}>Utility Access Required</span>
+                  </div>
+                  <p style={styles.utilitiesDesc}>
+                    For mobile detailing, we require access to <strong>water</strong> and <strong>electrical hookups</strong> at your location to complete the job properly.
+                  </p>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={() => setMobileUtilitiesConfirmed(!mobileUtilitiesConfirmed)}
+                    style={styles.utilitiesCheckbox(mobileUtilitiesConfirmed)}
+                    data-testid="utilities-confirm"
+                  >
+                    <div style={styles.checkboxBox(mobileUtilitiesConfirmed)}>
+                      {mobileUtilitiesConfirmed && <CheckCircle2 size={18} style={{ color: '#fff' }} />}
+                    </div>
+                    <div style={styles.checkboxText}>
+                      <span style={styles.checkboxLabel}>Yes, I confirm I have easy access to:</span>
+                      <div style={styles.checkboxItems}>
+                        <span style={styles.checkboxItem}>
+                          <Droplets size={14} style={{ color: '#3b82f6' }} /> Water hookup / hose connection
+                        </span>
+                        <span style={styles.checkboxItem}>
+                          <Zap size={14} style={{ color: '#eab308' }} /> Electrical outlet (standard 120V)
+                        </span>
+                      </div>
+                    </div>
+                  </motion.button>
+
+                  {!mobileUtilitiesConfirmed && (
+                    <div style={styles.utilitiesWarning}>
+                      <Info size={16} style={{ color: '#f59e0b', flexShrink: 0 }} />
+                      <span>Please confirm utility access to proceed with mobile service booking.</span>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Pickup & Delivery Option - Only shows when In Shop is selected */}
           <AnimatePresence>
