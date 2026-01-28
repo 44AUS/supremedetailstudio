@@ -260,6 +260,7 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
+    minWidth: 0,
   },
   label: {
     fontSize: '13px',
