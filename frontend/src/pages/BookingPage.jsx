@@ -4,7 +4,8 @@ import {
   User, Phone, Mail, Car, Calendar, Clock, 
   ChevronRight, CheckCircle2, Sparkles, Shield, 
   Droplets, Sun, ArrowRight, ChevronLeft, MapPin,
-  Building2, Truck, ChevronDown, Palette, Loader2
+  Building2, Truck, ChevronDown, Palette, Loader2,
+  CarFront, Info
 } from 'lucide-react';
 
 /* ---------------- DATA ---------------- */
