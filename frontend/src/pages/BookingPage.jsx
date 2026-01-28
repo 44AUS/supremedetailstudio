@@ -406,8 +406,11 @@ const styles = {
     lineHeight: 1.6,
   },
   progressContainer: {
-    maxWidth: '800px',
+    maxWidth: '700px',
     margin: '50px auto 0',
+    padding: '0 20px',
+  },
+  progressWrapper: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -415,19 +418,19 @@ const styles = {
   },
   progressLine: {
     position: 'absolute',
-    left: '40px',
-    right: '40px',
-    top: '50%',
-    height: '3px',
+    left: '28px',
+    right: '28px',
+    top: '20px',
+    height: '2px',
     background: 'rgba(255,255,255,0.1)',
     borderRadius: '2px',
-    transform: 'translateY(-50%)',
+    zIndex: 0,
   },
   progressFill: {
     height: '100%',
     background: 'linear-gradient(90deg, #dc2626, #ef4444)',
     borderRadius: '2px',
-    transition: 'width 0.5s ease',
+    transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
   },
   progressStep: {
     position: 'relative',
@@ -435,28 +438,44 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    flex: '0 0 auto',
   },
   progressCircle: (completed, active) => ({
-    width: '44px',
-    height: '44px',
+    width: '40px',
+    height: '40px',
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '13px',
+    fontSize: '14px',
     fontWeight: 700,
-    transition: 'all 0.3s ease',
-    background: completed ? '#dc2626' : 'rgba(255,255,255,0.05)',
-    border: active && !completed ? '2px solid #dc2626' : completed ? 'none' : '1px solid rgba(255,255,255,0.1)',
-    color: completed || active ? '#fff' : 'rgba(255,255,255,0.4)',
-    boxShadow: completed ? '0 0 20px rgba(220, 38, 38, 0.4)' : 'none',
-    cursor: 'pointer',
+    transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+    background: completed 
+      ? 'linear-gradient(135deg, #dc2626, #b91c1c)' 
+      : active 
+        ? 'rgba(220, 38, 38, 0.2)' 
+        : 'rgba(255,255,255,0.05)',
+    border: active && !completed 
+      ? '2px solid #dc2626' 
+      : completed 
+        ? 'none' 
+        : '2px solid rgba(255,255,255,0.1)',
+    color: completed ? '#fff' : active ? '#dc2626' : 'rgba(255,255,255,0.4)',
+    boxShadow: completed 
+      ? '0 4px 15px rgba(220, 38, 38, 0.4), 0 0 0 4px rgba(220, 38, 38, 0.1)' 
+      : active 
+        ? '0 0 0 4px rgba(220, 38, 38, 0.1)' 
+        : 'none',
+    cursor: 'default',
   }),
-  progressLabel: (completed) => ({
-    marginTop: '8px',
-    fontSize: '11px',
-    fontWeight: 500,
-    color: completed ? '#ef4444' : 'rgba(255,255,255,0.4)',
+  progressLabel: (completed, active) => ({
+    marginTop: '10px',
+    fontSize: '12px',
+    fontWeight: 600,
+    color: completed ? '#dc2626' : active ? '#fff' : 'rgba(255,255,255,0.4)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    transition: 'all 0.3s ease',
   }),
   content: {
     position: 'relative',
