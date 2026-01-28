@@ -1221,7 +1221,14 @@ export default function BookAppointment() {
                   key={location.id}
                   whileHover={{ scale: 1.02, y: -4 }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => setServiceLocation(location)}
+                  onClick={() => {
+                    setServiceLocation(location);
+                    // Reset pickup/delivery when changing location
+                    if (location.id !== 'shop') {
+                      setPickupDelivery(null);
+                      setPickupDistance('under15');
+                    }
+                  }}
                   style={styles.locationCard(serviceLocation?.id === location.id)}
                   data-testid={`location-${location.id}`}
                 >
@@ -1240,6 +1247,107 @@ export default function BookAppointment() {
               );
             })}
           </div>
+
+          {/* Pickup & Delivery Option - Only shows when In Shop is selected */}
+          <AnimatePresence>
+            {serviceLocation?.id === 'shop' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ marginTop: '24px' }}
+              >
+                <div style={styles.pickupDeliveryContainer}>
+                  <div style={styles.pickupDeliveryHeader}>
+                    <CarFront size={20} style={{ color: '#ef4444' }} />
+                    <span style={styles.pickupDeliveryTitle}>Pickup & Delivery Service</span>
+                  </div>
+                  <p style={styles.pickupDeliveryDesc}>
+                    Don't have time to drop off? We'll pick up your vehicle and deliver it back to you!
+                  </p>
+
+                  <div style={styles.pickupOptions}>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setPickupDelivery('no')}
+                      style={styles.pickupOptionCard(pickupDelivery === 'no')}
+                      data-testid="pickup-no"
+                    >
+                      {pickupDelivery === 'no' && (
+                        <CheckCircle2 size={18} style={styles.checkIcon} />
+                      )}
+                      <div style={styles.pickupOptionTitle}>No Thanks</div>
+                      <div style={styles.pickupOptionSubtitle}>I'll drop off myself</div>
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setPickupDelivery('yes')}
+                      style={styles.pickupOptionCard(pickupDelivery === 'yes')}
+                      data-testid="pickup-yes"
+                    >
+                      {pickupDelivery === 'yes' && (
+                        <CheckCircle2 size={18} style={styles.checkIcon} />
+                      )}
+                      <div style={styles.pickupOptionTitle}>Yes, Please!</div>
+                      <div style={styles.pickupOptionSubtitle}>Pick up & deliver my car</div>
+                      <div style={styles.pickupOptionPrice}>Starting at +$50</div>
+                    </motion.button>
+                  </div>
+
+                  {/* Distance Selection - Only shows when pickup is selected */}
+                  <AnimatePresence>
+                    {pickupDelivery === 'yes' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        style={{ marginTop: '16px' }}
+                      >
+                        <div style={styles.distanceNote}>
+                          <Info size={16} style={{ color: '#ef4444', flexShrink: 0 }} />
+                          <span>Select the distance from our Marietta location to your address:</span>
+                        </div>
+                        <div style={styles.distanceOptions}>
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setPickupDistance('under15')}
+                            style={styles.distanceCard(pickupDistance === 'under15')}
+                            data-testid="distance-under15"
+                          >
+                            {pickupDistance === 'under15' && (
+                              <CheckCircle2 size={16} style={{ ...styles.checkIcon, top: '8px', right: '8px' }} />
+                            )}
+                            <div style={styles.distanceLabel}>Under 15 miles</div>
+                            <div style={styles.distancePrice}>+$50</div>
+                          </motion.button>
+
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setPickupDistance('over15')}
+                            style={styles.distanceCard(pickupDistance === 'over15')}
+                            data-testid="distance-over15"
+                          >
+                            {pickupDistance === 'over15' && (
+                              <CheckCircle2 size={16} style={{ ...styles.checkIcon, top: '8px', right: '8px' }} />
+                            )}
+                            <div style={styles.distanceLabel}>Over 15 miles</div>
+                            <div style={styles.distancePrice}>+$75</div>
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </motion.div>
 
         {/* STEP 3 – VEHICLE */}
