@@ -83,7 +83,7 @@ const useStyles = createStyles((theme) => ({
     height: '16px',
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     [theme.fn.smallerThan('md')]: {
-      display: 'none',
+      height: '14px',
     },
   },
   badgeText: {
