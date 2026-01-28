@@ -1824,6 +1824,12 @@ export default function BookAppointment() {
                         {selectedColor.name} ({selectedColor.code})
                       </div>
                     )}
+                    {serviceLocation?.id === 'mobile' && mobileUtilitiesConfirmed && (
+                      <div style={styles.confirmDetail}>
+                        <CheckCircle2 size={16} style={{ color: '#22c55e' }} />
+                        <span style={{ color: '#22c55e' }}>Water & Electric Access Confirmed</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
