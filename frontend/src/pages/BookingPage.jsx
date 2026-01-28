@@ -1043,6 +1043,7 @@ export default function BookAppointment() {
     lastName: '',
     phone: '',
     email: '',
+    address: '',
   });
   const [serviceLocation, setServiceLocation] = useState(null);
   const [pickupDelivery, setPickupDelivery] = useState(null); // null, 'yes', or 'no'
