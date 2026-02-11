@@ -180,7 +180,7 @@ async def create_service(service: ServiceCreate):
         service_dict["vehicle_pricing"] = service_dict["vehicle_pricing"]
     result = await db.services.insert_one(service_dict)
     service_dict["id"] = str(result.inserted_id)
-    del service_dict["_id"] if "_id" in service_dict else None
+    service_dict.pop("_id", None)
     return service_dict
 
 @app.put("/api/services/{service_id}", dependencies=[Depends(verify_token)])
