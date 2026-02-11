@@ -2012,14 +2012,34 @@ export default function BookAppointment() {
                 <div style={styles.confirmRight}>
                   <div style={styles.totalLabel}>Total</div>
                   <div style={styles.totalPrice}>${totalPrice}</div>
+                  {submitError && (
+                    <div style={{ color: '#ef4444', fontSize: '13px', marginBottom: '12px', fontFamily: "'Montserrat', sans-serif" }}>
+                      {submitError}
+                    </div>
+                  )}
                   <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    style={styles.confirmBtn}
+                    whileHover={{ scale: submitting ? 1 : 1.03 }}
+                    whileTap={{ scale: submitting ? 1 : 0.97 }}
+                    onClick={handleSubmitBooking}
+                    disabled={submitting}
+                    style={{
+                      ...styles.confirmBtn,
+                      opacity: submitting ? 0.7 : 1,
+                      cursor: submitting ? 'not-allowed' : 'pointer',
+                    }}
                     data-testid="confirm-appointment-btn"
                   >
-                    Confirm Appointment
-                    <ArrowRight size={20} />
+                    {submitting ? (
+                      <>
+                        <Loader2 size={20} style={{ animation: 'spin 1s linear infinite' }} />
+                        Booking...
+                      </>
+                    ) : (
+                      <>
+                        Confirm Appointment
+                        <ArrowRight size={20} />
+                      </>
+                    )}
                   </motion.button>
                 </div>
               </div>
@@ -2027,6 +2047,12 @@ export default function BookAppointment() {
           )}
         </AnimatePresence>
       </div>
+      <style>{`
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
     </div>
   );
 }
