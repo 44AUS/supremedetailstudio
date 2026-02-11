@@ -1,0 +1,139 @@
+{
+  "identity": {
+    "persona": "E1 - The Performance Pro",
+    "archetype": "Elite Athleticism & Precision",
+    "vibe": "Tactical, High-Contrast, Aggressive, Premium",
+    "principles": [
+      "Fusion over Imitation: Mix automotive precision with SaaS utility.",
+      "Emotion First: Every interaction should feel 'tuned' and responsive.",
+      "Content is King: Data and services are the heroes.",
+      "Contrast: High contrast is non-negotiable. Red on Black."
+    ]
+  },
+  "typography": {
+    "headings": {
+      "family": "Oswald, sans-serif",
+      "weights": ["700"],
+      "usage": "All page titles, section headers, and card titles.",
+      "transform": "uppercase"
+    },
+    "body": {
+      "family": "Montserrat, sans-serif",
+      "weights": ["400", "500", "600"],
+      "usage": "Paragraphs, inputs, labels, data tables."
+    }
+  },
+  "colors": {
+    "palette": {
+      "primary": {
+        "DEFAULT": "#e80200",
+        "hover": "#ff1a1a",
+        "foreground": "#ffffff"
+      },
+      "background": {
+        "DEFAULT": "#000000",
+        "paper": "#0a0a0a",
+        "card": "#111111",
+        "overlay": "rgba(0, 0, 0, 0.8)"
+      },
+      "text": {
+        "primary": "#ffffff",
+        "secondary": "#ababab",
+        "muted": "#525252"
+      },
+      "border": {
+        "DEFAULT": "#262626",
+        "active": "#e80200"
+      },
+      "status": {
+        "success": "#10b981",
+        "warning": "#f59e0b",
+        "error": "#ef4444",
+        "info": "#3b82f6"
+      }
+    },
+    "rules": [
+      "Never use gradients for the background. Stick to pure black #000000.",
+      "Use the primary red (#e80200) sparingly for CTAs, active states, and critical alerts.",
+      "Ensure text contrast is at least 4.5:1. Use #ffffff for main text and #ababab for secondary."
+    ]
+  },
+  "visual_enhancers": {
+    "borders": "1px solid #262626. On hover/active, switch to #e80200.",
+    "shadows": "None or very subtle. Prefer flat, high-contrast layers.",
+    "radius": "rounded-none or rounded-sm (max 4px). Avoid rounded-xl or pill shapes to maintain the 'mechanical' feel.",
+    "textures": "Subtle noise or carbon fiber patterns are acceptable in small doses, but keep it clean."
+  },
+  "layout_strategy": {
+    "admin_dashboard": {
+      "structure": "Sidebar Navigation (Left) + Main Content Area (Right).",
+      "sidebar": "Fixed width (250px), dark gray background (#0a0a0a), red active indicators.",
+      "grid": "Bento Grid for Dashboard Home (Stats, Recent Bookings, Quick Actions).",
+      "spacing": "Dense but legible. p-6 for containers."
+    },
+    "booking_page": {
+      "structure": "Step-by-step Wizard or Single Page Scroll with Sticky Summary.",
+      "container": "Centered, max-width-4xl.",
+      "steps": [
+        "Service Selection (Cards with Images)",
+        "Package/Subcategory (List/Radio)",
+        "Vehicle Size (Toggle/Cards)",
+        "Date & Time (Calendar Grid)",
+        "Customer Info (Form)",
+        "Confirmation (Summary)"
+      ]
+    }
+  },
+  "components": {
+    "Button": {
+      "base": "font-oswald uppercase tracking-wide font-bold transition-all duration-200",
+      "variants": {
+        "default": "bg-[#e80200] text-white hover:bg-[#ff1a1a] rounded-sm",
+        "outline": "border border-[#e80200] text-[#e80200] hover:bg-[#e80200] hover:text-white rounded-sm",
+        "ghost": "text-[#ababab] hover:text-white hover:bg-[#111111]"
+      }
+    },
+    "Card": {
+      "base": "bg-[#111111] border border-[#262626] p-6 rounded-sm hover:border-[#e80200] transition-colors duration-300",
+      "usage": "Service items, dashboard widgets, booking summaries."
+    },
+    "Input": {
+      "base": "bg-[#0a0a0a] border border-[#262626] text-white placeholder-[#525252] focus:border-[#e80200] focus:ring-1 focus:ring-[#e80200] rounded-sm h-12"
+    },
+    "Table": {
+      "base": "w-full text-left border-collapse",
+      "header": "bg-[#111111] text-[#ababab] font-oswald uppercase text-sm tracking-wider p-4",
+      "row": "border-b border-[#262626] hover:bg-[#0a0a0a] transition-colors",
+      "cell": "p-4 text-white font-montserrat"
+    }
+  },
+  "image_urls": {
+    "hero_backgrounds": [
+      "https://images.unsplash.com/photo-1661415335287-ca31b4862fc8?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBjYXIlMjBkZXRhaWxpbmclMjBpbnRlcmlvciUyMGV4dGVyaW9yfGVufDB8fHx8MTc3MDc4NDE4N3ww&ixlib=rb-4.1.0&q=85",
+      "https://images.unsplash.com/photo-1594611373247-32d49b8ec68c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHw0fHxjYXIlMjBleHRlcmlvciUyMGRldGFpbGluZyUyMHBvbGlzaGluZyUyMHdhc2hpbmclMjBmb2FtfGVufDB8fHx8MTc3MDc4NDIwM3ww&ixlib=rb-4.1.0&q=85"
+    ],
+    "service_icons": {
+      "interior": "https://images.unsplash.com/photo-1721191512545-4979bd174014?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1NzR8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBjYXIlMjBkZXRhaWxpbmclMjBpbnRlcmlvciUyMGV4dGVyaW9yfGVufDB8fHx8MTc3MDc4NDE4N3ww&ixlib=rb-4.1.0&q=85",
+      "exterior": "https://images.unsplash.com/photo-1694678505383-676d78ea3b96?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwxfHxjYXIlMjBleHRlcmlvciUyMGRldGFpbGluZyUyMHBvbGlzaGluZyUyMHdhc2hpbmclMjBmb2FtfGVufDB8fHx8MTc3MDc4NDIwM3ww&ixlib=rb-4.1.0&q=85",
+      "polishing": "https://images.unsplash.com/photo-1588581952346-a6799a192088?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNDR8MHwxfHNlYXJjaHwyfHxjYXIlMjBleHRlcmlvciUyMGRldGFpbGluZyUyMHBvbGlzaGluZyUyMHdhc2hpbmclMjBmb2FtfGVufDB8fHx8MTc3MDc4NDIwM3ww&ixlib=rb-4.1.0&q=85"
+    }
+  },
+  "instructions_to_main_agent": [
+    "CRITICAL: Create a 'tailwind.config.js' file in '/app/frontend/' if it doesn't exist. Configure it to scan './src/**/*.{js,jsx,ts,tsx}' and add the custom colors (primary: #e80200, etc.) to the theme extension.",
+    "Install 'lucide-react' for icons if not present.",
+    "Create a new layout for the Admin Dashboard that is distinct from the public site but shares the same typography and color DNA.",
+    "For the Booking Page, ensure it integrates with the existing 'App.js' routes. You might need to replace or update the existing '/book-appointment' route.",
+    "Use 'fetch' or 'axios' to communicate with the FastAPI backend (which you will also build/update).",
+    "Ensure all new components use the 'data-testid' attribute for testing.",
+    "The Admin Dashboard must be protected (simple login).",
+    "Implement the 'Service Management' logic to allow dynamic addition of services which then reflect on the Booking Page."
+  ],
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Do not use gradients for the background. Stick to pure black #000000.",
+    "Use the primary red (#e80200) sparingly for CTAs, active states, and critical alerts.",
+    "Ensure text contrast is at least 4.5:1. Use #ffffff for main text and #ababab for secondary.",
+    "Every interaction needs micro-animations - hover states, transitions.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "All interactive and key informational elements MUST include a 'data-testid' attribute."
+  ]
+}
