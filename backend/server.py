@@ -294,9 +294,14 @@ async def get_availability(date: str, service_id: Optional[str] = None):
     # Get service duration
     duration = 60  # default
     if service_id:
-        service = await db.services.find_one({"_id": ObjectId(service_id)})
-        if service:
-            duration = service.get("duration_minutes", 60)
+        try:
+            # Only try to lookup if it looks like a valid ObjectId
+            if len(service_id) == 24:
+                service = await db.services.find_one({"_id": ObjectId(service_id)})
+                if service:
+                    duration = service.get("duration_minutes", 60)
+        except Exception:
+            pass  # Use default duration if lookup fails
     
     # Generate time slots
     open_time = datetime.strptime(business_hours.get("open_time", "09:00"), "%H:%M")
