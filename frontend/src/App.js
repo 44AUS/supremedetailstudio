@@ -49,6 +49,13 @@ import NotFoundPage from './pages/NotFoundPage';
 import HoursStatusBar from './components/HoursStatusBar';
 import GetQuote from './pages/GetQuotePage';
 import BookAppointment from './pages/BookingPage';
+import BookingConfirmation from './pages/BookingConfirmation';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminLayout from './pages/admin/AdminLayout';
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminServices from './pages/admin/AdminServices';
+import AdminSchedule from './pages/admin/AdminSchedule';
+import AdminBookings from './pages/admin/AdminBookings';
 
 function App() {
 
