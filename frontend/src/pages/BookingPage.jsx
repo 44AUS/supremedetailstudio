@@ -1175,6 +1175,112 @@ export default function BookAppointment() {
   const [loadingMakes, setLoadingMakes] = useState(false);
   const [loadingModels, setLoadingModels] = useState(false);
 
+  // Fetch services from backend
+  useEffect(() => {
+    const fetchServices = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/services?active_only=true`);
+        if (response.ok) {
+          const data = await response.json();
+          setAvailableServices(data);
+        }
+      } catch (err) {
+        console.error('Error fetching services:', err);
+      }
+    };
+    fetchServices();
+  }, []);
+
+  // Fetch available time slots when date changes
+  useEffect(() => {
+    const fetchAvailability = async () => {
+      if (!selectedDate) {
+        setAvailableSlots([]);
+        return;
+      }
+      setLoadingSlots(true);
+      try {
+        const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+        const url = selectedService?.id 
+          ? `${API_URL}/api/availability/${dateStr}?service_id=${selectedService.id}`
+          : `${API_URL}/api/availability/${dateStr}`;
+        const response = await fetch(url);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.available) {
+            setAvailableSlots(data.slots || []);
+          } else {
+            setAvailableSlots([]);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching availability:', err);
+        // Fallback to default slots
+        setAvailableSlots(TIME_SLOTS);
+      } finally {
+        setLoadingSlots(false);
+      }
+    };
+    fetchAvailability();
+  }, [selectedDate, selectedService]);
+
+  // Handle booking submission
+  const handleSubmitBooking = async () => {
+    if (!formData.firstName || !formData.email || !formData.phone || !selectedService || !selectedDate || !selectedTime) {
+      setSubmitError('Please fill in all required fields');
+      return;
+    }
+
+    setSubmitting(true);
+    setSubmitError('');
+
+    try {
+      const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+      
+      const bookingData = {
+        customer_first_name: formData.firstName,
+        customer_last_name: formData.lastName,
+        customer_phone: formData.phone,
+        customer_email: formData.email,
+        customer_address: formData.address,
+        service_location: serviceLocation?.id || 'shop',
+        pickup_delivery: pickupDelivery,
+        pickup_distance: pickupDistance,
+        vehicle_year: vehicle.year,
+        vehicle_make: vehicle.make,
+        vehicle_model: vehicle.model,
+        vehicle_type: vehicleType?.id || 'sedan',
+        vehicle_color: selectedColor?.name || '',
+        service_id: selectedService?.id || '',
+        service_name: selectedService?.name || '',
+        booking_date: dateStr,
+        booking_time: selectedTime,
+        total_price: totalPrice,
+        notes: notes,
+      };
+
+      const response = await fetch(`${API_URL}/api/bookings`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to create booking');
+      }
+
+      const booking = await response.json();
+      navigate(`/booking-confirmation/${booking.id}`);
+    } catch (err) {
+      setSubmitError(err.message || 'Failed to submit booking. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   // Generate years (last 30 years)
   useEffect(() => {
     const currentYear = new Date().getFullYear();
