@@ -1143,6 +1143,7 @@ const styles = {
 /* ---------------- MAIN ---------------- */
 
 export default function BookAppointment() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -1161,6 +1162,11 @@ export default function BookAppointment() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [notes, setNotes] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [availableServices, setAvailableServices] = useState([]);
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
 
   // API data states
   const [years, setYears] = useState([]);
