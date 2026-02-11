@@ -57,7 +57,7 @@ import AdminServices from './pages/admin/AdminServices';
 import AdminSchedule from './pages/admin/AdminSchedule';
 import AdminBookings from './pages/admin/AdminBookings';
 
-function App() {
+function MainApp() {
 
   return (
     <NextUIProvider>
