@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, Phone, Mail, Car, Calendar, Clock, 
@@ -7,6 +8,8 @@ import {
   Building2, Truck, ChevronDown, Palette, Loader2,
   CarFront, Info, Zap
 } from 'lucide-react';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 /* ---------------- DATA ---------------- */
 
