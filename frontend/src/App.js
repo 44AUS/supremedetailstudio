@@ -116,6 +116,7 @@ function App() {
 
             <Route path='/get-quote' element={<GetQuote />} />
             <Route path='/book-appointment' element={<BookAppointment />} />
+            <Route path='/booking-confirmation/:bookingId' element={<BookingConfirmation />} />
             <Route path='/about' element={<AboutPage />} />
             <Route path='/gallery' element={<GalleryPage />} />
             <Route path='/reviews' element={<ReviewsPage />} />
@@ -132,6 +133,37 @@ function App() {
     </ParallaxProvider>
     </main>
     </NextUIProvider>
+  );
+}
+
+// Admin routes rendered outside the main layout
+function AdminRoutes() {
+  return (
+    <Routes>
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin" element={<AdminLayout />}>
+        <Route path="dashboard" element={<AdminDashboard />} />
+        <Route path="services" element={<AdminServices />} />
+        <Route path="schedule" element={<AdminSchedule />} />
+        <Route path="bookings" element={<AdminBookings />} />
+      </Route>
+    </Routes>
+  );
+}
+
+function App() {
+  const isAdminRoute = window.location.pathname.startsWith('/admin');
+
+  if (isAdminRoute) {
+    return (
+      <Router>
+        <AdminRoutes />
+      </Router>
+    );
+  }
+
+  return (
+    <MainApp />
   );
 }
 
