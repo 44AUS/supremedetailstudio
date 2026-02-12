@@ -56,6 +56,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminServices from './pages/admin/AdminServices';
 import AdminSchedule from './pages/admin/AdminSchedule';
 import AdminBookings from './pages/admin/AdminBookings';
+import AdminCustomers from './pages/admin/AdminCustomers';
 
 function MainApp() {
 
