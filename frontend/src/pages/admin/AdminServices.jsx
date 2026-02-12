@@ -172,9 +172,21 @@ export default function AdminServices() {
   useEffect(() => {
     fetchServices();
     fetchCategories();
+    fetchBusinessSettings();
   }, []);
 
   const getToken = () => localStorage.getItem('adminToken');
+
+  const fetchBusinessSettings = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/settings/business`);
+      if (!response.ok) throw new Error('Failed to fetch settings');
+      const data = await response.json();
+      setBusinessSettings(data);
+    } catch (err) {
+      console.error('Failed to load business settings:', err);
+    }
+  };
 
   const fetchCategories = async () => {
     try {
