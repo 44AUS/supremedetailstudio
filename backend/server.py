@@ -626,6 +626,74 @@ async def update_booking_status(booking_id: str, status_update: BookingStatusUpd
     
     return {"message": "Booking status updated successfully"}
 
+@app.put("/api/bookings/{booking_id}", dependencies=[Depends(verify_token)])
+async def update_booking(booking_id: str, booking_update: BookingUpdate):
+    """Update a booking's details"""
+    booking = await db.bookings.find_one({"_id": ObjectId(booking_id)})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    update_data = {k: v for k, v in booking_update.model_dump().items() if v is not None}
+    
+    if not update_data:
+        return {"message": "No changes to update"}
+    
+    # Handle status change for customer total_spent
+    old_status = booking.get("status")
+    new_status = update_data.get("status")
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.bookings.update_one(
+        {"_id": ObjectId(booking_id)},
+        {"$set": update_data}
+    )
+    
+    # Update customer total_spent if status changed to/from complete
+    if new_status and new_status != old_status:
+        customer_id = booking.get("customer_id")
+        total_price = update_data.get("total_price", booking.get("total_price", 0))
+        if customer_id:
+            if new_status == "complete" and old_status != "complete":
+                await db.customers.update_one(
+                    {"_id": ObjectId(customer_id)},
+                    {"$inc": {"total_spent": total_price}}
+                )
+            elif old_status == "complete" and new_status != "complete":
+                await db.customers.update_one(
+                    {"_id": ObjectId(customer_id)},
+                    {"$inc": {"total_spent": -booking.get("total_price", 0)}}
+                )
+    
+    # Return updated booking
+    updated_booking = await db.bookings.find_one({"_id": ObjectId(booking_id)})
+    updated_booking["id"] = str(updated_booking.pop("_id"))
+    return updated_booking
+
+@app.post("/api/bookings/admin", dependencies=[Depends(verify_token)])
+async def create_booking_admin(booking: BookingCreate):
+    """Create a booking from admin dashboard (for phone orders)"""
+    # Find or create customer
+    customer_id = await find_or_create_customer(
+        email=booking.customer_email,
+        phone=booking.customer_phone,
+        first_name=booking.customer_first_name,
+        last_name=booking.customer_last_name,
+        address=booking.customer_address
+    )
+    
+    booking_dict = booking.model_dump()
+    booking_dict["customer_id"] = customer_id
+    booking_dict["status"] = "pending"
+    booking_dict["created_at"] = datetime.now(timezone.utc).isoformat()
+    booking_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    booking_dict["created_by"] = "admin"
+    
+    result = await db.bookings.insert_one(booking_dict)
+    booking_dict["id"] = str(result.inserted_id)
+    booking_dict.pop("_id", None)
+    return booking_dict
+
 @app.delete("/api/bookings/{booking_id}", dependencies=[Depends(verify_token)])
 async def delete_booking(booking_id: str):
     result = await db.bookings.delete_one({"_id": ObjectId(booking_id)})
