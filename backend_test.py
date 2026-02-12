@@ -346,6 +346,203 @@ class SupremeDetailAPITester:
 
         return success
 
+    def test_customers_crud(self):
+        """Test customer management operations"""
+        if not self.token:
+            print("❌ No token available for customer operations")
+            return False
+
+        # Get customers (should work even if empty)
+        success, customers = self.run_test(
+            "Get Customers",
+            "GET",
+            "api/customers",
+            200
+        )
+        
+        if not success:
+            return False
+
+        # Create a test customer
+        test_customer = {
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "john.doe@example.com",
+            "phone": "(555) 123-4567",
+            "address": "123 Main St, Marietta, GA 30060",
+            "notes": "Test customer for API testing",
+            "tags": ["VIP", "Test"]
+        }
+
+        success, created_customer = self.run_test(
+            "Create Customer",
+            "POST",
+            "api/customers",
+            200,
+            data=test_customer
+        )
+        
+        if not success:
+            return False
+
+        customer_id = created_customer.get('id')
+        if not customer_id:
+            print("❌ No customer ID returned from creation")
+            return False
+
+        # Get specific customer
+        success, customer_details = self.run_test(
+            "Get Specific Customer",
+            "GET",
+            f"api/customers/{customer_id}",
+            200
+        )
+
+        if not success:
+            return False
+
+        # Update the customer
+        update_data = {
+            "first_name": "Jane",
+            "notes": "Updated test customer",
+            "tags": ["VIP", "Updated"]
+        }
+
+        success, _ = self.run_test(
+            "Update Customer",
+            "PUT",
+            f"api/customers/{customer_id}",
+            200,
+            data=update_data
+        )
+
+        if not success:
+            return False
+
+        # Test customer search
+        success, search_results = self.run_test(
+            "Search Customers by Email",
+            "GET",
+            "api/customers?search=john.doe@example.com",
+            200
+        )
+
+        if not success:
+            return False
+
+        # Get customer bookings (should be empty for new customer)
+        success, customer_bookings = self.run_test(
+            "Get Customer Bookings",
+            "GET",
+            f"api/customers/{customer_id}/bookings",
+            200
+        )
+
+        if not success:
+            return False
+
+        # Test CSV export
+        success, _ = self.run_test(
+            "Export Customers CSV",
+            "GET",
+            "api/customers/export/csv",
+            200
+        )
+
+        if not success:
+            return False
+
+        # Test CSV import
+        csv_data = "First Name,Last Name,Email,Phone,Address,Notes,Tags\nBob,Smith,bob@example.com,(555) 987-6543,456 Oak St,Imported customer,Regular"
+        
+        success, import_result = self.run_test(
+            "Import Customers CSV",
+            "POST",
+            "api/customers/import",
+            200,
+            data={"csv_data": csv_data}
+        )
+
+        if not success:
+            return False
+
+        # Delete the test customer
+        success, _ = self.run_test(
+            "Delete Customer",
+            "DELETE",
+            f"api/customers/{customer_id}",
+            200
+        )
+
+        return success
+
+    def test_auto_customer_creation(self):
+        """Test auto-customer creation when booking is made"""
+        # Create a booking with new customer info
+        test_booking = {
+            "customer_first_name": "Auto",
+            "customer_last_name": "Created",
+            "customer_phone": "(555) 999-8888",
+            "customer_email": "auto.created@example.com",
+            "customer_address": "789 Auto St, Marietta, GA 30060",
+            "service_location": "shop",
+            "vehicle_year": "2021",
+            "vehicle_make": "Honda",
+            "vehicle_model": "Civic",
+            "vehicle_type": "sedan",
+            "vehicle_color": "Blue",
+            "service_id": "auto-test-service",
+            "service_name": "Auto Test Detail",
+            "booking_date": "2024-12-21",
+            "booking_time": "11:00",
+            "total_price": 200.0,
+            "notes": "Test auto customer creation"
+        }
+
+        # Remove token for public booking creation
+        temp_token = self.token
+        self.token = None
+        
+        success, created_booking = self.run_test(
+            "Create Booking (Auto Customer)",
+            "POST",
+            "api/bookings",
+            200,
+            data=test_booking
+        )
+        
+        # Restore token
+        self.token = temp_token
+        
+        if not success:
+            return False
+
+        customer_id = created_booking.get('customer_id')
+        if not customer_id:
+            print("❌ No customer_id returned from booking creation")
+            return False
+
+        # Verify customer was auto-created
+        success, auto_customer = self.run_test(
+            "Verify Auto-Created Customer",
+            "GET",
+            f"api/customers/{customer_id}",
+            200
+        )
+
+        if not success:
+            return False
+
+        # Verify customer details match booking
+        if (auto_customer.get('first_name') != 'Auto' or 
+            auto_customer.get('last_name') != 'Created' or
+            auto_customer.get('email') != 'auto.created@example.com'):
+            print("❌ Auto-created customer details don't match booking")
+            return False
+
+        print("✅ Auto-customer creation verified")
+        return True
+
 def main():
     print("🚀 Starting Supreme Detail Studio API Tests")
     print("=" * 50)
