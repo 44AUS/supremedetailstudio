@@ -133,17 +133,77 @@ export default function AdminServices() {
 
   const handleAddNew = () => {
     setEditingService(null);
-    setFormData(emptyService);
+    setFormData({...emptyService, category: categories[0]?.name || 'interior'});
     setShowForm(true);
   };
 
-  const categories = [
-    { value: 'interior', label: 'Interior Detail' },
-    { value: 'exterior', label: 'Exterior Detail' },
-    { value: 'full', label: 'Full Detail' },
-    { value: 'protection', label: 'Protection Services' },
-    { value: 'addon', label: 'Add-On Services' },
-  ];
+  // Category CRUD functions
+  const handleAddCategory = () => {
+    setEditingCategory(null);
+    setCategoryFormData({ name: '', label: '', description: '', sort_order: categories.length + 1 });
+    setShowCategoryForm(true);
+  };
+
+  const handleEditCategory = (category) => {
+    setEditingCategory(category);
+    setCategoryFormData({
+      name: category.name,
+      label: category.label,
+      description: category.description || '',
+      sort_order: category.sort_order || 0
+    });
+    setShowCategoryForm(true);
+  };
+
+  const handleSaveCategory = async () => {
+    setSaving(true);
+    setError('');
+    try {
+      const url = editingCategory 
+        ? `${API_URL}/api/categories/${editingCategory.id}`
+        : `${API_URL}/api/categories`;
+      
+      const response = await fetch(url, {
+        method: editingCategory ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify(categoryFormData),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.detail || 'Failed to save category');
+      }
+      
+      await fetchCategories();
+      setShowCategoryForm(false);
+      setEditingCategory(null);
+    } catch (err) {
+      setError(err.message || 'Failed to save category');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteCategory = async (categoryId) => {
+    if (!window.confirm('Are you sure you want to delete this category? Services using it must be moved first.')) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/categories/${categoryId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.detail || 'Failed to delete category');
+      }
+      await fetchCategories();
+    } catch (err) {
+      setError(err.message || 'Failed to delete category');
+    }
+  };
 
   if (loading) {
     return (
