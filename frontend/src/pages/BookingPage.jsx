@@ -1244,7 +1244,12 @@ export default function BookAppointment() {
         if (response.ok) {
           const data = await response.json();
           if (data.available) {
-            setAvailableSlots(data.slots || []);
+            // Format time slots from 24h to 12h AM/PM format
+            const formattedSlots = (data.slots || []).map(slot => ({
+              ...slot,
+              time: formatTime24to12(slot.time)
+            }));
+            setAvailableSlots(formattedSlots);
           } else {
             setAvailableSlots([]);
           }
@@ -1259,6 +1264,14 @@ export default function BookAppointment() {
     };
     fetchAvailability();
   }, [selectedDate, selectedService]);
+
+  // Convert 24h time format to 12h AM/PM
+  const formatTime24to12 = (time24) => {
+    const [hours, minutes] = time24.split(':').map(Number);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = hours % 12 || 12;
+    return `${hours12}:${String(minutes).padStart(2, '0')} ${ampm}`;
+  };
 
   // Handle booking submission
   const handleSubmitBooking = async () => {
