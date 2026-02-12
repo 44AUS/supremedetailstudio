@@ -1181,15 +1181,15 @@ export default function BookAppointment() {
   const [loadingModels, setLoadingModels] = useState(false);
 
   // Convert 24h time format to 12h AM/PM
-  const formatTime24to12 = (time24) => {
+  const formatTime24to12 = useCallback((time24) => {
     const [hours, minutes] = time24.split(':').map(Number);
     const ampm = hours >= 12 ? 'PM' : 'AM';
     const hours12 = hours % 12 || 12;
     return `${hours12}:${String(minutes).padStart(2, '0')} ${ampm}`;
-  };
+  }, []);
 
   // Convert 12h AM/PM to 24h format for API
-  const formatTime12to24 = (time12) => {
+  const formatTime12to24 = useCallback((time12) => {
     if (!time12) return '';
     const match = time12.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
     if (!match) return time12; // Return as-is if not in expected format
@@ -1199,7 +1199,7 @@ export default function BookAppointment() {
     if (period === 'PM' && hours !== 12) hours += 12;
     if (period === 'AM' && hours === 12) hours = 0;
     return `${String(hours).padStart(2, '0')}:${minutes}`;
-  };
+  }, []);
 
   // Fetch business settings and services from backend
   useEffect(() => {
