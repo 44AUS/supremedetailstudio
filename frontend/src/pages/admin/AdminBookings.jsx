@@ -270,6 +270,10 @@ export default function AdminBookings() {
           <h1 style={styles.title}>BOOKINGS</h1>
           <p style={styles.subtitle}>{bookings.length} total bookings</p>
         </div>
+        <button onClick={openCreateBooking} style={styles.addBtn} data-testid="add-booking-btn">
+          <Plus size={18} />
+          Add Booking
+        </button>
       </div>
 
       {/* Filters */}
