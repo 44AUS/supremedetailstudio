@@ -324,15 +324,17 @@ const OTHER_SERVICES = [
   },
 ];
 
+// Default time slots - all available, will be updated by API
 const TIME_SLOTS = [
   { time: '9:00 AM', available: true },
   { time: '10:00 AM', available: true },
-  { time: '11:00 AM', available: false },
+  { time: '11:00 AM', available: true },
   { time: '12:00 PM', available: true },
   { time: '1:00 PM', available: true },
   { time: '2:00 PM', available: true },
-  { time: '3:00 PM', available: false },
+  { time: '3:00 PM', available: true },
   { time: '4:00 PM', available: true },
+  { time: '5:00 PM', available: true },
 ];
 
 /* ---------------- STYLES ---------------- */
