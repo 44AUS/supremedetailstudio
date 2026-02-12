@@ -448,26 +448,115 @@ export default function AdminServices() {
 
       {/* Categories Section */}
       <div style={styles.categoriesSection}>
-        <h3 style={styles.sectionTitle}>CATEGORIES</h3>
-        <div style={styles.categoriesGrid}>
-          {categories.map((cat) => (
-            <div key={cat.id} style={styles.categoryCard}>
-              <div style={styles.categoryInfo}>
-                <span style={styles.categoryLabel}>{cat.label}</span>
-                <span style={styles.categoryName}>{cat.name}</span>
+        <h3 style={styles.sectionTitle}>CATEGORIES <span style={styles.dragHint}>(drag to reorder)</span></h3>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext items={categories.map(c => c.id)} strategy={horizontalListSortingStrategy}>
+            <div style={styles.categoriesGrid}>
+              {categories.map((cat) => (
+                <SortableCategoryCard
+                  key={cat.id}
+                  category={cat}
+                  onEdit={handleEditCategory}
+                  onDelete={handleDeleteCategory}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      </div>
+
+      {/* Business Settings Modal */}
+      {showSettingsForm && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalSmall} data-testid="business-settings-modal">
+            <div style={styles.modalHeader}>
+              <h2 style={styles.modalTitle}>BUSINESS SETTINGS</h2>
+              <button onClick={() => setShowSettingsForm(false)} style={styles.closeBtn}>
+                <X size={24} />
+              </button>
+            </div>
+            <div style={styles.modalBody}>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Shop Name</label>
+                <input
+                  type="text"
+                  value={businessSettings.shop_name}
+                  onChange={(e) => setBusinessSettings({ ...businessSettings, shop_name: e.target.value })}
+                  style={styles.input}
+                  placeholder="e.g., Supreme Detail Studio"
+                  data-testid="shop-name-input"
+                />
               </div>
-              <div style={styles.categoryActions}>
-                <button onClick={() => handleEditCategory(cat)} style={styles.iconBtn} data-testid={`edit-category-${cat.id}`}>
-                  <Edit2 size={14} />
-                </button>
-                <button onClick={() => handleDeleteCategory(cat.id)} style={styles.iconBtnDanger} data-testid={`delete-category-${cat.id}`}>
-                  <Trash2 size={14} />
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Shop Address</label>
+                <input
+                  type="text"
+                  value={businessSettings.shop_address}
+                  onChange={(e) => setBusinessSettings({ ...businessSettings, shop_address: e.target.value })}
+                  style={styles.input}
+                  placeholder="e.g., 123 Main St, Marietta, GA 30060"
+                  data-testid="shop-address-input"
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Shop Phone</label>
+                <input
+                  type="tel"
+                  value={businessSettings.shop_phone}
+                  onChange={(e) => setBusinessSettings({ ...businessSettings, shop_phone: e.target.value })}
+                  style={styles.input}
+                  placeholder="e.g., (502) 417-0690"
+                  data-testid="shop-phone-input"
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Shop Email</label>
+                <input
+                  type="email"
+                  value={businessSettings.shop_email}
+                  onChange={(e) => setBusinessSettings({ ...businessSettings, shop_email: e.target.value })}
+                  style={styles.input}
+                  placeholder="e.g., info@supremedetailstudio.com"
+                  data-testid="shop-email-input"
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Mobile Service Upcharge ($)</label>
+                <input
+                  type="number"
+                  value={businessSettings.mobile_service_upcharge}
+                  onChange={(e) => setBusinessSettings({ ...businessSettings, mobile_service_upcharge: parseFloat(e.target.value) || 0 })}
+                  style={styles.input}
+                  min="0"
+                  data-testid="mobile-upcharge-input"
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Mobile Service Description</label>
+                <input
+                  type="text"
+                  value={businessSettings.mobile_service_description}
+                  onChange={(e) => setBusinessSettings({ ...businessSettings, mobile_service_description: e.target.value })}
+                  style={styles.input}
+                  placeholder="e.g., We come to you"
+                  data-testid="mobile-description-input"
+                />
+              </div>
+              <div style={styles.modalFooter}>
+                <button onClick={() => setShowSettingsForm(false)} style={styles.cancelBtn}>Cancel</button>
+                <button onClick={handleSaveBusinessSettings} disabled={saving} style={styles.saveBtn} data-testid="save-settings-btn">
+                  {saving ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={16} />}
+                  Save Settings
                 </button>
               </div>
             </div>
-          ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Category Form Modal */}
       {showCategoryForm && (
