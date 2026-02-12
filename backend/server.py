@@ -396,7 +396,17 @@ async def create_booking(booking: BookingCreate):
     except Exception:
         pass  # Allow booking if availability check fails
     
+    # Find or create customer
+    customer_id = await find_or_create_customer(
+        email=booking.customer_email,
+        phone=booking.customer_phone,
+        first_name=booking.customer_first_name,
+        last_name=booking.customer_last_name,
+        address=booking.customer_address
+    )
+    
     booking_dict = booking.model_dump()
+    booking_dict["customer_id"] = customer_id
     booking_dict["status"] = "pending"
     booking_dict["created_at"] = datetime.now(timezone.utc).isoformat()
     booking_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
