@@ -2014,7 +2014,7 @@ export default function BookAppointment() {
                     </div>
                     <div style={styles.confirmDetail}>
                       <Calendar size={16} style={styles.confirmIcon} />
-                      Day {selectedDate} at {selectedTime}
+                      {selectedDate?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} at {selectedTime}
                     </div>
                     {vehicleType && (
                       <div style={styles.confirmDetail}>
