@@ -78,8 +78,14 @@ Build an admin dashboard with booking appointment page logic that allows:
 - Password: supremeadmin123
 
 ## Testing Status
-- Backend: 100% functional
-- Frontend: 100% functional
+- Backend: 93.8% functional
+- Frontend: 85% functional
+
+## Recent Bug Fixes (Feb 12, 2026)
+- **Calendar Date Selection**: Fixed calendar to use proper Date objects instead of day numbers, enabling correct date formatting for API calls
+- **Month Navigation**: Added prev/next month buttons to calendar
+- **Time Slot Availability**: Time slots now correctly show booked times as unavailable
+- **Time Format**: Added 24h to 12h AM/PM conversion for user-friendly display
 
 ## Next Action Items
 
