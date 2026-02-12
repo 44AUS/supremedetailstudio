@@ -422,6 +422,13 @@ async def update_booking_status(booking_id: str, status_update: BookingStatusUpd
     if status_update.status not in valid_statuses:
         raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
     
+    # Get booking to update customer total_spent if complete
+    booking = await db.bookings.find_one({"_id": ObjectId(booking_id)})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    old_status = booking.get("status")
+    
     result = await db.bookings.update_one(
         {"_id": ObjectId(booking_id)},
         {"$set": {
@@ -429,8 +436,26 @@ async def update_booking_status(booking_id: str, status_update: BookingStatusUpd
             "updated_at": datetime.now(timezone.utc).isoformat()
         }}
     )
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Booking not found")
+    
+    # Update customer total_spent when marked complete (and wasn't already complete)
+    if status_update.status == "complete" and old_status != "complete":
+        customer_id = booking.get("customer_id")
+        total_price = booking.get("total_price", 0)
+        if customer_id:
+            await db.customers.update_one(
+                {"_id": ObjectId(customer_id)},
+                {"$inc": {"total_spent": total_price}}
+            )
+    # Reverse if was complete and now isn't
+    elif old_status == "complete" and status_update.status != "complete":
+        customer_id = booking.get("customer_id")
+        total_price = booking.get("total_price", 0)
+        if customer_id:
+            await db.customers.update_one(
+                {"_id": ObjectId(customer_id)},
+                {"$inc": {"total_spent": -total_price}}
+            )
+    
     return {"message": "Booking status updated successfully"}
 
 @app.delete("/api/bookings/{booking_id}", dependencies=[Depends(verify_token)])
