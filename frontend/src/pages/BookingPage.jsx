@@ -1168,6 +1168,8 @@ export default function BookAppointment() {
   const [availableServices, setAvailableServices] = useState([]);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [serviceLocations, setServiceLocations] = useState(DEFAULT_SERVICE_LOCATIONS);
+  const [businessSettings, setBusinessSettings] = useState(null);
 
   // API data states
   const [years, setYears] = useState([]);
@@ -1175,6 +1177,39 @@ export default function BookAppointment() {
   const [models, setModels] = useState([]);
   const [loadingMakes, setLoadingMakes] = useState(false);
   const [loadingModels, setLoadingModels] = useState(false);
+
+  // Fetch business settings and services from backend
+  useEffect(() => {
+    const fetchBusinessSettings = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/settings/business`);
+        if (response.ok) {
+          const data = await response.json();
+          setBusinessSettings(data);
+          // Update service locations with business settings
+          setServiceLocations([
+            { 
+              id: 'shop', 
+              label: 'In Shop', 
+              description: `Drop off at ${data.shop_address || 'our shop location'}`,
+              icon: Building2,
+              upcharge: 0
+            },
+            { 
+              id: 'mobile', 
+              label: 'Mobile Service', 
+              description: data.mobile_service_description || 'We come to you',
+              icon: Truck,
+              upcharge: data.mobile_service_upcharge || 50
+            },
+          ]);
+        }
+      } catch (err) {
+        console.error('Error fetching business settings:', err);
+      }
+    };
+    fetchBusinessSettings();
+  }, []);
 
   // Fetch services from backend
   useEffect(() => {
