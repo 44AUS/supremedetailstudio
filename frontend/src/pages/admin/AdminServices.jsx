@@ -1,10 +1,130 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit2, Trash2, Save, X, Loader2, 
-  AlertCircle, Package, Building2, Truck, Clock, DollarSign, Tag
+  AlertCircle, Package, Building2, Truck, Clock, DollarSign, Tag, GripVertical, Settings
 } from 'lucide-react';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
+
+// Sortable Category Card Component
+function SortableCategoryCard({ category, onEdit, onDelete }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={{...categoryCardStyle, ...style}} data-testid={`category-card-${category.id}`}>
+      <div {...attributes} {...listeners} style={dragHandleStyle}>
+        <GripVertical size={16} />
+      </div>
+      <div style={categoryInfoStyle}>
+        <span style={categoryLabelStyle}>{category.label}</span>
+        <span style={categoryNameStyle}>{category.name}</span>
+      </div>
+      <div style={categoryActionsStyle}>
+        <button onClick={() => onEdit(category)} style={iconBtnStyle} data-testid={`edit-category-${category.id}`}>
+          <Edit2 size={14} />
+        </button>
+        <button onClick={() => onDelete(category.id)} style={iconBtnDangerStyle} data-testid={`delete-category-${category.id}`}>
+          <Trash2 size={14} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+const categoryCardStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '12px',
+  padding: '12px 16px',
+  background: '#0a0a0a',
+  border: '1px solid #262626',
+  minWidth: '200px',
+};
+
+const dragHandleStyle = {
+  cursor: 'grab',
+  color: '#525252',
+  display: 'flex',
+  alignItems: 'center',
+};
+
+const categoryInfoStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '2px',
+  flex: 1,
+};
+
+const categoryLabelStyle = {
+  fontFamily: "'Oswald', sans-serif",
+  fontSize: '14px',
+  fontWeight: 600,
+  color: '#fff',
+};
+
+const categoryNameStyle = {
+  fontFamily: "'Montserrat', sans-serif",
+  fontSize: '11px',
+  color: '#ababab',
+};
+
+const categoryActionsStyle = {
+  display: 'flex',
+  gap: '6px',
+};
+
+const iconBtnStyle = {
+  width: '28px',
+  height: '28px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: 'rgba(255, 255, 255, 0.05)',
+  border: '1px solid #262626',
+  color: '#ababab',
+  cursor: 'pointer',
+};
+
+const iconBtnDangerStyle = {
+  width: '28px',
+  height: '28px',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  background: 'rgba(239, 68, 68, 0.1)',
+  border: '1px solid rgba(239, 68, 68, 0.3)',
+  color: '#ef4444',
+  cursor: 'pointer',
+};
 
 export default function AdminServices() {
   const [services, setServices] = useState([]);
@@ -14,9 +134,25 @@ export default function AdminServices() {
   const [editingService, setEditingService] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [showSettingsForm, setShowSettingsForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [saving, setSaving] = useState(false);
   const [categoryFormData, setCategoryFormData] = useState({ name: '', label: '', description: '', sort_order: 0 });
+  const [businessSettings, setBusinessSettings] = useState({
+    shop_name: '',
+    shop_address: '',
+    shop_phone: '',
+    shop_email: '',
+    mobile_service_upcharge: 50,
+    mobile_service_description: 'We come to you'
+  });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
   
   const emptyService = {
     name: '',
