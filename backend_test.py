@@ -641,7 +641,7 @@ class SupremeDetailAPITester:
             "service_id": "auto-test-service",
             "service_name": "Auto Test Detail",
             "booking_date": "2024-12-21",
-            "booking_time": "11:00",
+            "booking_time": "12:00",  # Use 12:00 which should be available
             "total_price": 200.0,
             "notes": "Test auto customer creation"
         }
