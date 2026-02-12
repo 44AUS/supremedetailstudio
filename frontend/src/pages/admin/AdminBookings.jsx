@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { 
   Search, Filter, Eye, CheckCircle, Clock, AlertCircle, 
   XCircle, Loader2, ChevronDown, Calendar, User, Car,
-  MapPin, Phone, Mail
+  MapPin, Phone, Mail, Plus, Edit2, Save, X, Trash2
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -15,21 +15,67 @@ const STATUS_CONFIG = {
   cancelled: { label: 'Cancelled', color: '#6b7280', bg: 'rgba(107, 114, 128, 0.1)' },
 };
 
+const VEHICLE_TYPES = [
+  { id: 'sedan', label: 'Sedan / Coupe' },
+  { id: 'suv-2row', label: '2-Row SUV / Crossover' },
+  { id: 'suv-3row', label: '3-Row SUV / Large Truck' },
+];
+
+const emptyBookingForm = {
+  customer_first_name: '',
+  customer_last_name: '',
+  customer_phone: '',
+  customer_email: '',
+  customer_address: '',
+  service_location: 'shop',
+  vehicle_year: '',
+  vehicle_make: '',
+  vehicle_model: '',
+  vehicle_type: 'sedan',
+  vehicle_color: '',
+  service_id: '',
+  service_name: '',
+  booking_date: '',
+  booking_time: '',
+  total_price: 0,
+  notes: '',
+  status: 'pending',
+};
+
 export default function AdminBookings() {
   const [bookings, setBookings] = useState([]);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('');
   const [dateFilter, setDateFilter] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingBooking, setEditingBooking] = useState(null);
+  const [bookingForm, setBookingForm] = useState(emptyBookingForm);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     fetchBookings();
+    fetchServices();
   }, [statusFilter, dateFilter]);
 
   const getToken = () => localStorage.getItem('adminToken');
+
+  const fetchServices = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/services`);
+      if (response.ok) {
+        const data = await response.json();
+        setServices(data);
+      }
+    } catch (err) {
+      console.error('Error fetching services:', err);
+    }
+  };
 
   const fetchBookings = async () => {
     setLoading(true);
