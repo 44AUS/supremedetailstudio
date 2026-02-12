@@ -598,7 +598,8 @@ class SupremeDetailAPITester:
             400  # Should return 400 error
         )
 
-        if not success:
+        # For this test, success means we got the expected 400 status
+        if success:
             print("✅ Category deletion correctly prevented when services use it")
         else:
             print("❌ Category deletion should have failed when services use it")
