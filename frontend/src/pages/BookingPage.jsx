@@ -1303,7 +1303,7 @@ export default function BookAppointment() {
         service_id: selectedService?.id || '',
         service_name: selectedService?.name || '',
         booking_date: dateStr,
-        booking_time: selectedTime,
+        booking_time: formatTime12to24(selectedTime),
         total_price: totalPrice,
         notes: notes,
       };
