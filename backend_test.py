@@ -476,6 +476,153 @@ class SupremeDetailAPITester:
 
         return success
 
+    def test_categories_crud(self):
+        """Test category management operations"""
+        if not self.token:
+            print("❌ No token available for category operations")
+            return False
+
+        # Get categories (should return default categories if none exist)
+        success, categories = self.run_test(
+            "Get Categories",
+            "GET",
+            "api/categories",
+            200
+        )
+        
+        if not success:
+            return False
+
+        print(f"   Found {len(categories)} existing categories")
+
+        # Create a test category
+        test_category = {
+            "name": "test_category",
+            "label": "Test Category",
+            "description": "Test category for API testing",
+            "sort_order": 99
+        }
+
+        success, created_category = self.run_test(
+            "Create Category",
+            "POST",
+            "api/categories",
+            200,
+            data=test_category
+        )
+        
+        if not success:
+            return False
+
+        category_id = created_category.get('id')
+        if not category_id:
+            print("❌ No category ID returned from creation")
+            return False
+
+        # Update the category
+        update_data = {
+            "label": "Updated Test Category",
+            "description": "Updated test category description",
+            "sort_order": 100
+        }
+
+        success, _ = self.run_test(
+            "Update Category",
+            "PUT",
+            f"api/categories/{category_id}",
+            200,
+            data=update_data
+        )
+
+        if not success:
+            return False
+
+        # Get categories again to verify update
+        success, updated_categories = self.run_test(
+            "Get Categories After Update",
+            "GET",
+            "api/categories",
+            200
+        )
+
+        if not success:
+            return False
+
+        # Find our updated category
+        updated_category = None
+        for cat in updated_categories:
+            if cat.get('id') == category_id:
+                updated_category = cat
+                break
+
+        if not updated_category:
+            print("❌ Updated category not found in categories list")
+            return False
+
+        if updated_category.get('label') != 'Updated Test Category':
+            print("❌ Category update not reflected")
+            return False
+
+        # Test creating a service with the new category
+        test_service = {
+            "name": "Test Service with Custom Category",
+            "category": "test_category",
+            "description": "Service using custom category",
+            "base_price": 100.0,
+            "duration_minutes": 60,
+            "is_active": True,
+            "shop_available": True,
+            "mobile_available": True
+        }
+
+        success, created_service = self.run_test(
+            "Create Service with Custom Category",
+            "POST",
+            "api/services",
+            200,
+            data=test_service
+        )
+        
+        if not success:
+            return False
+
+        service_id = created_service.get('id')
+
+        # Try to delete category while service uses it (should fail)
+        success, _ = self.run_test(
+            "Delete Category with Services (Should Fail)",
+            "DELETE",
+            f"api/categories/{category_id}",
+            400  # Should return 400 error
+        )
+
+        if success:
+            print("❌ Category deletion should have failed when services use it")
+            return False
+        else:
+            print("✅ Category deletion correctly prevented when services use it")
+
+        # Delete the service first
+        if service_id:
+            success, _ = self.run_test(
+                "Delete Service Using Custom Category",
+                "DELETE",
+                f"api/services/{service_id}",
+                200
+            )
+            if not success:
+                return False
+
+        # Now delete the category (should succeed)
+        success, _ = self.run_test(
+            "Delete Category After Removing Services",
+            "DELETE",
+            f"api/categories/{category_id}",
+            200
+        )
+
+        return success
+
     def test_auto_customer_creation(self):
         """Test auto-customer creation when booking is made"""
         # Create a booking with new customer info
