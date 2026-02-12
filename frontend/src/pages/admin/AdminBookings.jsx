@@ -504,6 +504,272 @@ export default function AdminBookings() {
                   <p style={styles.notesText}>{selectedBooking.notes}</p>
                 </div>
               )}
+
+              {/* Action Buttons */}
+              <div style={styles.modalActions}>
+                <button onClick={() => openEditBooking(selectedBooking)} style={styles.editBtn} data-testid="edit-booking-btn">
+                  <Edit2 size={16} /> Edit Booking
+                </button>
+                <button onClick={() => deleteBooking(selectedBooking.id)} style={styles.deleteBtn} data-testid="delete-booking-btn">
+                  <Trash2 size={16} /> Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create/Edit Booking Modal */}
+      {showEditModal && (
+        <div style={styles.modalOverlay} onClick={() => setShowEditModal(false)}>
+          <div style={styles.editModal} onClick={(e) => e.stopPropagation()} data-testid="booking-form-modal">
+            <div style={styles.modalHeader}>
+              <h2 style={styles.modalTitle}>
+                {editingBooking ? 'EDIT BOOKING' : 'ADD NEW BOOKING'}
+              </h2>
+              <button onClick={() => setShowEditModal(false)} style={styles.closeBtn}>
+                <X size={24} />
+              </button>
+            </div>
+            
+            <div style={styles.modalContent}>
+              {error && (
+                <div style={styles.errorBox}>
+                  <AlertCircle size={16} />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {/* Customer Info */}
+              <div style={styles.formSection}>
+                <h3 style={styles.formSectionTitle}>Customer Information</h3>
+                <div style={styles.formGrid}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>First Name *</label>
+                    <input
+                      type="text"
+                      value={bookingForm.customer_first_name}
+                      onChange={(e) => setBookingForm({...bookingForm, customer_first_name: e.target.value})}
+                      style={styles.formInput}
+                      data-testid="booking-first-name"
+                    />
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Last Name *</label>
+                    <input
+                      type="text"
+                      value={bookingForm.customer_last_name}
+                      onChange={(e) => setBookingForm({...bookingForm, customer_last_name: e.target.value})}
+                      style={styles.formInput}
+                      data-testid="booking-last-name"
+                    />
+                  </div>
+                </div>
+                <div style={styles.formGrid}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Phone *</label>
+                    <input
+                      type="tel"
+                      value={bookingForm.customer_phone}
+                      onChange={(e) => setBookingForm({...bookingForm, customer_phone: e.target.value})}
+                      style={styles.formInput}
+                      data-testid="booking-phone"
+                    />
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Email *</label>
+                    <input
+                      type="email"
+                      value={bookingForm.customer_email}
+                      onChange={(e) => setBookingForm({...bookingForm, customer_email: e.target.value})}
+                      style={styles.formInput}
+                      data-testid="booking-email"
+                    />
+                  </div>
+                </div>
+                <div style={styles.formGroup}>
+                  <label style={styles.formLabel}>Address</label>
+                  <input
+                    type="text"
+                    value={bookingForm.customer_address}
+                    onChange={(e) => setBookingForm({...bookingForm, customer_address: e.target.value})}
+                    style={styles.formInput}
+                    data-testid="booking-address"
+                  />
+                </div>
+              </div>
+
+              {/* Vehicle Info */}
+              <div style={styles.formSection}>
+                <h3 style={styles.formSectionTitle}>Vehicle Information</h3>
+                <div style={styles.formGrid}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Year</label>
+                    <input
+                      type="text"
+                      value={bookingForm.vehicle_year}
+                      onChange={(e) => setBookingForm({...bookingForm, vehicle_year: e.target.value})}
+                      style={styles.formInput}
+                      placeholder="2024"
+                      data-testid="booking-vehicle-year"
+                    />
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Make</label>
+                    <input
+                      type="text"
+                      value={bookingForm.vehicle_make}
+                      onChange={(e) => setBookingForm({...bookingForm, vehicle_make: e.target.value})}
+                      style={styles.formInput}
+                      placeholder="Toyota"
+                      data-testid="booking-vehicle-make"
+                    />
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Model</label>
+                    <input
+                      type="text"
+                      value={bookingForm.vehicle_model}
+                      onChange={(e) => setBookingForm({...bookingForm, vehicle_model: e.target.value})}
+                      style={styles.formInput}
+                      placeholder="Camry"
+                      data-testid="booking-vehicle-model"
+                    />
+                  </div>
+                </div>
+                <div style={styles.formGrid}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Vehicle Type</label>
+                    <select
+                      value={bookingForm.vehicle_type}
+                      onChange={(e) => setBookingForm({...bookingForm, vehicle_type: e.target.value})}
+                      style={styles.formSelect}
+                      data-testid="booking-vehicle-type"
+                    >
+                      {VEHICLE_TYPES.map(vt => (
+                        <option key={vt.id} value={vt.id}>{vt.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Color</label>
+                    <input
+                      type="text"
+                      value={bookingForm.vehicle_color}
+                      onChange={(e) => setBookingForm({...bookingForm, vehicle_color: e.target.value})}
+                      style={styles.formInput}
+                      placeholder="Black"
+                      data-testid="booking-vehicle-color"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Service & Appointment */}
+              <div style={styles.formSection}>
+                <h3 style={styles.formSectionTitle}>Service & Appointment</h3>
+                <div style={styles.formGrid}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Service *</label>
+                    <select
+                      value={bookingForm.service_id}
+                      onChange={(e) => handleServiceChange(e.target.value)}
+                      style={styles.formSelect}
+                      data-testid="booking-service"
+                    >
+                      <option value="">Select a service...</option>
+                      {services.map(s => (
+                        <option key={s.id} value={s.id}>{s.name} - ${s.base_price}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Location</label>
+                    <select
+                      value={bookingForm.service_location}
+                      onChange={(e) => setBookingForm({...bookingForm, service_location: e.target.value})}
+                      style={styles.formSelect}
+                      data-testid="booking-location"
+                    >
+                      <option value="shop">In Shop</option>
+                      <option value="mobile">Mobile Service</option>
+                    </select>
+                  </div>
+                </div>
+                <div style={styles.formGrid}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Date *</label>
+                    <input
+                      type="date"
+                      value={bookingForm.booking_date}
+                      onChange={(e) => setBookingForm({...bookingForm, booking_date: e.target.value})}
+                      style={styles.formInput}
+                      data-testid="booking-date"
+                    />
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Time *</label>
+                    <input
+                      type="time"
+                      value={bookingForm.booking_time}
+                      onChange={(e) => setBookingForm({...bookingForm, booking_time: e.target.value})}
+                      style={styles.formInput}
+                      data-testid="booking-time"
+                    />
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Price ($)</label>
+                    <input
+                      type="number"
+                      value={bookingForm.total_price}
+                      onChange={(e) => setBookingForm({...bookingForm, total_price: parseFloat(e.target.value) || 0})}
+                      style={styles.formInput}
+                      min="0"
+                      step="0.01"
+                      data-testid="booking-price"
+                    />
+                  </div>
+                </div>
+                {editingBooking && (
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Status</label>
+                    <select
+                      value={bookingForm.status}
+                      onChange={(e) => setBookingForm({...bookingForm, status: e.target.value})}
+                      style={styles.formSelect}
+                      data-testid="booking-status"
+                    >
+                      {Object.entries(STATUS_CONFIG).map(([key, config]) => (
+                        <option key={key} value={key}>{config.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {/* Notes */}
+              <div style={styles.formGroup}>
+                <label style={styles.formLabel}>Notes</label>
+                <textarea
+                  value={bookingForm.notes}
+                  onChange={(e) => setBookingForm({...bookingForm, notes: e.target.value})}
+                  style={styles.formTextarea}
+                  rows={3}
+                  placeholder="Any special requests or notes..."
+                  data-testid="booking-notes"
+                />
+              </div>
+
+              {/* Form Actions */}
+              <div style={styles.formActions}>
+                <button onClick={() => setShowEditModal(false)} style={styles.cancelBtn}>
+                  Cancel
+                </button>
+                <button onClick={saveBooking} disabled={saving} style={styles.saveBtn} data-testid="save-booking-btn">
+                  {saving ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={16} />}
+                  {editingBooking ? 'Update Booking' : 'Create Booking'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
