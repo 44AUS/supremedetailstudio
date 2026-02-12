@@ -221,16 +221,117 @@ export default function AdminServices() {
           <h1 style={styles.title}>SERVICES</h1>
           <p style={styles.subtitle}>Manage your service offerings and pricing</p>
         </div>
-        <button onClick={handleAddNew} style={styles.addBtn} data-testid="add-service-btn">
-          <Plus size={20} />
-          Add Service
-        </button>
+        <div style={styles.headerButtons}>
+          <button onClick={handleAddCategory} style={styles.secondaryBtn} data-testid="manage-categories-btn">
+            <Tag size={18} />
+            Add Category
+          </button>
+          <button onClick={handleAddNew} style={styles.addBtn} data-testid="add-service-btn">
+            <Plus size={20} />
+            Add Service
+          </button>
+        </div>
       </div>
 
       {error && (
         <div style={styles.errorBox}>
           <AlertCircle size={18} />
           <span>{error}</span>
+          <button onClick={() => setError('')} style={styles.errorClose}><X size={16} /></button>
+        </div>
+      )}
+
+      {/* Categories Section */}
+      <div style={styles.categoriesSection}>
+        <h3 style={styles.sectionTitle}>CATEGORIES</h3>
+        <div style={styles.categoriesGrid}>
+          {categories.map((cat) => (
+            <div key={cat.id} style={styles.categoryCard}>
+              <div style={styles.categoryInfo}>
+                <span style={styles.categoryLabel}>{cat.label}</span>
+                <span style={styles.categoryName}>{cat.name}</span>
+              </div>
+              <div style={styles.categoryActions}>
+                <button onClick={() => handleEditCategory(cat)} style={styles.iconBtn} data-testid={`edit-category-${cat.id}`}>
+                  <Edit2 size={14} />
+                </button>
+                <button onClick={() => handleDeleteCategory(cat.id)} style={styles.iconBtnDanger} data-testid={`delete-category-${cat.id}`}>
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Category Form Modal */}
+      {showCategoryForm && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalSmall} data-testid="category-form-modal">
+            <div style={styles.modalHeader}>
+              <h2 style={styles.modalTitle}>
+                {editingCategory ? 'EDIT CATEGORY' : 'ADD NEW CATEGORY'}
+              </h2>
+              <button onClick={() => setShowCategoryForm(false)} style={styles.closeBtn}>
+                <X size={24} />
+              </button>
+            </div>
+            <div style={styles.modalBody}>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Category Name (internal) *</label>
+                <input
+                  type="text"
+                  value={categoryFormData.name}
+                  onChange={(e) => setCategoryFormData({ ...categoryFormData, name: e.target.value })}
+                  style={styles.input}
+                  placeholder="e.g., ceramic_coating"
+                  data-testid="category-name-input"
+                  disabled={!!editingCategory}
+                />
+                <span style={styles.helpText}>Lowercase, no spaces (used internally)</span>
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Display Label *</label>
+                <input
+                  type="text"
+                  value={categoryFormData.label}
+                  onChange={(e) => setCategoryFormData({ ...categoryFormData, label: e.target.value })}
+                  style={styles.input}
+                  placeholder="e.g., Ceramic Coating"
+                  data-testid="category-label-input"
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Description</label>
+                <textarea
+                  value={categoryFormData.description}
+                  onChange={(e) => setCategoryFormData({ ...categoryFormData, description: e.target.value })}
+                  style={styles.textarea}
+                  placeholder="Category description..."
+                  rows={2}
+                  data-testid="category-description-input"
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Sort Order</label>
+                <input
+                  type="number"
+                  value={categoryFormData.sort_order}
+                  onChange={(e) => setCategoryFormData({ ...categoryFormData, sort_order: parseInt(e.target.value) || 0 })}
+                  style={styles.input}
+                  min="0"
+                  data-testid="category-sort-input"
+                />
+              </div>
+              <div style={styles.modalFooter}>
+                <button onClick={() => setShowCategoryForm(false)} style={styles.cancelBtn}>Cancel</button>
+                <button onClick={handleSaveCategory} disabled={saving} style={styles.saveBtn} data-testid="save-category-btn">
+                  {saving ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={16} />}
+                  {editingCategory ? 'Update' : 'Create'}
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
