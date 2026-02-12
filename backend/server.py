@@ -154,6 +154,19 @@ class CategoryUpdate(BaseModel):
     description: Optional[str] = None
     sort_order: Optional[int] = None
 
+class CategoryReorder(BaseModel):
+    category_ids: List[str]  # List of category IDs in new order
+
+# ============== Business Settings Models ==============
+
+class BusinessSettings(BaseModel):
+    shop_name: Optional[str] = "Supreme Detail Studio"
+    shop_address: Optional[str] = "123 Main St, Marietta, GA 30060"
+    shop_phone: Optional[str] = "(502) 417-0690"
+    shop_email: Optional[str] = "info@supremedetailstudio.com"
+    mobile_service_upcharge: Optional[float] = 50.0
+    mobile_service_description: Optional[str] = "We come to you"
+
 # ============== Auth Helpers ==============
 
 def create_access_token(data: dict):
