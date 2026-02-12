@@ -559,6 +559,8 @@ def main():
         ("Schedule Operations", tester.test_schedule_operations),
         ("Availability Check", tester.test_availability),
         ("Bookings Operations", tester.test_bookings_operations),
+        ("Customer CRUD Operations", tester.test_customers_crud),
+        ("Auto Customer Creation", tester.test_auto_customer_creation),
     ]
     
     failed_tests = []
