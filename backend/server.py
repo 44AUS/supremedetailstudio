@@ -120,6 +120,26 @@ class BookingCreate(BaseModel):
 class BookingStatusUpdate(BaseModel):
     status: str  # pending, in_progress, complete, incomplete
 
+# ============== Customer Models ==============
+
+class CustomerCreate(BaseModel):
+    first_name: str
+    last_name: str
+    phone: str
+    email: str
+    address: Optional[str] = ""
+    notes: Optional[str] = ""
+    tags: Optional[List[str]] = []
+
+class CustomerUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    email: Optional[str] = None
+    address: Optional[str] = None
+    notes: Optional[str] = None
+    tags: Optional[List[str]] = None
+
 # ============== Auth Helpers ==============
 
 def create_access_token(data: dict):
