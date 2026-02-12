@@ -787,7 +787,24 @@ export default function AdminBookings() {
 
 const styles = {
   header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     marginBottom: '32px',
+  },
+  addBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 20px',
+    background: '#e80200',
+    border: 'none',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    letterSpacing: '1px',
+    cursor: 'pointer',
   },
   title: {
     fontFamily: "'Oswald', sans-serif",
