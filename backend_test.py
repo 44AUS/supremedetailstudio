@@ -495,9 +495,11 @@ class SupremeDetailAPITester:
 
         print(f"   Found {len(categories)} existing categories")
 
-        # Create a test category
+        # Create a test category with unique name
+        import time
+        timestamp = int(time.time())
         test_category = {
-            "name": "test_category",
+            "name": f"test_category_{timestamp}",
             "label": "Test Category",
             "description": "Test category for API testing",
             "sort_order": 99
