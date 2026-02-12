@@ -296,7 +296,7 @@ class SupremeDetailAPITester:
             "service_id": "test-service",
             "service_name": "Test Interior Detail",
             "booking_date": "2024-12-20",
-            "booking_time": "10:00",
+            "booking_time": "09:00",  # Use 09:00 which should be available
             "total_price": 150.0,
             "notes": "Test booking for API testing"
         }
