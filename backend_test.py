@@ -702,6 +702,7 @@ def main():
         ("Admin Login", tester.test_admin_login),
         ("Auth Verification", tester.test_auth_verify),
         ("Dashboard Stats", tester.test_dashboard_stats),
+        ("Categories CRUD", tester.test_categories_crud),
         ("Services CRUD", tester.test_services_crud),
         ("Schedule Operations", tester.test_schedule_operations),
         ("Availability Check", tester.test_availability),
