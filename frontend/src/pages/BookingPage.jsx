@@ -1606,7 +1606,7 @@ export default function BookAppointment() {
           </div>
 
           <div style={{ ...styles.locationGrid, ...(isMobile && { gridTemplateColumns: '1fr' }) }}>
-            {SERVICE_LOCATIONS.map((location) => {
+            {serviceLocations.map((location) => {
               const Icon = location.icon;
               return (
                 <motion.button
