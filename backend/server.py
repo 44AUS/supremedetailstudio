@@ -140,6 +140,20 @@ class CustomerUpdate(BaseModel):
     notes: Optional[str] = None
     tags: Optional[List[str]] = None
 
+# ============== Category Models ==============
+
+class CategoryCreate(BaseModel):
+    name: str
+    label: str
+    description: Optional[str] = ""
+    sort_order: Optional[int] = 0
+
+class CategoryUpdate(BaseModel):
+    name: Optional[str] = None
+    label: Optional[str] = None
+    description: Optional[str] = None
+    sort_order: Optional[int] = None
+
 # ============== Auth Helpers ==============
 
 def create_access_token(data: dict):
