@@ -2013,7 +2013,7 @@ export default function BookAppointment() {
               </div>
             ) : (
               <TimeSlotPicker 
-                slots={TIME_SLOTS}
+                slots={availableSlots}
                 selected={selectedTime}
                 onSelect={setSelectedTime}
               />
