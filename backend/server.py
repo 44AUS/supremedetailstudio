@@ -274,6 +274,50 @@ async def delete_category(category_id: str):
         raise HTTPException(status_code=404, detail="Category not found")
     return {"message": "Category deleted successfully"}
 
+@app.put("/api/categories/reorder", dependencies=[Depends(verify_token)])
+async def reorder_categories(reorder: CategoryReorder):
+    """Reorder categories by updating their sort_order"""
+    for index, category_id in enumerate(reorder.category_ids):
+        await db.categories.update_one(
+            {"_id": ObjectId(category_id)},
+            {"$set": {"sort_order": index + 1}}
+        )
+    return {"message": "Categories reordered successfully"}
+
+# ============== Business Settings Routes ==============
+
+@app.get("/api/settings/business")
+async def get_business_settings():
+    """Get business settings (public endpoint for booking page)"""
+    settings = await db.settings.find_one({"type": "business"})
+    if not settings:
+        # Return defaults
+        return {
+            "shop_name": "Supreme Detail Studio",
+            "shop_address": "123 Main St, Marietta, GA 30060",
+            "shop_phone": "(502) 417-0690",
+            "shop_email": "info@supremedetailstudio.com",
+            "mobile_service_upcharge": 50.0,
+            "mobile_service_description": "We come to you"
+        }
+    settings.pop("_id", None)
+    settings.pop("type", None)
+    return settings
+
+@app.put("/api/settings/business", dependencies=[Depends(verify_token)])
+async def update_business_settings(settings: BusinessSettings):
+    """Update business settings (admin only)"""
+    settings_dict = settings.model_dump()
+    settings_dict["type"] = "business"
+    settings_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    await db.settings.update_one(
+        {"type": "business"},
+        {"$set": settings_dict},
+        upsert=True
+    )
+    return {"message": "Business settings updated successfully"}
+
 # ============== Services Routes ==============
 
 @app.get("/api/services")
