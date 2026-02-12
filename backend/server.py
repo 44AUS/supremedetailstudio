@@ -120,6 +120,28 @@ class BookingCreate(BaseModel):
 class BookingStatusUpdate(BaseModel):
     status: str  # pending, in_progress, complete, incomplete
 
+class BookingUpdate(BaseModel):
+    customer_first_name: Optional[str] = None
+    customer_last_name: Optional[str] = None
+    customer_phone: Optional[str] = None
+    customer_email: Optional[str] = None
+    customer_address: Optional[str] = None
+    service_location: Optional[str] = None
+    pickup_delivery: Optional[str] = None
+    pickup_distance: Optional[str] = None
+    vehicle_year: Optional[str] = None
+    vehicle_make: Optional[str] = None
+    vehicle_model: Optional[str] = None
+    vehicle_type: Optional[str] = None
+    vehicle_color: Optional[str] = None
+    service_id: Optional[str] = None
+    service_name: Optional[str] = None
+    booking_date: Optional[str] = None
+    booking_time: Optional[str] = None
+    total_price: Optional[float] = None
+    notes: Optional[str] = None
+    status: Optional[str] = None
+
 # ============== Customer Models ==============
 
 class CustomerCreate(BaseModel):
