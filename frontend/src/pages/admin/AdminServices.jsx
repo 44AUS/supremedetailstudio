@@ -272,7 +272,7 @@ export default function AdminServices() {
                     data-testid="service-category-select"
                   >
                     {categories.map((cat) => (
-                      <option key={cat.value} value={cat.value}>{cat.label}</option>
+                      <option key={cat.name} value={cat.name}>{cat.label}</option>
                     ))}
                   </select>
                 </div>
