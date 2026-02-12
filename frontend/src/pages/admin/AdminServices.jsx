@@ -1366,4 +1366,11 @@ const styles = {
     color: '#6b7280',
     fontFamily: "'Montserrat', sans-serif",
   },
+  dragHint: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '11px',
+    color: '#525252',
+    fontWeight: 400,
+    marginLeft: '8px',
+  },
 };
