@@ -1266,27 +1266,34 @@ export default function BookAppointment() {
         const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();
-          if (data.available) {
+          if (data.available && data.slots && data.slots.length > 0) {
             // Format time slots from 24h to 12h AM/PM format
-            const formattedSlots = (data.slots || []).map(slot => ({
+            const formattedSlots = data.slots.map(slot => ({
               ...slot,
               time: formatTime24to12(slot.time)
             }));
             setAvailableSlots(formattedSlots);
-          } else {
+          } else if (!data.available) {
+            // Day is closed
             setAvailableSlots([]);
+          } else {
+            // Fallback if no slots returned
+            setAvailableSlots(TIME_SLOTS);
           }
+        } else {
+          // API error - use fallback
+          setAvailableSlots(TIME_SLOTS);
         }
       } catch (err) {
         console.error('Error fetching availability:', err);
-        // Fallback to default slots
+        // Fallback to default slots on error
         setAvailableSlots(TIME_SLOTS);
       } finally {
         setLoadingSlots(false);
       }
     };
     fetchAvailability();
-  }, [selectedDate, selectedService]);
+  }, [selectedDate, selectedService, formatTime24to12]);
 
   // Handle booking submission
   const handleSubmitBooking = async () => {
