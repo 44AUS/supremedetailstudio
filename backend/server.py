@@ -430,6 +430,255 @@ async def delete_booking(booking_id: str):
         raise HTTPException(status_code=404, detail="Booking not found")
     return {"message": "Booking deleted successfully"}
 
+# ============== Customer Helper ==============
+
+async def find_or_create_customer(email: str, phone: str, first_name: str, last_name: str, address: str = ""):
+    """Find existing customer by email AND phone, or create new one"""
+    # Normalize email and phone
+    email_normalized = email.lower().strip()
+    phone_normalized = phone.strip().replace("-", "").replace(" ", "").replace("(", "").replace(")", "")
+    
+    # Try to find existing customer by email AND phone
+    customer = await db.customers.find_one({
+        "email_normalized": email_normalized,
+        "phone_normalized": phone_normalized
+    })
+    
+    if customer:
+        # Update last seen and address if provided
+        update_data = {"last_booking_date": datetime.now(timezone.utc).isoformat()}
+        if address and not customer.get("address"):
+            update_data["address"] = address
+        await db.customers.update_one(
+            {"_id": customer["_id"]},
+            {"$set": update_data, "$inc": {"total_bookings": 1}}
+        )
+        return str(customer["_id"])
+    
+    # Create new customer
+    new_customer = {
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email,
+        "email_normalized": email_normalized,
+        "phone": phone,
+        "phone_normalized": phone_normalized,
+        "address": address,
+        "notes": "",
+        "tags": [],
+        "total_bookings": 1,
+        "total_spent": 0.0,
+        "first_booking_date": datetime.now(timezone.utc).isoformat(),
+        "last_booking_date": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    result = await db.customers.insert_one(new_customer)
+    return str(result.inserted_id)
+
+# ============== Customers Routes ==============
+
+@app.get("/api/customers", dependencies=[Depends(verify_token)])
+async def get_customers(search: Optional[str] = None):
+    query = {}
+    if search:
+        search_lower = search.lower().strip()
+        query = {
+            "$or": [
+                {"first_name": {"$regex": search, "$options": "i"}},
+                {"last_name": {"$regex": search, "$options": "i"}},
+                {"email": {"$regex": search, "$options": "i"}},
+                {"phone": {"$regex": search, "$options": "i"}},
+                {"phone_normalized": {"$regex": search_lower.replace("-", "").replace(" ", ""), "$options": "i"}}
+            ]
+        }
+    
+    customers = []
+    async for customer in db.customers.find(query).sort("last_booking_date", -1):
+        customer["id"] = str(customer.pop("_id"))
+        customer.pop("email_normalized", None)
+        customer.pop("phone_normalized", None)
+        customers.append(customer)
+    return customers
+
+@app.get("/api/customers/{customer_id}", dependencies=[Depends(verify_token)])
+async def get_customer(customer_id: str):
+    customer = await db.customers.find_one({"_id": ObjectId(customer_id)})
+    if not customer:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    customer["id"] = str(customer.pop("_id"))
+    customer.pop("email_normalized", None)
+    customer.pop("phone_normalized", None)
+    return customer
+
+@app.get("/api/customers/{customer_id}/bookings", dependencies=[Depends(verify_token)])
+async def get_customer_bookings(customer_id: str):
+    """Get all bookings for a specific customer"""
+    bookings = []
+    async for booking in db.bookings.find({"customer_id": customer_id}).sort("created_at", -1):
+        booking["id"] = str(booking.pop("_id"))
+        bookings.append(booking)
+    return bookings
+
+@app.post("/api/customers", dependencies=[Depends(verify_token)])
+async def create_customer(customer: CustomerCreate):
+    email_normalized = customer.email.lower().strip()
+    phone_normalized = customer.phone.strip().replace("-", "").replace(" ", "").replace("(", "").replace(")", "")
+    
+    # Check if customer already exists
+    existing = await db.customers.find_one({
+        "email_normalized": email_normalized,
+        "phone_normalized": phone_normalized
+    })
+    if existing:
+        raise HTTPException(status_code=400, detail="Customer with this email and phone already exists")
+    
+    customer_dict = customer.model_dump()
+    customer_dict["email_normalized"] = email_normalized
+    customer_dict["phone_normalized"] = phone_normalized
+    customer_dict["total_bookings"] = 0
+    customer_dict["total_spent"] = 0.0
+    customer_dict["first_booking_date"] = None
+    customer_dict["last_booking_date"] = None
+    customer_dict["created_at"] = datetime.now(timezone.utc).isoformat()
+    customer_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.customers.insert_one(customer_dict)
+    customer_dict["id"] = str(result.inserted_id)
+    customer_dict.pop("_id", None)
+    customer_dict.pop("email_normalized", None)
+    customer_dict.pop("phone_normalized", None)
+    return customer_dict
+
+@app.put("/api/customers/{customer_id}", dependencies=[Depends(verify_token)])
+async def update_customer(customer_id: str, customer: CustomerUpdate):
+    update_data = {k: v for k, v in customer.model_dump().items() if v is not None}
+    
+    if "email" in update_data:
+        update_data["email_normalized"] = update_data["email"].lower().strip()
+    if "phone" in update_data:
+        update_data["phone_normalized"] = update_data["phone"].strip().replace("-", "").replace(" ", "").replace("(", "").replace(")", "")
+    
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.customers.update_one(
+        {"_id": ObjectId(customer_id)},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    return {"message": "Customer updated successfully"}
+
+@app.delete("/api/customers/{customer_id}", dependencies=[Depends(verify_token)])
+async def delete_customer(customer_id: str):
+    result = await db.customers.delete_one({"_id": ObjectId(customer_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    return {"message": "Customer deleted successfully"}
+
+@app.get("/api/customers/export/csv", dependencies=[Depends(verify_token)])
+async def export_customers():
+    """Export all customers as CSV data"""
+    from fastapi.responses import Response
+    import csv
+    import io
+    
+    customers = []
+    async for customer in db.customers.find():
+        customers.append(customer)
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["First Name", "Last Name", "Email", "Phone", "Address", "Notes", "Tags", "Total Bookings", "Total Spent"])
+    
+    for c in customers:
+        writer.writerow([
+            c.get("first_name", ""),
+            c.get("last_name", ""),
+            c.get("email", ""),
+            c.get("phone", ""),
+            c.get("address", ""),
+            c.get("notes", ""),
+            ",".join(c.get("tags", [])),
+            c.get("total_bookings", 0),
+            c.get("total_spent", 0)
+        ])
+    
+    csv_content = output.getvalue()
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=customers.csv"}
+    )
+
+@app.post("/api/customers/import/csv", dependencies=[Depends(verify_token)])
+async def import_customers(file_content: str = ""):
+    """Import customers from CSV data (sent as JSON body)"""
+    import csv
+    import io
+    
+    # Expect JSON body with csv_data field
+    from fastapi import Request
+    
+class CSVImportRequest(BaseModel):
+    csv_data: str
+
+@app.post("/api/customers/import", dependencies=[Depends(verify_token)])
+async def import_customers_csv(request: CSVImportRequest):
+    """Import customers from CSV data"""
+    import csv
+    import io
+    
+    reader = csv.DictReader(io.StringIO(request.csv_data))
+    imported = 0
+    skipped = 0
+    
+    for row in reader:
+        email = row.get("Email", row.get("email", "")).strip()
+        phone = row.get("Phone", row.get("phone", "")).strip()
+        
+        if not email or not phone:
+            skipped += 1
+            continue
+        
+        email_normalized = email.lower()
+        phone_normalized = phone.replace("-", "").replace(" ", "").replace("(", "").replace(")", "")
+        
+        # Check if exists
+        existing = await db.customers.find_one({
+            "email_normalized": email_normalized,
+            "phone_normalized": phone_normalized
+        })
+        
+        if existing:
+            skipped += 1
+            continue
+        
+        tags_str = row.get("Tags", row.get("tags", ""))
+        tags = [t.strip() for t in tags_str.split(",") if t.strip()] if tags_str else []
+        
+        new_customer = {
+            "first_name": row.get("First Name", row.get("first_name", "")),
+            "last_name": row.get("Last Name", row.get("last_name", "")),
+            "email": email,
+            "email_normalized": email_normalized,
+            "phone": phone,
+            "phone_normalized": phone_normalized,
+            "address": row.get("Address", row.get("address", "")),
+            "notes": row.get("Notes", row.get("notes", "")),
+            "tags": tags,
+            "total_bookings": 0,
+            "total_spent": 0.0,
+            "first_booking_date": None,
+            "last_booking_date": None,
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.customers.insert_one(new_customer)
+        imported += 1
+    
+    return {"imported": imported, "skipped": skipped}
+
 # ============== Dashboard Stats ==============
 
 @app.get("/api/dashboard/stats", dependencies=[Depends(verify_token)])
