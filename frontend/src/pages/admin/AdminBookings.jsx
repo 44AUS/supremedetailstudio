@@ -126,6 +126,116 @@ export default function AdminBookings() {
     }
   };
 
+  // Open create/edit modal
+  const openCreateBooking = () => {
+    setEditingBooking(null);
+    setBookingForm(emptyBookingForm);
+    setError('');
+    setShowEditModal(true);
+  };
+
+  const openEditBooking = (booking) => {
+    setEditingBooking(booking);
+    setBookingForm({
+      customer_first_name: booking.customer_first_name || '',
+      customer_last_name: booking.customer_last_name || '',
+      customer_phone: booking.customer_phone || '',
+      customer_email: booking.customer_email || '',
+      customer_address: booking.customer_address || '',
+      service_location: booking.service_location || 'shop',
+      vehicle_year: booking.vehicle_year || '',
+      vehicle_make: booking.vehicle_make || '',
+      vehicle_model: booking.vehicle_model || '',
+      vehicle_type: booking.vehicle_type || 'sedan',
+      vehicle_color: booking.vehicle_color || '',
+      service_id: booking.service_id || '',
+      service_name: booking.service_name || '',
+      booking_date: booking.booking_date || '',
+      booking_time: booking.booking_time || '',
+      total_price: booking.total_price || 0,
+      notes: booking.notes || '',
+      status: booking.status || 'pending',
+    });
+    setError('');
+    setShowEditModal(true);
+    setShowModal(false);
+  };
+
+  const handleServiceChange = (serviceId) => {
+    const service = services.find(s => s.id === serviceId);
+    if (service) {
+      setBookingForm({
+        ...bookingForm,
+        service_id: service.id,
+        service_name: service.name,
+        total_price: service.base_price || 0,
+      });
+    }
+  };
+
+  const saveBooking = async () => {
+    // Validation
+    if (!bookingForm.customer_first_name || !bookingForm.customer_email || !bookingForm.customer_phone) {
+      setError('Customer name, email, and phone are required');
+      return;
+    }
+    if (!bookingForm.booking_date || !bookingForm.booking_time) {
+      setError('Booking date and time are required');
+      return;
+    }
+    if (!bookingForm.service_name) {
+      setError('Please select a service');
+      return;
+    }
+
+    setSaving(true);
+    setError('');
+    
+    try {
+      const isEdit = !!editingBooking;
+      const url = isEdit 
+        ? `${API_URL}/api/bookings/${editingBooking.id}`
+        : `${API_URL}/api/bookings/admin`;
+      
+      const response = await fetch(url, {
+        method: isEdit ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify(bookingForm),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.detail || 'Failed to save booking');
+      }
+
+      setShowEditModal(false);
+      fetchBookings();
+    } catch (err) {
+      setError(err.message || 'Failed to save booking');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const deleteBooking = async (bookingId) => {
+    if (!window.confirm('Are you sure you want to delete this booking?')) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/bookings/${bookingId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (!response.ok) throw new Error('Failed to delete booking');
+      fetchBookings();
+      setShowModal(false);
+    } catch (err) {
+      alert('Failed to delete booking');
+    }
+  };
+
   const filteredBookings = bookings.filter((booking) => {
     if (!searchTerm) return true;
     const searchLower = searchTerm.toLowerCase();
