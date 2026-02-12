@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, Settings, Calendar, ClipboardList, 
-  LogOut, Menu, X, ChevronRight 
+  LogOut, Menu, X, ChevronRight, Users 
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
