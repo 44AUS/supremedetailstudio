@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Plus, Edit2, Trash2, Save, X, Loader2, 
-  AlertCircle, Package, Building2, Truck, Clock, DollarSign
+  AlertCircle, Package, Building2, Truck, Clock, DollarSign, Tag
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 export default function AdminServices() {
   const [services, setServices] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [editingService, setEditingService] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [showCategoryForm, setShowCategoryForm] = useState(false);
+  const [editingCategory, setEditingCategory] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [categoryFormData, setCategoryFormData] = useState({ name: '', label: '', description: '', sort_order: 0 });
   
   const emptyService = {
     name: '',
@@ -31,9 +35,21 @@ export default function AdminServices() {
 
   useEffect(() => {
     fetchServices();
+    fetchCategories();
   }, []);
 
   const getToken = () => localStorage.getItem('adminToken');
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/categories`);
+      if (!response.ok) throw new Error('Failed to fetch categories');
+      const data = await response.json();
+      setCategories(data);
+    } catch (err) {
+      console.error('Failed to load categories:', err);
+    }
+  };
 
   const fetchServices = async () => {
     try {
