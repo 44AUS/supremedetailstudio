@@ -1273,6 +1273,19 @@ export default function BookAppointment() {
     return `${hours12}:${String(minutes).padStart(2, '0')} ${ampm}`;
   };
 
+  // Convert 12h AM/PM to 24h format for API
+  const formatTime12to24 = (time12) => {
+    if (!time12) return '';
+    const match = time12.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if (!match) return time12; // Return as-is if not in expected format
+    let hours = parseInt(match[1], 10);
+    const minutes = match[2];
+    const period = match[3].toUpperCase();
+    if (period === 'PM' && hours !== 12) hours += 12;
+    if (period === 'AM' && hours === 12) hours = 0;
+    return `${String(hours).padStart(2, '0')}:${minutes}`;
+  };
+
   // Handle booking submission
   const handleSubmitBooking = async () => {
     if (!formData.firstName || !formData.email || !formData.phone || !selectedService || !selectedDate || !selectedTime) {
