@@ -243,6 +243,16 @@ async def create_category(category: CategoryCreate):
     category_dict.pop("_id", None)
     return category_dict
 
+@app.put("/api/categories/reorder", dependencies=[Depends(verify_token)])
+async def reorder_categories(reorder: CategoryReorder):
+    """Reorder categories by updating their sort_order"""
+    for index, category_id in enumerate(reorder.category_ids):
+        await db.categories.update_one(
+            {"_id": ObjectId(category_id)},
+            {"$set": {"sort_order": index + 1}}
+        )
+    return {"message": "Categories reordered successfully"}
+
 @app.put("/api/categories/{category_id}", dependencies=[Depends(verify_token)])
 async def update_category(category_id: str, category: CategoryUpdate):
     update_data = {k: v for k, v in category.model_dump().items() if v is not None}
@@ -273,16 +283,6 @@ async def delete_category(category_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Category not found")
     return {"message": "Category deleted successfully"}
-
-@app.put("/api/categories/reorder", dependencies=[Depends(verify_token)])
-async def reorder_categories(reorder: CategoryReorder):
-    """Reorder categories by updating their sort_order"""
-    for index, category_id in enumerate(reorder.category_ids):
-        await db.categories.update_one(
-            {"_id": ObjectId(category_id)},
-            {"$set": {"sort_order": index + 1}}
-        )
-    return {"message": "Categories reordered successfully"}
 
 # ============== Business Settings Routes ==============
 
