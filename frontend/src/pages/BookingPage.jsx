@@ -13,11 +13,12 @@ const API_URL = process.env.REACT_APP_BACKEND_URL;
 
 /* ---------------- DATA ---------------- */
 
-const SERVICE_LOCATIONS = [
+// Default service locations - will be updated from API
+const DEFAULT_SERVICE_LOCATIONS = [
   { 
     id: 'shop', 
     label: 'In Shop', 
-    description: 'Drop off at our Marietta location',
+    description: 'Drop off at our shop location',
     icon: Building2,
     upcharge: 0
   },
