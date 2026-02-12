@@ -2223,23 +2223,42 @@ function ServiceCard({ service, price, selected, onClick }) {
 }
 
 function CalendarPicker({ selected, onSelect }) {
+  const [viewDate, setViewDate] = useState(new Date());
   const today = new Date();
-  const currentMonth = today.toLocaleString('default', { month: 'long' });
-  const currentYear = today.getFullYear();
-  const daysInMonth = new Date(currentYear, today.getMonth() + 1, 0).getDate();
-  const firstDayOfMonth = new Date(currentYear, today.getMonth(), 1).getDay();
+  today.setHours(0, 0, 0, 0);
+  
+  const currentMonth = viewDate.toLocaleString('default', { month: 'long' });
+  const currentYear = viewDate.getFullYear();
+  const viewMonth = viewDate.getMonth();
+  const daysInMonth = new Date(currentYear, viewMonth + 1, 0).getDate();
+  const firstDayOfMonth = new Date(currentYear, viewMonth, 1).getDay();
   
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  
+  const handlePrevMonth = () => {
+    setViewDate(new Date(currentYear, viewMonth - 1, 1));
+  };
+  
+  const handleNextMonth = () => {
+    setViewDate(new Date(currentYear, viewMonth + 1, 1));
+  };
+  
+  const isDateSelected = (day) => {
+    if (!selected) return false;
+    return selected.getDate() === day && 
+           selected.getMonth() === viewMonth && 
+           selected.getFullYear() === currentYear;
+  };
   
   return (
     <div>
       <div style={styles.calendarHeader}>
         <div style={styles.calendarMonth}>{currentMonth} {currentYear}</div>
         <div style={styles.calendarNav}>
-          <button style={styles.calendarNavBtn}>
+          <button style={styles.calendarNavBtn} onClick={handlePrevMonth}>
             <ChevronLeft size={18} />
           </button>
-          <button style={styles.calendarNavBtn}>
+          <button style={styles.calendarNavBtn} onClick={handleNextMonth}>
             <ChevronRight size={18} />
           </button>
         </div>
@@ -2259,16 +2278,18 @@ function CalendarPicker({ selected, onSelect }) {
         
         {Array.from({ length: daysInMonth }).map((_, i) => {
           const day = i + 1;
-          const isPast = day < today.getDate();
-          const isToday = day === today.getDate();
-          const isSelected = selected === day;
+          const dateForDay = new Date(currentYear, viewMonth, day);
+          dateForDay.setHours(0, 0, 0, 0);
+          const isPast = dateForDay < today;
+          const isToday = dateForDay.getTime() === today.getTime();
+          const isSelected = isDateSelected(day);
           
           return (
             <motion.button
               key={day}
               whileHover={!isPast ? { scale: 1.15 } : {}}
               whileTap={!isPast ? { scale: 0.95 } : {}}
-              onClick={() => !isPast && onSelect(day)}
+              onClick={() => !isPast && onSelect(new Date(currentYear, viewMonth, day))}
               disabled={isPast}
               style={styles.calendarDay(isSelected, isToday, isPast)}
               data-testid={`calendar-day-${day}`}
