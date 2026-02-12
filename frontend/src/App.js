@@ -147,6 +147,7 @@ function AdminRoutes() {
         <Route path="services" element={<AdminServices />} />
         <Route path="schedule" element={<AdminSchedule />} />
         <Route path="bookings" element={<AdminBookings />} />
+        <Route path="customers" element={<AdminCustomers />} />
       </Route>
     </Routes>
   );
