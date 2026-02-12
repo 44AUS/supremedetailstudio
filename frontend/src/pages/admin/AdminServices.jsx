@@ -353,6 +353,59 @@ export default function AdminServices() {
     }
   };
 
+  // Drag and drop handler for categories
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+    
+    if (active.id !== over?.id) {
+      const oldIndex = categories.findIndex((cat) => cat.id === active.id);
+      const newIndex = categories.findIndex((cat) => cat.id === over.id);
+      
+      const newCategories = arrayMove(categories, oldIndex, newIndex);
+      setCategories(newCategories);
+      
+      // Save new order to backend
+      try {
+        await fetch(`${API_URL}/api/categories/reorder`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getToken()}`,
+          },
+          body: JSON.stringify({ category_ids: newCategories.map(c => c.id) }),
+        });
+      } catch (err) {
+        console.error('Failed to save category order:', err);
+        // Revert on error
+        fetchCategories();
+      }
+    }
+  };
+
+  // Business settings handlers
+  const handleSaveBusinessSettings = async () => {
+    setSaving(true);
+    setError('');
+    try {
+      const response = await fetch(`${API_URL}/api/settings/business`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify(businessSettings),
+      });
+
+      if (!response.ok) throw new Error('Failed to save settings');
+      
+      setShowSettingsForm(false);
+    } catch (err) {
+      setError('Failed to save business settings');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div style={styles.loading}>
@@ -370,6 +423,10 @@ export default function AdminServices() {
           <p style={styles.subtitle}>Manage your service offerings and pricing</p>
         </div>
         <div style={styles.headerButtons}>
+          <button onClick={() => setShowSettingsForm(true)} style={styles.secondaryBtn} data-testid="business-settings-btn">
+            <Settings size={18} />
+            Business Settings
+          </button>
           <button onClick={handleAddCategory} style={styles.secondaryBtn} data-testid="manage-categories-btn">
             <Tag size={18} />
             Add Category
