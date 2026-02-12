@@ -596,11 +596,11 @@ class SupremeDetailAPITester:
             400  # Should return 400 error
         )
 
-        if success:
+        if not success:
+            print("✅ Category deletion correctly prevented when services use it")
+        else:
             print("❌ Category deletion should have failed when services use it")
             return False
-        else:
-            print("✅ Category deletion correctly prevented when services use it")
 
         # Delete the service first
         if service_id:
