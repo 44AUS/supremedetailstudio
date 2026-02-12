@@ -568,7 +568,7 @@ class SupremeDetailAPITester:
         # Test creating a service with the new category
         test_service = {
             "name": "Test Service with Custom Category",
-            "category": "test_category",
+            "category": f"test_category_{timestamp}",
             "description": "Service using custom category",
             "base_price": 100.0,
             "duration_minutes": 60,
