@@ -186,6 +186,81 @@ async def login(request: LoginRequest):
 async def verify_auth(username: str = Depends(verify_token)):
     return {"valid": True, "username": username}
 
+# ============== Categories Routes ==============
+
+@app.get("/api/categories")
+async def get_categories():
+    """Get all categories, sorted by sort_order"""
+    categories = []
+    async for category in db.categories.find().sort("sort_order", 1):
+        category["id"] = str(category.pop("_id"))
+        categories.append(category)
+    
+    # If no custom categories exist, seed with defaults
+    if len(categories) == 0:
+        default_categories = [
+            {"name": "interior", "label": "Interior Detail", "description": "Interior cleaning and detailing services", "sort_order": 1},
+            {"name": "exterior", "label": "Exterior Detail", "description": "Exterior wash and detailing services", "sort_order": 2},
+            {"name": "full", "label": "Full Detail", "description": "Complete interior and exterior detailing", "sort_order": 3},
+            {"name": "protection", "label": "Protection Services", "description": "Paint protection, ceramic coating, PPF", "sort_order": 4},
+            {"name": "addon", "label": "Add-On Services", "description": "Additional services and upgrades", "sort_order": 5},
+        ]
+        for cat in default_categories:
+            cat["created_at"] = datetime.now(timezone.utc).isoformat()
+            result = await db.categories.insert_one(cat)
+            cat["id"] = str(result.inserted_id)
+            cat.pop("_id", None)
+            categories.append(cat)
+    
+    return categories
+
+@app.post("/api/categories", dependencies=[Depends(verify_token)])
+async def create_category(category: CategoryCreate):
+    # Check if name already exists
+    existing = await db.categories.find_one({"name": category.name.lower().strip().replace(" ", "_")})
+    if existing:
+        raise HTTPException(status_code=400, detail="Category with this name already exists")
+    
+    category_dict = category.model_dump()
+    category_dict["name"] = category_dict["name"].lower().strip().replace(" ", "_")
+    category_dict["created_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.categories.insert_one(category_dict)
+    category_dict["id"] = str(result.inserted_id)
+    category_dict.pop("_id", None)
+    return category_dict
+
+@app.put("/api/categories/{category_id}", dependencies=[Depends(verify_token)])
+async def update_category(category_id: str, category: CategoryUpdate):
+    update_data = {k: v for k, v in category.model_dump().items() if v is not None}
+    if "name" in update_data:
+        update_data["name"] = update_data["name"].lower().strip().replace(" ", "_")
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    
+    result = await db.categories.update_one(
+        {"_id": ObjectId(category_id)},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return {"message": "Category updated successfully"}
+
+@app.delete("/api/categories/{category_id}", dependencies=[Depends(verify_token)])
+async def delete_category(category_id: str):
+    # Check if any services use this category
+    category = await db.categories.find_one({"_id": ObjectId(category_id)})
+    if not category:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    services_count = await db.services.count_documents({"category": category["name"]})
+    if services_count > 0:
+        raise HTTPException(status_code=400, detail=f"Cannot delete category: {services_count} services are using it")
+    
+    result = await db.categories.delete_one({"_id": ObjectId(category_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return {"message": "Category deleted successfully"}
+
 # ============== Services Routes ==============
 
 @app.get("/api/services")
