@@ -46,6 +46,7 @@ export default function AdminLayout() {
     { path: '/admin/services', icon: Settings, label: 'Services' },
     { path: '/admin/schedule', icon: Calendar, label: 'Schedule' },
     { path: '/admin/bookings', icon: ClipboardList, label: 'Bookings' },
+    { path: '/admin/customers', icon: Users, label: 'Customers' },
   ];
 
   return (
