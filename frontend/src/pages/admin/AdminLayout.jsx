@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, Settings, Calendar, ClipboardList, 
-  LogOut, Menu, X, ChevronRight, Users 
+import {
+  LayoutDashboard, Settings, Calendar, ClipboardList,
+  LogOut, Menu, X, ChevronRight, Users, Mail
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL;
@@ -47,6 +47,7 @@ export default function AdminLayout() {
     { path: '/admin/schedule', icon: Calendar, label: 'Schedule' },
     { path: '/admin/bookings', icon: ClipboardList, label: 'Bookings' },
     { path: '/admin/customers', icon: Users, label: 'Customers' },
+    { path: '/admin/contacts', icon: Mail, label: 'Contact Messages' },
   ];
 
   return (

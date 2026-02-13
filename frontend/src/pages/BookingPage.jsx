@@ -397,7 +397,7 @@ const styles = {
     fontWeight: 700,
     color: '#fff',
     marginBottom: '16px',
-    fontFamily: 'Oswald, sans-serif',
+    fontFamily: "'Oswald', sans-serif",
     textTransform: 'uppercase',
     letterSpacing: '1px',
   },
@@ -457,11 +457,11 @@ const styles = {
     fontSize: '14px',
     fontWeight: 700,
     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-    background: completed 
-      ? 'linear-gradient(135deg, #dc2626, #b91c1c)' 
-      : active 
-        ? 'rgba(220, 38, 38, 0.2)' 
-        : 'rgba(255,255,255,0.05)',
+    background: completed
+      ? 'linear-gradient(135deg, #dc2626, #b91c1c)'
+      : active
+        ? 'rgba(220, 38, 38, 0.2)'
+        : '#000',
     border: active && !completed 
       ? '2px solid #dc2626' 
       : completed 
@@ -522,7 +522,7 @@ const styles = {
     fontSize: '20px',
     fontWeight: 700,
     color: '#fff',
-    fontFamily: 'Oswald, sans-serif',
+    fontFamily: "'Oswald', sans-serif",
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
   },
@@ -895,6 +895,31 @@ const styles = {
     alignItems: 'center',
     gap: '10px',
   },
+  categoryTabs: {
+    display: 'flex',
+    gap: '12px',
+    marginBottom: '24px',
+    flexWrap: 'wrap',
+  },
+  categoryTab: (isSelected) => ({
+    padding: '12px 24px',
+    background: isSelected ? '#e80200' : 'rgba(255,255,255,0.05)',
+    border: isSelected ? '1px solid #e80200' : '1px solid rgba(255,255,255,0.1)',
+    color: isSelected ? '#fff' : 'rgba(255,255,255,0.7)',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+  }),
+  emptyServices: {
+    padding: '40px 20px',
+    textAlign: 'center',
+    color: 'rgba(255,255,255,0.4)',
+    fontFamily: "'Montserrat', sans-serif",
+  },
   serviceGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
@@ -1003,7 +1028,7 @@ const styles = {
     gridTemplateColumns: 'repeat(7, 1fr)',
     gap: '8px',
   },
-  calendarDay: (selected, isToday, isPast) => ({
+  calendarDay: (selected, isToday, isPast, isClosed) => ({
     aspectRatio: '1',
     borderRadius: '12px',
     display: 'flex',
@@ -1011,12 +1036,18 @@ const styles = {
     justifyContent: 'center',
     fontSize: '14px',
     fontWeight: 500,
-    cursor: isPast ? 'not-allowed' : 'pointer',
+    cursor: (isPast || isClosed) ? 'not-allowed' : 'pointer',
     transition: 'all 0.2s ease',
-    background: selected ? '#dc2626' : isToday ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.03)',
-    color: isPast ? 'rgba(255,255,255,0.2)' : selected ? '#fff' : '#fff',
-    border: isToday && !selected ? '1px solid rgba(220, 38, 38, 0.5)' : 'none',
+    background: selected ? '#dc2626'
+              : isClosed ? 'rgba(239, 68, 68, 0.1)'
+              : isToday ? 'rgba(255,255,255,0.1)'
+              : 'rgba(255,255,255,0.03)',
+    color: (isPast || isClosed) ? 'rgba(255,255,255,0.3)' : selected ? '#fff' : '#fff',
+    border: isClosed ? '1px solid rgba(239, 68, 68, 0.3)'
+          : isToday && !selected ? '1px solid rgba(220, 38, 38, 0.5)'
+          : 'none',
     boxShadow: selected ? '0 8px 20px rgba(220, 38, 38, 0.4)' : 'none',
+    textDecoration: isClosed ? 'line-through' : 'none',
   }),
   emptyTimeState: {
     textAlign: 'center',
@@ -1073,7 +1104,7 @@ const styles = {
     fontWeight: 700,
     color: '#fff',
     marginBottom: '12px',
-    fontFamily: 'Oswald, sans-serif',
+    fontFamily: "'Oswald', sans-serif",
     textTransform: 'uppercase',
   },
   confirmDetails: {
@@ -1161,13 +1192,15 @@ export default function BookAppointment() {
   const [vehicle, setVehicle] = useState({ year: '', make: '', model: '' });
   const [vehicleType, setVehicleType] = useState(null);
   const [selectedColor, setSelectedColor] = useState(null);
-  const [selectedService, setSelectedService] = useState(null);
+  const [selectedServices, setSelectedServices] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [availableServices, setAvailableServices] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [serviceLocations, setServiceLocations] = useState(DEFAULT_SERVICE_LOCATIONS);
@@ -1234,7 +1267,7 @@ export default function BookAppointment() {
     fetchBusinessSettings();
   }, []);
 
-  // Fetch services from backend
+  // Fetch services and categories from backend
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -1247,7 +1280,25 @@ export default function BookAppointment() {
         console.error('Error fetching services:', err);
       }
     };
+
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/categories`);
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data);
+          // Select first category by default
+          if (data.length > 0) {
+            setSelectedCategory(data[0].name);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
+    };
+
     fetchServices();
+    fetchCategories();
   }, []);
 
   // Fetch available time slots when date changes
@@ -1260,8 +1311,9 @@ export default function BookAppointment() {
       setLoadingSlots(true);
       try {
         const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-        const url = selectedService?.id 
-          ? `${API_URL}/api/availability/${dateStr}?service_id=${selectedService.id}`
+        const totalDur = selectedServices.reduce((sum, service) => sum + (service.duration_minutes || 60), 0);
+        const url = totalDur > 0
+          ? `${API_URL}/api/availability/${dateStr}?total_duration=${totalDur}`
           : `${API_URL}/api/availability/${dateStr}`;
         const response = await fetch(url);
         if (response.ok) {
@@ -1293,11 +1345,11 @@ export default function BookAppointment() {
       }
     };
     fetchAvailability();
-  }, [selectedDate, selectedService, formatTime24to12]);
+  }, [selectedDate, selectedServices, formatTime24to12]);
 
   // Handle booking submission
   const handleSubmitBooking = async () => {
-    if (!formData.firstName || !formData.email || !formData.phone || !selectedService || !selectedDate || !selectedTime) {
+    if (!formData.firstName || !formData.email || !formData.phone || selectedServices.length === 0 || !selectedDate || !selectedTime) {
       setSubmitError('Please fill in all required fields');
       return;
     }
@@ -1307,7 +1359,7 @@ export default function BookAppointment() {
 
     try {
       const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-      
+
       const bookingData = {
         customer_first_name: formData.firstName,
         customer_last_name: formData.lastName,
@@ -1322,11 +1374,18 @@ export default function BookAppointment() {
         vehicle_model: vehicle.model,
         vehicle_type: vehicleType?.id || 'sedan',
         vehicle_color: selectedColor?.name || '',
-        service_id: selectedService?.id || '',
-        service_name: selectedService?.name || '',
+        service_id: selectedServices[0]?.id || '',
+        service_name: selectedServices.map(s => s.name).join(' + '),
         booking_date: dateStr,
         booking_time: formatTime12to24(selectedTime),
         total_price: totalPrice,
+        total_duration: totalDuration,
+        services: selectedServices.map(service => ({
+          service_id: service.id,
+          service_name: service.name,
+          base_price: service.base_price,
+          duration_minutes: service.duration_minutes || 60
+        })),
         notes: notes,
       };
 
@@ -1446,29 +1505,99 @@ export default function BookAppointment() {
     return PAINT_COLORS_BY_MAKE[makeKey] || PAINT_COLORS_BY_MAKE['Default'];
   };
 
-  // Calculate total price
+  // Calculate total price and duration for all selected services
   const locationUpcharge = serviceLocation?.upcharge || 0;
   const vehicleUpcharge = vehicleType?.upcharge || 0;
-  
+
   // Pickup & Delivery pricing
   let pickupDeliveryCharge = 0;
   if (serviceLocation?.id === 'shop' && pickupDelivery === 'yes') {
     pickupDeliveryCharge = pickupDistance === 'over15' ? 75 : 50;
   }
-  
-  const totalPrice = selectedService
-    ? selectedService.category === 'detail'
-      ? vehicleType
-        ? selectedService.base + vehicleUpcharge + locationUpcharge + pickupDeliveryCharge
-        : null
-      : selectedService.price + locationUpcharge + pickupDeliveryCharge
+
+  const totalPrice = selectedServices.length > 0 && vehicleType
+    ? selectedServices.reduce((sum, service) => sum + service.base_price, 0) + vehicleUpcharge + locationUpcharge + pickupDeliveryCharge
     : null;
+
+  const totalDuration = selectedServices.reduce((sum, service) => sum + (service.duration_minutes || 60), 0);
+
+  // Debug logging
+  console.log('🔍 Booking Debug:', {
+    selectedServices: selectedServices.map(s => s.name),
+    totalDuration: totalDuration,
+    vehicleType: vehicleType?.label,
+    selectedTime,
+    totalPrice,
+    showConfirmation: !!(selectedTime && totalPrice)
+  });
+
+  // Multi-service selection logic
+  const canCombineService = (service) => {
+    if (selectedServices.length === 0) return true;
+
+    // Get categories of already selected services
+    const selectedCategories = selectedServices.map(s => s.category);
+    const serviceCategory = categories.find(c => c.name === service.category);
+
+    // Check if this service's category can combine with all selected categories
+    for (const selectedCat of selectedCategories) {
+      const selectedCategoryObj = categories.find(c => c.name === selectedCat);
+      if (!selectedCategoryObj || !serviceCategory) continue;
+
+      // Check bidirectional compatibility
+      const canCombineForward = (serviceCategory.can_combine_with || []).includes(selectedCat);
+      const canCombineBackward = (selectedCategoryObj.can_combine_with || []).includes(service.category);
+
+      if (!canCombineForward && !canCombineBackward) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const toggleServiceSelection = (service) => {
+    const isSelected = selectedServices.some(s => s.id === service.id);
+
+    if (isSelected) {
+      // Remove service
+      setSelectedServices(selectedServices.filter(s => s.id !== service.id));
+    } else {
+      // Add service if compatible
+      if (canCombineService(service)) {
+        setSelectedServices([...selectedServices, service]);
+      }
+    }
+  };
+
+  // Filter categories to only show compatible ones
+  const getAvailableCategories = () => {
+    if (selectedServices.length === 0) {
+      return categories;
+    }
+
+    return categories.filter(category => {
+      // Always show categories that already have selected services
+      if (selectedServices.some(s => s.category === category.name)) {
+        return true;
+      }
+
+      // Check if this category can combine with all selected categories
+      const selectedCategories = selectedServices.map(s => s.category);
+      return selectedCategories.every(selectedCat => {
+        const selectedCategoryObj = categories.find(c => c.name === selectedCat);
+        const canCombineForward = (category.can_combine_with || []).includes(selectedCat);
+        const canCombineBackward = (selectedCategoryObj?.can_combine_with || []).includes(category.name);
+        return canCombineForward || canCombineBackward;
+      });
+    });
+  };
 
   const progressSteps = [
     { num: 1, label: 'Info', completed: formData.firstName && formData.email && formData.address },
     { num: 2, label: 'Location', completed: serviceLocation !== null && (serviceLocation?.id !== 'mobile' || mobileUtilitiesConfirmed) },
     { num: 3, label: 'Vehicle', completed: vehicleType !== null && vehicle.make && selectedColor },
-    { num: 4, label: 'Service', completed: selectedService !== null },
+    { num: 4, label: 'Service', completed: selectedServices.length > 0 },
     { num: 5, label: 'Schedule', completed: selectedDate && selectedTime },
   ];
 
@@ -1935,46 +2064,94 @@ export default function BookAppointment() {
         >
           <div style={styles.stepHeader}>
             <div style={styles.stepNumber}>4</div>
-            <h3 style={styles.stepTitle}>SELECT A SERVICE</h3>
+            <h3 style={styles.stepTitle}>SELECT SERVICE(S)</h3>
             <Sparkles size={20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
           </div>
 
-          <div style={styles.sectionTitle}>
-            <Droplets size={18} style={{ color: '#ef4444' }} />
-            Detailing Services
-          </div>
-          <div style={styles.serviceGrid}>
-            {DETAIL_SERVICES.map((service) => {
-              const price = vehicleType 
-                ? service.base + vehicleUpcharge + locationUpcharge + pickupDeliveryCharge
-                : 'Select vehicle';
-              return (
-                <ServiceCard
-                  key={service.id}
-                  service={service}
-                  price={price}
-                  selected={selectedService?.id === service.id}
-                  onClick={() => setSelectedService(service)}
-                />
-              );
-            })}
+          {/* Multi-service info message */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            padding: '12px 16px',
+            background: 'rgba(232, 2, 0, 0.1)',
+            border: '1px solid rgba(232, 2, 0, 0.3)',
+            borderRadius: '12px',
+            marginBottom: '20px',
+          }}>
+            <Info size={18} style={{ color: '#e80200', flexShrink: 0 }} />
+            <p style={{
+              margin: 0,
+              color: 'rgba(255,255,255,0.8)',
+              fontSize: '13px',
+              lineHeight: 1.5,
+              fontFamily: "'Montserrat', sans-serif",
+            }}>
+              <strong style={{ color: '#e80200' }}>Combine Services:</strong> Select multiple compatible services for one appointment. Click services to add or remove them.
+              {selectedServices.length > 0 && (
+                <span style={{ color: '#e80200', fontWeight: 600 }}>
+                  {' '}({selectedServices.length} selected)
+                </span>
+              )}
+            </p>
           </div>
 
-          <div style={styles.sectionTitle}>
-            <Shield size={18} style={{ color: '#ef4444' }} />
-            Protection Services
-          </div>
-          <div style={styles.serviceGrid}>
-            {OTHER_SERVICES.map((service) => (
-              <ServiceCard
-                key={service.id}
-                service={service}
-                price={service.price + locationUpcharge + pickupDeliveryCharge}
-                selected={selectedService?.id === service.id}
-                onClick={() => setSelectedService(service)}
-              />
-            ))}
-          </div>
+          {/* Category Tabs */}
+          {categories.length > 0 && (
+            <div style={styles.categoryTabs}>
+              {getAvailableCategories().map((category) => (
+                <motion.button
+                  key={category.name}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setSelectedCategory(category.name)}
+                  style={styles.categoryTab(selectedCategory === category.name)}
+                  data-testid={`category-tab-${category.name}`}
+                >
+                  {category.label}
+                </motion.button>
+              ))}
+            </div>
+          )}
+
+          {/* Services filtered by category */}
+          {selectedCategory && (
+            <>
+              <div style={styles.sectionTitle}>
+                <Sparkles size={18} style={{ color: '#ef4444' }} />
+                {categories.find(c => c.name === selectedCategory)?.label || 'Services'}
+              </div>
+              <div style={styles.serviceGrid}>
+                {availableServices
+                  .filter(service => service.category === selectedCategory)
+                  .map((service) => {
+                    const price = vehicleType
+                      ? service.base_price + vehicleUpcharge + locationUpcharge + pickupDeliveryCharge
+                      : 'Select vehicle';
+                    return (
+                      <ServiceCard
+                        key={service.id}
+                        service={{
+                          ...service,
+                          name: service.name,
+                          description: service.description,
+                          icon: Sparkles
+                        }}
+                        price={price}
+                        selected={selectedServices.some(s => s.id === service.id)}
+                        disabled={!canCombineService(service) && !selectedServices.some(s => s.id === service.id)}
+                        onClick={() => toggleServiceSelection(service)}
+                      />
+                    );
+                  })}
+              </div>
+              {availableServices.filter(service => service.category === selectedCategory).length === 0 && (
+                <div style={styles.emptyServices}>
+                  <p>No services available in this category.</p>
+                </div>
+              )}
+            </>
+          )}
         </motion.div>
 
         {/* STEP 5 & 6 – DATE & TIME */}
@@ -2036,10 +2213,12 @@ export default function BookAppointment() {
                 <div>
                   <h3 style={styles.confirmTitle}>CONFIRM YOUR BOOKING</h3>
                   <div style={styles.confirmDetails}>
-                    <div style={styles.confirmDetail}>
-                      <Sparkles size={16} style={styles.confirmIcon} />
-                      {selectedService?.name}
-                    </div>
+                    {selectedServices.map((service, idx) => (
+                      <div key={service.id} style={styles.confirmDetail}>
+                        <Sparkles size={16} style={styles.confirmIcon} />
+                        {service.name} ({service.duration_minutes || 60} min)
+                      </div>
+                    ))}
                     <div style={styles.confirmDetail}>
                       <MapPin size={16} style={styles.confirmIcon} />
                       {serviceLocation?.label}
@@ -2222,22 +2401,25 @@ function VehicleTypeCard({ type, selected, onClick }) {
   );
 }
 
-function ServiceCard({ service, price, selected, onClick }) {
+function ServiceCard({ service, price, selected, onClick, disabled }) {
   const [hovered, setHovered] = useState(false);
   const Icon = service.icon;
-  
+
   return (
     <motion.button
-      whileHover={{ scale: 1.02, y: -4 }}
-      whileTap={{ scale: 0.98 }}
-      onClick={onClick}
+      whileHover={!disabled ? { scale: 1.02, y: -4 } : {}}
+      whileTap={!disabled ? { scale: 0.98 } : {}}
+      onClick={disabled ? undefined : onClick}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
         ...styles.serviceCard(selected),
         borderColor: hovered && !selected ? 'rgba(255,255,255,0.2)' : selected ? '#dc2626' : 'rgba(255,255,255,0.08)',
+        opacity: disabled ? 0.4 : 1,
+        cursor: disabled ? 'not-allowed' : 'pointer',
       }}
       data-testid={`service-${service.id}`}
+      disabled={disabled}
     >
       {service.popular && (
         <div style={styles.popularBadge}>POPULAR</div>
@@ -2259,32 +2441,84 @@ function ServiceCard({ service, price, selected, onClick }) {
 
 function CalendarPicker({ selected, onSelect }) {
   const [viewDate, setViewDate] = useState(new Date());
+  const [closedDates, setClosedDates] = useState([]);
+  const [businessHours, setBusinessHours] = useState([]);
+  const [minimumNoticeDays, setMinimumNoticeDays] = useState(1);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
+  // Calculate minimum bookable date
+  const minBookableDate = new Date(today);
+  minBookableDate.setDate(minBookableDate.getDate() + minimumNoticeDays);
+  minBookableDate.setHours(0, 0, 0, 0);
+
   const currentMonth = viewDate.toLocaleString('default', { month: 'long' });
   const currentYear = viewDate.getFullYear();
   const viewMonth = viewDate.getMonth();
   const daysInMonth = new Date(currentYear, viewMonth + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentYear, viewMonth, 1).getDay();
-  
+
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  
+  const dayNamesLower = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+  // Fetch schedule (closed dates and business hours) and business settings
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/schedule`);
+        if (response.ok) {
+          const data = await response.json();
+          setClosedDates(data.closed_dates || []);
+          setBusinessHours(data.business_hours || []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch schedule:', err);
+      }
+    };
+
+    const fetchBusinessSettings = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/settings/business`);
+        if (response.ok) {
+          const data = await response.json();
+          setMinimumNoticeDays(data.minimum_booking_notice_days || 1);
+        }
+      } catch (err) {
+        console.error('Failed to fetch business settings:', err);
+      }
+    };
+
+    fetchSchedule();
+    fetchBusinessSettings();
+  }, []);
+
   const handlePrevMonth = () => {
     setViewDate(new Date(currentYear, viewMonth - 1, 1));
   };
-  
+
   const handleNextMonth = () => {
     setViewDate(new Date(currentYear, viewMonth + 1, 1));
   };
-  
+
   const isDateSelected = (day) => {
     if (!selected) return false;
-    return selected.getDate() === day && 
-           selected.getMonth() === viewMonth && 
+    return selected.getDate() === day &&
+           selected.getMonth() === viewMonth &&
            selected.getFullYear() === currentYear;
   };
-  
+
+  const isDateClosed = (day) => {
+    const dateStr = `${currentYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return closedDates.some(cd => cd.date === dateStr);
+  };
+
+  const isDayOfWeekOpen = (dayOfWeek) => {
+    // dayOfWeek: 0 = Sunday, 1 = Monday, etc.
+    const dayName = dayNamesLower[dayOfWeek];
+    const daySchedule = businessHours.find(h => h.day === dayName);
+    return daySchedule ? daySchedule.is_open : true; // Default to open if not found
+  };
+
   return (
     <div>
       <div style={styles.calendarHeader}>
@@ -2315,19 +2549,34 @@ function CalendarPicker({ selected, onSelect }) {
           const day = i + 1;
           const dateForDay = new Date(currentYear, viewMonth, day);
           dateForDay.setHours(0, 0, 0, 0);
-          const isPast = dateForDay < today;
+          const dayOfWeek = dateForDay.getDay();
+          const isPast = dateForDay < minBookableDate;
           const isToday = dateForDay.getTime() === today.getTime();
           const isSelected = isDateSelected(day);
-          
+          const isClosed = isDateClosed(day);
+          const isDayNotOpen = !isDayOfWeekOpen(dayOfWeek);
+          const isDisabled = isPast || isClosed || isDayNotOpen;
+
+          // Determine tooltip message
+          let tooltipMessage = '';
+          if (isClosed) {
+            tooltipMessage = 'Closed';
+          } else if (isDayNotOpen) {
+            tooltipMessage = `Closed - ${weekDays[dayOfWeek]} not available`;
+          } else if (isPast && dateForDay >= today) {
+            tooltipMessage = `Minimum ${minimumNoticeDays} day${minimumNoticeDays > 1 ? 's' : ''} notice required`;
+          }
+
           return (
             <motion.button
               key={day}
-              whileHover={!isPast ? { scale: 1.15 } : {}}
-              whileTap={!isPast ? { scale: 0.95 } : {}}
-              onClick={() => !isPast && onSelect(new Date(currentYear, viewMonth, day))}
-              disabled={isPast}
-              style={styles.calendarDay(isSelected, isToday, isPast)}
+              whileHover={!isDisabled ? { scale: 1.15 } : {}}
+              whileTap={!isDisabled ? { scale: 0.95 } : {}}
+              onClick={() => !isDisabled && onSelect(new Date(currentYear, viewMonth, day))}
+              disabled={isDisabled}
+              style={styles.calendarDay(isSelected, isToday, isPast, isClosed || isDayNotOpen)}
               data-testid={`calendar-day-${day}`}
+              title={tooltipMessage}
             >
               {day}
             </motion.button>

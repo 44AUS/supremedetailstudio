@@ -401,6 +401,13 @@ export default function AdminBookings() {
             </div>
             
             <div style={styles.modalContent}>
+              {/* Booking Reference */}
+              <div style={styles.bookingReference}>
+                <span style={styles.referenceLabel}>Customer Ref:</span>
+                <span style={styles.referenceValue}>#{selectedBooking.id?.slice(-8).toUpperCase()}</span>
+                <span style={styles.fullIdLabel}>Full ID: {selectedBooking.id}</span>
+              </div>
+
               {/* Status Section */}
               <div style={styles.statusSection}>
                 <span style={styles.modalLabel}>Status:</span>
@@ -489,12 +496,110 @@ export default function AdminBookings() {
                 </div>
               </div>
 
-              {/* Service & Price */}
+              {/* Service Details */}
               <div style={styles.infoSection}>
-                <h3 style={styles.infoTitle}>Service & Price</h3>
-                <div style={styles.priceSection}>
-                  <span style={styles.serviceName}>{selectedBooking.service_name}</span>
-                  <span style={styles.totalPrice}>${selectedBooking.total_price?.toFixed(2)}</span>
+                <h3 style={styles.infoTitle}>
+                  <MapPin size={18} />
+                  Service Details
+                </h3>
+                <div style={styles.serviceDetailsGrid}>
+                  <div style={styles.detailItem}>
+                    <span style={styles.detailLabel}>Service Location:</span>
+                    <span style={styles.detailValue}>
+                      {selectedBooking.service_location === 'shop' ? '🏪 In Shop' : '🚗 Mobile Service'}
+                    </span>
+                  </div>
+                  {selectedBooking.service_location === 'shop' && (
+                    <>
+                      <div style={styles.detailItem}>
+                        <span style={styles.detailLabel}>Pickup & Delivery:</span>
+                        <span style={styles.detailValue}>
+                          {selectedBooking.pickup_delivery === 'yes' ? '✅ Yes' : selectedBooking.pickup_delivery === 'no' ? '❌ No' : 'Not specified'}
+                        </span>
+                      </div>
+                      {selectedBooking.pickup_delivery === 'yes' && selectedBooking.pickup_distance && (
+                        <div style={styles.detailItem}>
+                          <span style={styles.detailLabel}>Pickup Distance:</span>
+                          <span style={styles.detailValue}>
+                            {selectedBooking.pickup_distance === 'under15' ? 'Under 15 miles (+$50)' : 'Over 15 miles (+$75)'}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Service & Price Breakdown */}
+              <div style={styles.infoSection}>
+                <h3 style={styles.infoTitle}>Service & Price Breakdown</h3>
+                <div style={styles.priceBreakdown}>
+                  {/* Display all services if multi-service booking, otherwise show single service */}
+                  {selectedBooking.services && selectedBooking.services.length > 0 ? (
+                    selectedBooking.services.map((service, idx) => (
+                      <div key={idx} style={styles.priceRow}>
+                        <span style={styles.priceLabel}>
+                          {service.service_name}
+                          <span style={{ fontSize: '11px', color: '#6b7280', marginLeft: '8px' }}>
+                            ({service.duration_minutes || 60} min)
+                          </span>
+                        </span>
+                        <span style={styles.priceValue}>${service.base_price?.toFixed(2)}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={styles.priceRow}>
+                      <span style={styles.priceLabel}>{selectedBooking.service_name}</span>
+                      <span style={styles.priceValue}>
+                        {(() => {
+                          // Find the service to get base price
+                          const service = services.find(s => s.id === selectedBooking.service_id);
+                          if (service) {
+                            return `$${service.base_price?.toFixed(2)}`;
+                          }
+                          return 'Base price';
+                        })()}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Vehicle Type Upcharge */}
+                  {selectedBooking.vehicle_type && selectedBooking.vehicle_type !== 'sedan' && (
+                    <div style={styles.priceRow}>
+                      <span style={styles.priceLabel}>
+                        Vehicle Size ({selectedBooking.vehicle_type === 'suv-2row' ? '2-Row SUV' : '3-Row SUV'})
+                      </span>
+                      <span style={styles.priceValue}>
+                        +${selectedBooking.vehicle_type === 'suv-2row' ? '50.00' : '100.00'}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Mobile Service Upcharge */}
+                  {selectedBooking.service_location === 'mobile' && (
+                    <div style={styles.priceRow}>
+                      <span style={styles.priceLabel}>Mobile Service Fee</span>
+                      <span style={styles.priceValue}>+$50.00</span>
+                    </div>
+                  )}
+
+                  {/* Pickup & Delivery Charge */}
+                  {selectedBooking.pickup_delivery === 'yes' && (
+                    <div style={styles.priceRow}>
+                      <span style={styles.priceLabel}>
+                        Pickup & Delivery ({selectedBooking.pickup_distance === 'over15' ? '>15mi' : '<15mi'})
+                      </span>
+                      <span style={styles.priceValue}>
+                        +${selectedBooking.pickup_distance === 'over15' ? '75.00' : '50.00'}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Total */}
+                  <div style={{...styles.priceRow, ...styles.totalRow}}>
+                    <span style={styles.totalLabel}>TOTAL</span>
+                    <span style={styles.totalPrice}>${selectedBooking.total_price?.toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
 
@@ -1021,6 +1126,38 @@ const styles = {
   modalContent: {
     padding: '24px',
   },
+  bookingReference: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '16px',
+    background: 'rgba(232, 2, 0, 0.05)',
+    border: '1px solid rgba(232, 2, 0, 0.2)',
+    marginBottom: '24px',
+  },
+  referenceLabel: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '12px',
+    fontWeight: 700,
+    color: '#ababab',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  referenceValue: {
+    fontFamily: "'Courier New', monospace",
+    fontSize: '18px',
+    fontWeight: 700,
+    color: '#e80200',
+    letterSpacing: '1px',
+    userSelect: 'all',
+  },
+  fullIdLabel: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '11px',
+    color: '#6b7280',
+    marginLeft: 'auto',
+    userSelect: 'all',
+  },
   statusSection: {
     marginBottom: '24px',
     paddingBottom: '24px',
@@ -1137,6 +1274,43 @@ const styles = {
     background: '#0a0a0a',
     border: '1px solid #262626',
   },
+  priceBreakdown: {
+    padding: '16px',
+    background: '#0a0a0a',
+    border: '1px solid #262626',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+  priceRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingBottom: '8px',
+  },
+  priceLabel: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    color: '#ababab',
+  },
+  priceValue: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#fff',
+  },
+  totalRow: {
+    paddingTop: '12px',
+    borderTop: '2px solid #262626',
+    marginTop: '4px',
+  },
+  totalLabel: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '16px',
+    fontWeight: 700,
+    color: '#fff',
+    letterSpacing: '1px',
+  },
   serviceName: {
     fontFamily: "'Oswald', sans-serif",
     fontSize: '16px',
@@ -1161,5 +1335,181 @@ const styles = {
     fontFamily: "'Montserrat', sans-serif",
     lineHeight: 1.6,
     margin: 0,
+  },
+  serviceDetailsGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    padding: '16px',
+    background: '#0a0a0a',
+    border: '1px solid #262626',
+  },
+  detailItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  detailLabel: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '13px',
+    color: '#ababab',
+  },
+  detailValue: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#fff',
+  },
+  modalActions: {
+    display: 'flex',
+    gap: '12px',
+    marginTop: '24px',
+    paddingTop: '24px',
+    borderTop: '1px solid #262626',
+  },
+  editBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 20px',
+    background: 'rgba(59, 130, 246, 0.1)',
+    border: '1px solid rgba(59, 130, 246, 0.3)',
+    color: '#3b82f6',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    letterSpacing: '0.5px',
+  },
+  deleteBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 20px',
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
+    color: '#ef4444',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    letterSpacing: '0.5px',
+  },
+  editModal: {
+    width: '100%',
+    maxWidth: '800px',
+    maxHeight: '90vh',
+    background: '#0a0a0a',
+    border: '1px solid #262626',
+    overflow: 'auto',
+  },
+  formSection: {
+    marginBottom: '24px',
+    paddingBottom: '24px',
+    borderBottom: '1px solid #262626',
+  },
+  formSectionTitle: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 700,
+    color: '#e80200',
+    margin: '0 0 16px 0',
+    letterSpacing: '1px',
+  },
+  formGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '16px',
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  formLabel: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '12px',
+    fontWeight: 600,
+    color: '#ababab',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  formInput: {
+    width: '100%',
+    padding: '12px 14px',
+    background: '#111111',
+    border: '1px solid #262626',
+    color: '#fff',
+    fontSize: '14px',
+    fontFamily: "'Montserrat', sans-serif",
+    outline: 'none',
+    boxSizing: 'border-box',
+  },
+  formSelect: {
+    width: '100%',
+    padding: '12px 14px',
+    background: '#111111',
+    border: '1px solid #262626',
+    color: '#fff',
+    fontSize: '14px',
+    fontFamily: "'Montserrat', sans-serif",
+    outline: 'none',
+    boxSizing: 'border-box',
+    cursor: 'pointer',
+  },
+  formTextarea: {
+    width: '100%',
+    padding: '12px 14px',
+    background: '#111111',
+    border: '1px solid #262626',
+    color: '#fff',
+    fontSize: '14px',
+    fontFamily: "'Montserrat', sans-serif",
+    outline: 'none',
+    boxSizing: 'border-box',
+    resize: 'vertical',
+  },
+  formActions: {
+    display: 'flex',
+    gap: '12px',
+    justifyContent: 'flex-end',
+    marginTop: '24px',
+  },
+  cancelBtn: {
+    padding: '12px 24px',
+    background: 'transparent',
+    border: '1px solid #262626',
+    color: '#ababab',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    letterSpacing: '0.5px',
+  },
+  saveBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 24px',
+    background: '#e80200',
+    border: 'none',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 700,
+    cursor: 'pointer',
+    letterSpacing: '1px',
+  },
+  errorBox: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '12px 16px',
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
+    color: '#ef4444',
+    fontSize: '14px',
+    marginBottom: '20px',
+    fontFamily: "'Montserrat', sans-serif",
   },
 };

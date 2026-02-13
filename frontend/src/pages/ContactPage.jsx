@@ -9,6 +9,7 @@ import {Input, Textarea} from "@nextui-org/react";
 import ContactUsHero from '../components/Heroes/ContactUsHero';
 import { Helmet } from 'react-helmet';
 import Map from '../components/Map';
+import ContactForm from '../components/ContactForm';
 
 
 const useStyles = createStyles((theme) => ({
@@ -244,53 +245,7 @@ const Contact = () => {
           </div>
           <div className={classes.form}>
             <Title className={classes.formTitle}>COMPLETE THE FORM BELOW</Title>
-            <iframe src="https://app.urable.com/form/SxuPVxIQ2P7KOV77y6qD/kEZWtaMuEwfT2Bjc92tK" className={classes.contactBox} scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" height="900px" width="100%"></iframe>
-            {/* <iframe src="https://app.urable.com/form/rB9FHJFIfifYgU8Ty9Yw/LylS3TUIRYzhBmg9pjjp" className={classes.contactBox} scrolling="no" frameborder="0" marginheight="0px" marginwidth="0px" height="900px" width="100%"></iframe> */}
-            {/* <form ref={form} onSubmit={sendEmail}>
-            <div className="w-full grid grid-cols-1 gap-4">
-            <Input
-
-      type="name"
-      name="from_name"
-      pattern="^(\w\w+)\s(\w+)$"
-      label="First and Last Name"
-      variant="bordered"
-      className="max"
-    />
-                          <Input
-
-type="email"
-name="email"
-label="Email"
-variant="bordered"
-className="max"
-/>
-                          <Input
-
-type="number"
-name="number"
-label="Phone Number"
-variant="bordered"
-className="max"
-/>
-
-<Textarea
-      label="Questions/Comments"
-      variant="bordered"
-      labelPlacement="inside"
-      // value="Please give us a brief description of your questions, comments, or concerns."
-      className="max"
-      name="description"
-    />
-              </div>
-              <div style={{ margin: 'auto', marginTop: '15px', display: 'block', float: 'right' }}>
-          <Button 
-          type="submit" radius="none" size="md" variant="shadow" style={{ backgroundColor: 'rgb(232, 2, 0)', fontFamily: 'SceneProRg', letterSpacing: '3px', textTransform: 'uppercase' }}
-          >
-            Send Message
-          </Button>
-              </div>
-            </form> */}
+            <ContactForm />
           </div>
         </SimpleGrid>
       </div>

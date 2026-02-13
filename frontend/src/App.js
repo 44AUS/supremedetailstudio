@@ -57,6 +57,7 @@ import AdminServices from './pages/admin/AdminServices';
 import AdminSchedule from './pages/admin/AdminSchedule';
 import AdminBookings from './pages/admin/AdminBookings';
 import AdminCustomers from './pages/admin/AdminCustomers';
+import AdminContacts from './pages/admin/AdminContacts';
 
 function MainApp() {
 
@@ -148,6 +149,7 @@ function AdminRoutes() {
         <Route path="schedule" element={<AdminSchedule />} />
         <Route path="bookings" element={<AdminBookings />} />
         <Route path="customers" element={<AdminCustomers />} />
+        <Route path="contacts" element={<AdminContacts />} />
       </Route>
     </Routes>
   );

@@ -137,14 +137,15 @@ export default function AdminServices() {
   const [showSettingsForm, setShowSettingsForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [categoryFormData, setCategoryFormData] = useState({ name: '', label: '', description: '', sort_order: 0 });
+  const [categoryFormData, setCategoryFormData] = useState({ name: '', label: '', description: '', sort_order: 0, can_combine_with: [] });
   const [businessSettings, setBusinessSettings] = useState({
     shop_name: '',
     shop_address: '',
     shop_phone: '',
     shop_email: '',
     mobile_service_upcharge: 50,
-    mobile_service_description: 'We come to you'
+    mobile_service_description: 'We come to you',
+    minimum_booking_notice_days: 1
   });
 
   const sensors = useSensors(
@@ -288,7 +289,7 @@ export default function AdminServices() {
   // Category CRUD functions
   const handleAddCategory = () => {
     setEditingCategory(null);
-    setCategoryFormData({ name: '', label: '', description: '', sort_order: categories.length + 1 });
+    setCategoryFormData({ name: '', label: '', description: '', sort_order: categories.length + 1, can_combine_with: [] });
     setShowCategoryForm(true);
   };
 
@@ -298,7 +299,8 @@ export default function AdminServices() {
       name: category.name,
       label: category.label,
       description: category.description || '',
-      sort_order: category.sort_order || 0
+      sort_order: category.sort_order || 0,
+      can_combine_with: category.can_combine_with || []
     });
     setShowCategoryForm(true);
   };
@@ -546,6 +548,19 @@ export default function AdminServices() {
                   data-testid="mobile-description-input"
                 />
               </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Minimum Booking Notice (days)</label>
+                <input
+                  type="number"
+                  value={businessSettings.minimum_booking_notice_days}
+                  onChange={(e) => setBusinessSettings({ ...businessSettings, minimum_booking_notice_days: parseInt(e.target.value) || 1 })}
+                  style={styles.input}
+                  min="0"
+                  max="30"
+                  data-testid="minimum-notice-input"
+                />
+                <span style={styles.helpText}>Customers must book at least this many days in advance (0 = same-day booking allowed)</span>
+              </div>
               <div style={styles.modalFooter}>
                 <button onClick={() => setShowSettingsForm(false)} style={styles.cancelBtn}>Cancel</button>
                 <button onClick={handleSaveBusinessSettings} disabled={saving} style={styles.saveBtn} data-testid="save-settings-btn">
@@ -605,6 +620,34 @@ export default function AdminServices() {
                   rows={2}
                   data-testid="category-description-input"
                 />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Can Combine With (for multi-service bookings)</label>
+                <div style={styles.checkboxGrid}>
+                  {categories
+                    .filter(cat => cat.name !== categoryFormData.name)
+                    .map(cat => (
+                      <label key={cat.name} style={styles.checkboxLabel}>
+                        <input
+                          type="checkbox"
+                          checked={categoryFormData.can_combine_with.includes(cat.name)}
+                          onChange={(e) => {
+                            const newCombineWith = e.target.checked
+                              ? [...categoryFormData.can_combine_with, cat.name]
+                              : categoryFormData.can_combine_with.filter(c => c !== cat.name);
+                            setCategoryFormData({ ...categoryFormData, can_combine_with: newCombineWith });
+                          }}
+                          style={styles.checkbox}
+                          data-testid={`combine-with-${cat.name}`}
+                        />
+                        <span>{cat.label}</span>
+                      </label>
+                    ))}
+                  {categories.filter(cat => cat.name !== categoryFormData.name).length === 0 && (
+                    <span style={styles.helpText}>Add more categories to enable multi-service combinations</span>
+                  )}
+                </div>
+                <span style={styles.helpText}>Select which categories can be booked together with this one</span>
               </div>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Sort Order</label>
@@ -1372,5 +1415,28 @@ const styles = {
     color: '#525252',
     fontWeight: 400,
     marginLeft: '8px',
+  },
+  checkboxGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    padding: '12px',
+    background: '#111111',
+    border: '1px solid #262626',
+  },
+  checkboxLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    color: '#ababab',
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '13px',
+    cursor: 'pointer',
+  },
+  checkbox: {
+    width: '16px',
+    height: '16px',
+    cursor: 'pointer',
+    accentColor: '#e80200',
   },
 };

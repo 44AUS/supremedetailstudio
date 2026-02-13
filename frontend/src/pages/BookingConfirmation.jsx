@@ -112,13 +112,35 @@ export default function BookingConfirmation() {
             </div>
           </div>
 
-          {/* Service */}
+          {/* Service(s) */}
           <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>SERVICE</h3>
-            <div style={styles.serviceBox}>
-              <span style={styles.serviceName}>{booking?.service_name}</span>
-              <span style={styles.servicePrice}>${booking?.total_price?.toFixed(2)}</span>
-            </div>
+            <h3 style={styles.sectionTitle}>SERVICE{booking?.services?.length > 1 ? 'S' : ''}</h3>
+            {booking?.services && booking.services.length > 0 ? (
+              <>
+                {booking.services.map((service, idx) => (
+                  <div key={idx} style={{...styles.serviceBox, marginBottom: idx < booking.services.length - 1 ? '8px' : '0'}}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <span style={styles.serviceName}>{service.service_name}</span>
+                      <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: '#ababab' }}>
+                        {service.duration_minutes || 60} minutes
+                      </span>
+                    </div>
+                    <span style={styles.servicePrice}>${service.base_price?.toFixed(2)}</span>
+                  </div>
+                ))}
+                {booking.services.length > 1 && (
+                  <div style={{...styles.serviceBox, marginTop: '12px', background: '#0a0a0a', borderColor: '#e80200'}}>
+                    <span style={{...styles.serviceName, color: '#e80200'}}>TOTAL ({booking.total_duration || 0} min)</span>
+                    <span style={{...styles.servicePrice, color: '#e80200'}}>${booking?.total_price?.toFixed(2)}</span>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={styles.serviceBox}>
+                <span style={styles.serviceName}>{booking?.service_name}</span>
+                <span style={styles.servicePrice}>${booking?.total_price?.toFixed(2)}</span>
+              </div>
+            )}
           </div>
 
           {/* Vehicle */}
