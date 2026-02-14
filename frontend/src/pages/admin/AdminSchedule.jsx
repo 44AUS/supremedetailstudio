@@ -87,20 +87,49 @@ export default function AdminSchedule() {
     }));
   };
 
-  const addClosedDate = () => {
+  const addClosedDate = async () => {
     if (!newClosedDate.date) return;
-    setSchedule(prev => ({
-      ...prev,
-      closed_dates: [...prev.closed_dates, { ...newClosedDate }],
-    }));
-    setNewClosedDate({ date: '', reason: '' });
+    setError('');
+    try {
+      const response = await fetch(`${API_URL}/api/schedule/closed-dates`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({
+          date: newClosedDate.date,
+          reason: newClosedDate.reason || 'Holiday',
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to add closed date');
+      setSchedule(prev => ({
+        ...prev,
+        closed_dates: [...prev.closed_dates, { date: newClosedDate.date, reason: newClosedDate.reason || 'Holiday' }],
+      }));
+      setNewClosedDate({ date: '', reason: '' });
+    } catch (err) {
+      setError('Failed to add closed date');
+    }
   };
 
-  const removeClosedDate = (date) => {
-    setSchedule(prev => ({
-      ...prev,
-      closed_dates: prev.closed_dates.filter(d => d.date !== date),
-    }));
+  const removeClosedDate = async (date) => {
+    setError('');
+    try {
+      const response = await fetch(`${API_URL}/api/schedule/closed-dates/${date}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+      if (!response.ok) throw new Error('Failed to remove closed date');
+      setSchedule(prev => ({
+        ...prev,
+        closed_dates: prev.closed_dates.filter(d => d.date !== date),
+      }));
+    } catch (err) {
+      setError('Failed to remove closed date');
+    }
   };
 
   if (loading) {

@@ -11,6 +11,7 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     // Verify auth on mount
@@ -35,6 +36,32 @@ export default function AdminLayout() {
     };
     verifyToken();
   }, [navigate]);
+
+  // Fetch unread message count
+  useEffect(() => {
+    const fetchUnreadCount = async () => {
+      const token = localStorage.getItem('adminToken');
+      if (!token) return;
+
+      try {
+        const response = await fetch(`${API_URL}/api/admin/contact-messages`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const unread = data.messages.filter(msg => !msg.read).length;
+          setUnreadCount(unread);
+        }
+      } catch (error) {
+        console.error('Failed to fetch unread count:', error);
+      }
+    };
+
+    fetchUnreadCount();
+    // Refresh count every 30 seconds
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
@@ -78,6 +105,7 @@ export default function AdminLayout() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
+            const showBadge = item.path === '/admin/contacts' && unreadCount > 0;
             return (
               <NavLink
                 key={item.path}
@@ -91,6 +119,9 @@ export default function AdminLayout() {
               >
                 <Icon size={20} />
                 <span>{item.label}</span>
+                {showBadge && (
+                  <span style={styles.unreadBadge}>{unreadCount}</span>
+                )}
                 {isActive && <ChevronRight size={16} style={styles.navArrow} />}
               </NavLink>
             );
@@ -219,6 +250,21 @@ const styles = {
   navArrow: {
     marginLeft: 'auto',
     color: '#e80200',
+  },
+  unreadBadge: {
+    marginLeft: 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: '20px',
+    height: '20px',
+    padding: '0 6px',
+    borderRadius: '10px',
+    background: '#e80200',
+    color: '#fff',
+    fontSize: '11px',
+    fontWeight: 700,
+    fontFamily: "'Montserrat', sans-serif",
   },
   sidebarFooter: {
     padding: '20px 24px',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -345,6 +345,7 @@ const styles = {
     background: '#000',
     position: 'relative',
     overflow: 'hidden',
+    fontFamily: "'Montserrat', sans-serif",
   },
   gradientOverlay: {
     position: 'absolute',
@@ -391,6 +392,7 @@ const styles = {
     fontSize: '14px',
     fontWeight: 500,
     marginBottom: '24px',
+    fontFamily: "'Montserrat', sans-serif",
   },
   title: {
     fontSize: 'clamp(32px, 6vw, 56px)',
@@ -410,6 +412,7 @@ const styles = {
     maxWidth: '600px',
     margin: '0 auto',
     lineHeight: 1.6,
+    fontFamily: "'Montserrat', sans-serif",
   },
   progressContainer: {
     maxWidth: '700px',
@@ -456,6 +459,7 @@ const styles = {
     justifyContent: 'center',
     fontSize: '14px',
     fontWeight: 700,
+    fontFamily: "'Montserrat', sans-serif",
     transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
     background: completed
       ? 'linear-gradient(135deg, #dc2626, #b91c1c)'
@@ -479,6 +483,7 @@ const styles = {
     marginTop: '10px',
     fontSize: '12px',
     fontWeight: 600,
+    fontFamily: "'Montserrat', sans-serif",
     color: completed ? '#dc2626' : active ? '#fff' : 'rgba(255,255,255,0.4)',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
@@ -543,6 +548,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '6px',
+    fontFamily: "'Montserrat', sans-serif",
   },
   required: {
     color: '#ef4444',
@@ -567,6 +573,7 @@ const styles = {
     border: '1px solid rgba(255,255,255,0.08)',
     color: '#fff',
     fontSize: '15px',
+    fontFamily: "'Montserrat', sans-serif",
     outline: 'none',
     transition: 'all 0.3s ease',
   }),
@@ -580,6 +587,7 @@ const styles = {
     border: '1px solid rgba(255,255,255,0.08)',
     color: '#fff',
     fontSize: '15px',
+    fontFamily: "'Montserrat', sans-serif",
     outline: 'none',
     transition: 'all 0.3s ease',
     cursor: 'pointer',
@@ -597,6 +605,15 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
     gap: '16px',
+  },
+  noOptionsMessage: {
+    padding: '40px 20px',
+    textAlign: 'center',
+    background: 'rgba(239, 68, 68, 0.1)',
+    borderRadius: '18px',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
+    gridColumn: '1 / -1',
+    fontFamily: "'Montserrat', sans-serif",
   },
   locationCard: (selected) => ({
     position: 'relative',
@@ -1038,14 +1055,16 @@ const styles = {
     fontWeight: 500,
     cursor: (isPast || isClosed) ? 'not-allowed' : 'pointer',
     transition: 'all 0.2s ease',
+    border: 'none',
+    padding: 0,
     background: selected ? '#dc2626'
               : isClosed ? 'rgba(239, 68, 68, 0.1)'
               : isToday ? 'rgba(255,255,255,0.1)'
               : 'rgba(255,255,255,0.03)',
     color: (isPast || isClosed) ? 'rgba(255,255,255,0.3)' : selected ? '#fff' : '#fff',
-    border: isClosed ? '1px solid rgba(239, 68, 68, 0.3)'
-          : isToday && !selected ? '1px solid rgba(220, 38, 38, 0.5)'
-          : 'none',
+    ...(isClosed ? { border: '1px solid rgba(239, 68, 68, 0.3)' }
+          : isToday && !selected ? { border: '1px solid rgba(220, 38, 38, 0.5)' }
+          : {}),
     boxShadow: selected ? '0 8px 20px rgba(220, 38, 38, 0.4)' : 'none',
     textDecoration: isClosed ? 'line-through' : 'none',
   }),
@@ -1132,6 +1151,7 @@ const styles = {
     border: '1px solid rgba(255,255,255,0.1)',
     color: '#fff',
     fontSize: '14px',
+    fontFamily: "'Montserrat', sans-serif",
     resize: 'none',
     outline: 'none',
     boxSizing: 'border-box',
@@ -1188,6 +1208,7 @@ export default function BookAppointment() {
   const [serviceLocation, setServiceLocation] = useState(null);
   const [pickupDelivery, setPickupDelivery] = useState(null); // null, 'yes', or 'no'
   const [pickupDistance, setPickupDistance] = useState('under15'); // 'under15' or 'over15'
+  const [calculatedDistance, setCalculatedDistance] = useState(null); // Actual distance in miles from shop
   const [mobileUtilitiesConfirmed, setMobileUtilitiesConfirmed] = useState(false); // For mobile service water/electric confirmation
   const [vehicle, setVehicle] = useState({ year: '', make: '', model: '' });
   const [vehicleType, setVehicleType] = useState(null);
@@ -1212,6 +1233,9 @@ export default function BookAppointment() {
   const [models, setModels] = useState([]);
   const [loadingMakes, setLoadingMakes] = useState(false);
   const [loadingModels, setLoadingModels] = useState(false);
+
+  // Google Places Autocomplete ref
+  const addressInputRef = useRef(null);
 
   // Convert 24h time format to 12h AM/PM
   const formatTime24to12 = useCallback((time24) => {
@@ -1242,29 +1266,110 @@ export default function BookAppointment() {
         if (response.ok) {
           const data = await response.json();
           setBusinessSettings(data);
-          // Update service locations with business settings
-          setServiceLocations([
-            { 
-              id: 'shop', 
-              label: 'In Shop', 
+
+          // Update service locations based on enabled settings
+          const availableLocations = [];
+
+          if (data.enable_shop_bookings !== false) {
+            availableLocations.push({
+              id: 'shop',
+              label: 'In Shop',
               description: `Drop off at ${data.shop_address || 'our shop location'}`,
               icon: Building2,
               upcharge: 0
-            },
-            { 
-              id: 'mobile', 
-              label: 'Mobile Service', 
+            });
+          }
+
+          if (data.enable_mobile_bookings !== false) {
+            availableLocations.push({
+              id: 'mobile',
+              label: 'Mobile Service',
               description: data.mobile_service_description || 'We come to you',
               icon: Truck,
-              upcharge: data.mobile_service_upcharge || 50
-            },
-          ]);
+              upcharge: data.mobile_service_upcharge ?? 50
+            });
+          }
+
+          setServiceLocations(availableLocations);
         }
       } catch (err) {
         console.error('Error fetching business settings:', err);
       }
     };
     fetchBusinessSettings();
+  }, []);
+
+  // Google Places Autocomplete
+  useEffect(() => {
+    // Load Google Places API script
+    const loadGooglePlacesScript = () => {
+      if (window.google && window.google.maps && window.google.maps.places) {
+        initAutocomplete();
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyCl9Jn6oebsNxjbZHjQe_YqCZ7lho36UZE&libraries=places,geometry`;
+      script.async = true;
+      script.defer = true;
+      script.onload = initAutocomplete;
+      document.head.appendChild(script);
+    };
+
+    const initAutocomplete = () => {
+      if (!addressInputRef.current) return;
+
+      const autocomplete = new window.google.maps.places.Autocomplete(addressInputRef.current, {
+        types: ['address'],
+        componentRestrictions: { country: 'us' },
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+        if (place.formatted_address) {
+          setFormData(prev => ({ ...prev, address: place.formatted_address }));
+
+          // Calculate distance from shop if business settings are available
+          if (businessSettings && businessSettings.shop_address && place.geometry) {
+            calculateDistance(place.geometry.location, businessSettings.shop_address);
+          }
+        }
+      });
+    };
+
+    // Calculate distance using Distance Matrix API
+    const calculateDistance = (customerLocation, shopAddress) => {
+      const service = new window.google.maps.DistanceMatrixService();
+
+      service.getDistanceMatrix(
+        {
+          origins: [shopAddress],
+          destinations: [customerLocation],
+          travelMode: window.google.maps.TravelMode.DRIVING,
+          unitSystem: window.google.maps.UnitSystem.IMPERIAL,
+        },
+        (response, status) => {
+          if (status === 'OK' && response.rows[0].elements[0].status === 'OK') {
+            const distanceInMeters = response.rows[0].elements[0].distance.value;
+            const distanceInMiles = (distanceInMeters / 1609.34).toFixed(1); // Convert meters to miles
+
+            setCalculatedDistance(parseFloat(distanceInMiles));
+
+            // Automatically set pickup distance based on calculated distance
+            if (parseFloat(distanceInMiles) <= 15) {
+              setPickupDistance('under15');
+            } else {
+              setPickupDistance('over15');
+            }
+          } else {
+            console.error('Distance calculation failed:', status);
+            setCalculatedDistance(null);
+          }
+        }
+      );
+    };
+
+    loadGooglePlacesScript();
   }, []);
 
   // Fetch services and categories from backend
@@ -1505,9 +1610,24 @@ export default function BookAppointment() {
     return PAINT_COLORS_BY_MAKE[makeKey] || PAINT_COLORS_BY_MAKE['Default'];
   };
 
+  // Map vehicle type ID to vehicle_pricing key
+  const getVehiclePricingKey = (typeId) => {
+    const map = { 'sedan': 'sedan', 'suv-2row': 'suv_2row', 'suv-3row': 'suv_3row' };
+    return map[typeId] || 'sedan';
+  };
+
+  // Get vehicle upcharge for a specific service based on selected vehicle type
+  const getServiceVehicleUpcharge = (service, vType) => {
+    if (!vType || !service.vehicle_pricing) return 0;
+    const key = getVehiclePricingKey(vType.id);
+    return service.vehicle_pricing[key] || 0;
+  };
+
   // Calculate total price and duration for all selected services
   const locationUpcharge = serviceLocation?.upcharge || 0;
-  const vehicleUpcharge = vehicleType?.upcharge || 0;
+  const vehicleUpcharge = selectedServices.reduce(
+    (sum, service) => sum + getServiceVehicleUpcharge(service, vehicleType), 0
+  );
 
   // Pickup & Delivery pricing
   let pickupDeliveryCharge = 0;
@@ -1744,13 +1864,14 @@ export default function BookAppointment() {
             />
           </div>
           <div style={{ marginTop: '20px' }}>
-            <InputField 
-              label="Address" 
+            <InputField
+              label="Address"
               icon={MapPin}
               value={formData.address}
               onChange={(v) => setFormData({...formData, address: v})}
               placeholder="123 Main St, Marietta, GA 30060"
               required
+              inputRef={addressInputRef}
             />
           </div>
         </motion.div>
@@ -1770,7 +1891,11 @@ export default function BookAppointment() {
           </div>
 
           <div style={{ ...styles.locationGrid, ...(isMobile && { gridTemplateColumns: '1fr' }) }}>
-            {serviceLocations.map((location) => {
+            {serviceLocations.length === 0 ? (
+              <div style={styles.noOptionsMessage}>
+                <p style={{ color: '#ef4444', margin: 0 }}>No booking options are currently available. Please contact us directly.</p>
+              </div>
+            ) : serviceLocations.map((location) => {
               const Icon = location.icon;
               return (
                 <motion.button
@@ -1805,7 +1930,8 @@ export default function BookAppointment() {
                   )}
                 </motion.button>
               );
-            })}
+            })
+          }
           </div>
 
           {/* Mobile Service Utilities Requirement - Only shows when Mobile is selected */}
@@ -1923,7 +2049,11 @@ export default function BookAppointment() {
                       >
                         <div style={styles.distanceNote}>
                           <Info size={16} style={{ color: '#ef4444', flexShrink: 0 }} />
-                          <span>Select the distance from our Marietta location to your address:</span>
+                          <span>
+                            {calculatedDistance !== null
+                              ? `Distance from our Marietta location: ${calculatedDistance} miles`
+                              : 'Select the distance from our Marietta location to your address:'}
+                          </span>
                         </div>
                         <div style={styles.distanceOptions}>
                           <motion.button
@@ -2008,14 +2138,19 @@ export default function BookAppointment() {
             Select your vehicle type:
           </p>
           <div style={styles.vehicleTypeGrid}>
-            {VEHICLE_TYPES.map((type) => (
-              <VehicleTypeCard
-                key={type.id}
-                type={type}
-                selected={vehicleType?.id === type.id}
-                onClick={() => setVehicleType(type)}
-              />
-            ))}
+            {VEHICLE_TYPES.map((type) => {
+              const typeUpcharge = selectedServices.reduce(
+                (sum, service) => sum + getServiceVehicleUpcharge(service, type), 0
+              );
+              return (
+                <VehicleTypeCard
+                  key={type.id}
+                  type={{ ...type, upcharge: typeUpcharge }}
+                  selected={vehicleType?.id === type.id}
+                  onClick={() => setVehicleType(type)}
+                />
+              );
+            })}
           </div>
 
           {/* Color Selection */}
@@ -2125,8 +2260,9 @@ export default function BookAppointment() {
                 {availableServices
                   .filter(service => service.category === selectedCategory)
                   .map((service) => {
+                    const serviceVehicleUp = getServiceVehicleUpcharge(service, vehicleType);
                     const price = vehicleType
-                      ? service.base_price + vehicleUpcharge + locationUpcharge + pickupDeliveryCharge
+                      ? service.base_price + serviceVehicleUp + locationUpcharge + pickupDeliveryCharge
                       : 'Select vehicle';
                     return (
                       <ServiceCard
@@ -2160,13 +2296,13 @@ export default function BookAppointment() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            style={styles.card}
+            style={{ ...styles.card, ...(isMobile && { padding: '20px 16px', borderRadius: '18px' }) }}
             data-testid="step-5-card"
           >
-            <div style={styles.stepHeader}>
-              <div style={styles.stepNumber}>5</div>
-              <h3 style={styles.stepTitle}>SELECT A DATE</h3>
-              <Calendar size={20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
+            <div style={{ ...styles.stepHeader, ...(isMobile && { gap: '12px', marginBottom: '20px' }) }}>
+              <div style={{ ...styles.stepNumber, ...(isMobile && { width: '36px', height: '36px', fontSize: '14px', borderRadius: '10px' }) }}>5</div>
+              <h3 style={{ ...styles.stepTitle, ...(isMobile && { fontSize: '16px' }) }}>SELECT A DATE</h3>
+              <Calendar size={isMobile ? 18 : 20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
             </div>
             <CalendarPicker selected={selectedDate} onSelect={setSelectedDate} />
           </motion.div>
@@ -2175,21 +2311,21 @@ export default function BookAppointment() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
-            style={styles.card}
+            style={{ ...styles.card, ...(isMobile && { padding: '20px 16px', borderRadius: '18px' }) }}
             data-testid="step-6-card"
           >
-            <div style={styles.stepHeader}>
-              <div style={styles.stepNumber}>6</div>
-              <h3 style={styles.stepTitle}>SELECT A TIME</h3>
-              <Clock size={20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
+            <div style={{ ...styles.stepHeader, ...(isMobile && { gap: '12px', marginBottom: '20px' }) }}>
+              <div style={{ ...styles.stepNumber, ...(isMobile && { width: '36px', height: '36px', fontSize: '14px', borderRadius: '10px' }) }}>6</div>
+              <h3 style={{ ...styles.stepTitle, ...(isMobile && { fontSize: '16px' }) }}>SELECT A TIME</h3>
+              <Clock size={isMobile ? 18 : 20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
             </div>
             {!selectedDate ? (
               <div style={styles.emptyTimeState}>
-                <Calendar size={48} style={styles.emptyTimeIcon} />
+                <Calendar size={isMobile ? 36 : 48} style={styles.emptyTimeIcon} />
                 <p style={styles.emptyTimeText}>Select a date to view available times</p>
               </div>
             ) : (
-              <TimeSlotPicker 
+              <TimeSlotPicker
                 slots={availableSlots}
                 selected={selectedTime}
                 onSelect={setSelectedTime}
@@ -2222,6 +2358,9 @@ export default function BookAppointment() {
                     <div style={styles.confirmDetail}>
                       <MapPin size={16} style={styles.confirmIcon} />
                       {serviceLocation?.label}
+                      {serviceLocation?.id === 'mobile' && locationUpcharge > 0 && (
+                        <span style={{ color: '#ef4444' }}> (+${locationUpcharge} fee)</span>
+                      )}
                       {serviceLocation?.id === 'shop' && pickupDelivery === 'yes' && (
                         <span style={{ color: '#ef4444' }}> + Pickup & Delivery ({pickupDistance === 'over15' ? '>15mi' : '<15mi'})</span>
                       )}
@@ -2251,15 +2390,32 @@ export default function BookAppointment() {
                   </div>
                 </div>
 
-                <textarea
-                  placeholder="Any special requests? (optional)"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  style={styles.textarea}
-                  data-testid="special-requests-textarea"
-                />
-
                 <div style={styles.confirmRight}>
+                  {/* Price Breakdown */}
+                  <div style={{ marginBottom: '16px', textAlign: 'right' }}>
+                    {selectedServices.map((service) => {
+                      const svcVehicleUp = getServiceVehicleUpcharge(service, vehicleType);
+                      return (
+                        <div key={service.id} style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>
+                          {service.name}: ${service.base_price + svcVehicleUp}
+                          {svcVehicleUp > 0 && (
+                            <span style={{ color: 'rgba(255,255,255,0.3)' }}> (incl. +${svcVehicleUp} {vehicleType?.label})</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {locationUpcharge > 0 && (
+                      <div style={{ fontSize: '13px', color: '#ef4444', marginBottom: '4px' }}>
+                        Mobile Service Fee: +${locationUpcharge}
+                      </div>
+                    )}
+                    {pickupDeliveryCharge > 0 && (
+                      <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>
+                        Pickup & Delivery: +${pickupDeliveryCharge}
+                      </div>
+                    )}
+                    <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '8px', paddingTop: '8px' }} />
+                  </div>
                   <div style={styles.totalLabel}>Total</div>
                   <div style={styles.totalPrice}>${totalPrice}</div>
                   {submitError && (
@@ -2292,6 +2448,14 @@ export default function BookAppointment() {
                     )}
                   </motion.button>
                 </div>
+
+                <textarea
+                  placeholder="Any special requests? (optional)"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  style={{ ...styles.textarea, maxWidth: '100%', marginTop: '24px' }}
+                  data-testid="special-requests-textarea"
+                />
               </div>
             </motion.div>
           )}
@@ -2309,9 +2473,9 @@ export default function BookAppointment() {
 
 /* ---------------- COMPONENTS ---------------- */
 
-function InputField({ label, icon: Icon, value, onChange, placeholder, type = 'text', required }) {
+function InputField({ label, icon: Icon, value, onChange, placeholder, type = 'text', required, inputRef }) {
   const [focused, setFocused] = useState(false);
-  
+
   return (
     <div style={styles.inputWrapper}>
       <label style={styles.label}>
@@ -2321,6 +2485,7 @@ function InputField({ label, icon: Icon, value, onChange, placeholder, type = 't
       <div style={styles.inputContainer}>
         {Icon && <Icon size={18} style={styles.inputIcon} />}
         <input
+          ref={inputRef}
           type={type}
           value={value}
           onChange={(e) => onChange?.(e.target.value)}
@@ -2444,6 +2609,7 @@ function CalendarPicker({ selected, onSelect }) {
   const [closedDates, setClosedDates] = useState([]);
   const [businessHours, setBusinessHours] = useState([]);
   const [minimumNoticeDays, setMinimumNoticeDays] = useState(1);
+  const calMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
@@ -2519,32 +2685,39 @@ function CalendarPicker({ selected, onSelect }) {
     return daySchedule ? daySchedule.is_open : true; // Default to open if not found
   };
 
+  const mobileCalStyles = calMobile ? {
+    weekdays: { gap: '2px', marginBottom: '6px' },
+    weekday: { fontSize: '10px', padding: '4px 0' },
+    days: { gap: '3px' },
+    day: { borderRadius: '8px', fontSize: '12px' },
+  } : {};
+
   return (
     <div>
       <div style={styles.calendarHeader}>
-        <div style={styles.calendarMonth}>{currentMonth} {currentYear}</div>
+        <div style={{ ...styles.calendarMonth, ...(calMobile && { fontSize: '16px' }) }}>{currentMonth} {currentYear}</div>
         <div style={styles.calendarNav}>
-          <button style={styles.calendarNavBtn} onClick={handlePrevMonth}>
-            <ChevronLeft size={18} />
+          <button style={{ ...styles.calendarNavBtn, ...(calMobile && { width: '32px', height: '32px' }) }} onClick={handlePrevMonth}>
+            <ChevronLeft size={calMobile ? 16 : 18} />
           </button>
-          <button style={styles.calendarNavBtn} onClick={handleNextMonth}>
-            <ChevronRight size={18} />
+          <button style={{ ...styles.calendarNavBtn, ...(calMobile && { width: '32px', height: '32px' }) }} onClick={handleNextMonth}>
+            <ChevronRight size={calMobile ? 16 : 18} />
           </button>
         </div>
       </div>
-      
-      <div style={styles.calendarWeekdays}>
+
+      <div style={{ ...styles.calendarWeekdays, ...mobileCalStyles.weekdays }}>
         {weekDays.map((day) => (
-          <div key={day} style={styles.calendarWeekday}>{day}</div>
+          <div key={day} style={{ ...styles.calendarWeekday, ...mobileCalStyles.weekday }}>{day}</div>
         ))}
       </div>
-      
-      <div style={styles.calendarDays}>
+
+      <div style={{ ...styles.calendarDays, ...mobileCalStyles.days }}>
         {/* Empty cells for days before the first of the month */}
         {Array.from({ length: firstDayOfMonth }).map((_, i) => (
           <div key={`empty-${i}`} />
         ))}
-        
+
         {Array.from({ length: daysInMonth }).map((_, i) => {
           const day = i + 1;
           const dateForDay = new Date(currentYear, viewMonth, day);
@@ -2574,7 +2747,7 @@ function CalendarPicker({ selected, onSelect }) {
               whileTap={!isDisabled ? { scale: 0.95 } : {}}
               onClick={() => !isDisabled && onSelect(new Date(currentYear, viewMonth, day))}
               disabled={isDisabled}
-              style={styles.calendarDay(isSelected, isToday, isPast, isClosed || isDayNotOpen)}
+              style={{ ...styles.calendarDay(isSelected, isToday, isPast, isClosed || isDayNotOpen), ...mobileCalStyles.day }}
               data-testid={`calendar-day-${day}`}
               title={tooltipMessage}
             >
@@ -2588,8 +2761,13 @@ function CalendarPicker({ selected, onSelect }) {
 }
 
 function TimeSlotPicker({ slots, selected, onSelect }) {
+  const timeMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
   return (
-    <div style={styles.timeGrid}>
+    <div style={{
+      ...styles.timeGrid,
+      ...(timeMobile && { gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }),
+    }}>
       {slots.map((slot) => (
         <motion.button
           key={slot.time}
@@ -2597,10 +2775,13 @@ function TimeSlotPicker({ slots, selected, onSelect }) {
           whileTap={slot.available ? { scale: 0.97 } : {}}
           onClick={() => slot.available && onSelect(slot.time)}
           disabled={!slot.available}
-          style={styles.timeSlot(selected === slot.time, slot.available)}
+          style={{
+            ...styles.timeSlot(selected === slot.time, slot.available),
+            ...(timeMobile && { padding: '12px 8px', fontSize: '13px', borderRadius: '10px' }),
+          }}
           data-testid={`time-slot-${slot.time.replace(/\s+/g, '-').toLowerCase()}`}
         >
-          <Clock size={14} />
+          <Clock size={timeMobile ? 12 : 14} />
           {slot.time}
         </motion.button>
       ))}

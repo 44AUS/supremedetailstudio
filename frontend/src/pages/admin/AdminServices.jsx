@@ -145,7 +145,9 @@ export default function AdminServices() {
     shop_email: '',
     mobile_service_upcharge: 50,
     mobile_service_description: 'We come to you',
-    minimum_booking_notice_days: 1
+    minimum_booking_notice_days: 1,
+    enable_shop_bookings: true,
+    enable_mobile_bookings: true
   });
 
   const sensors = useSensors(
@@ -560,6 +562,32 @@ export default function AdminServices() {
                   data-testid="minimum-notice-input"
                 />
                 <span style={styles.helpText}>Customers must book at least this many days in advance (0 = same-day booking allowed)</span>
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Booking Options</label>
+                <div style={styles.toggleGroup}>
+                  <label style={styles.toggleLabel}>
+                    <input
+                      type="checkbox"
+                      checked={businessSettings.enable_shop_bookings}
+                      onChange={(e) => setBusinessSettings({ ...businessSettings, enable_shop_bookings: e.target.checked })}
+                      style={styles.checkbox}
+                      data-testid="enable-shop-bookings"
+                    />
+                    <span>Enable In-Shop Bookings</span>
+                  </label>
+                  <label style={styles.toggleLabel}>
+                    <input
+                      type="checkbox"
+                      checked={businessSettings.enable_mobile_bookings}
+                      onChange={(e) => setBusinessSettings({ ...businessSettings, enable_mobile_bookings: e.target.checked })}
+                      style={styles.checkbox}
+                      data-testid="enable-mobile-bookings"
+                    />
+                    <span>Enable Mobile Service Bookings</span>
+                  </label>
+                </div>
+                <span style={styles.helpText}>Control which booking types are available to customers</span>
               </div>
               <div style={styles.modalFooter}>
                 <button onClick={() => setShowSettingsForm(false)} style={styles.cancelBtn}>Cancel</button>
@@ -1408,6 +1436,27 @@ const styles = {
     fontSize: '11px',
     color: '#6b7280',
     fontFamily: "'Montserrat', sans-serif",
+  },
+  toggleGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    marginBottom: '8px',
+  },
+  toggleLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    color: '#fff',
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    cursor: 'pointer',
+  },
+  checkbox: {
+    width: '18px',
+    height: '18px',
+    cursor: 'pointer',
+    accentColor: '#e80200',
   },
   dragHint: {
     fontFamily: "'Montserrat', sans-serif",
