@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Settings, Calendar, ClipboardList,
-  LogOut, Menu, X, ChevronRight, Users, Mail
+  LogOut, Menu, X, ChevronRight, Users, Mail, Lock, Save, Loader2, AlertCircle, CheckCircle
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
@@ -12,6 +12,11 @@ export default function AdminLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({ current_password: '', new_password: '', confirm_password: '' });
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
 
   useEffect(() => {
     // Verify auth on mount
@@ -62,6 +67,48 @@ export default function AdminLayout() {
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleChangePassword = async () => {
+    setPasswordError('');
+    setPasswordSuccess('');
+    if (passwordForm.new_password !== passwordForm.confirm_password) {
+      setPasswordError('New passwords do not match');
+      return;
+    }
+    if (passwordForm.new_password.length < 6) {
+      setPasswordError('New password must be at least 6 characters');
+      return;
+    }
+    setPasswordSaving(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${API_URL}/api/auth/change-password`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          current_password: passwordForm.current_password,
+          new_password: passwordForm.new_password,
+        }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || 'Failed to change password');
+      }
+      setPasswordSuccess('Password changed successfully!');
+      setPasswordForm({ current_password: '', new_password: '', confirm_password: '' });
+      setTimeout(() => {
+        setShowPasswordModal(false);
+        setPasswordSuccess('');
+      }, 2000);
+    } catch (err) {
+      setPasswordError(err.message);
+    } finally {
+      setPasswordSaving(false);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
@@ -132,6 +179,10 @@ export default function AdminLayout() {
           <NavLink to="/" style={styles.backLink}>
             ← Back to Website
           </NavLink>
+          <button onClick={() => { setShowPasswordModal(true); setPasswordError(''); setPasswordSuccess(''); }} style={styles.logoutBtn} data-testid="change-password-btn">
+            <Lock size={18} />
+            <span>Change Password</span>
+          </button>
           <button onClick={handleLogout} style={styles.logoutBtn} data-testid="logout-btn">
             <LogOut size={18} />
             <span>Logout</span>
@@ -148,6 +199,71 @@ export default function AdminLayout() {
       <main style={styles.main}>
         <Outlet />
       </main>
+
+      {/* Change Password Modal */}
+      {showPasswordModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <div style={styles.modalHeader}>
+              <h2 style={styles.modalTitle}>CHANGE PASSWORD</h2>
+              <button onClick={() => setShowPasswordModal(false)} style={styles.closeBtn}>
+                <X size={24} />
+              </button>
+            </div>
+            <div style={styles.modalBody}>
+              {passwordError && (
+                <div style={styles.errorBox}>
+                  <AlertCircle size={16} />
+                  <span>{passwordError}</span>
+                </div>
+              )}
+              {passwordSuccess && (
+                <div style={styles.successBox}>
+                  <CheckCircle size={16} />
+                  <span>{passwordSuccess}</span>
+                </div>
+              )}
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Current Password</label>
+                <input
+                  type="password"
+                  value={passwordForm.current_password}
+                  onChange={(e) => setPasswordForm({ ...passwordForm, current_password: e.target.value })}
+                  style={styles.input}
+                  placeholder="Enter current password"
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>New Password</label>
+                <input
+                  type="password"
+                  value={passwordForm.new_password}
+                  onChange={(e) => setPasswordForm({ ...passwordForm, new_password: e.target.value })}
+                  style={styles.input}
+                  placeholder="Enter new password"
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Confirm New Password</label>
+                <input
+                  type="password"
+                  value={passwordForm.confirm_password}
+                  onChange={(e) => setPasswordForm({ ...passwordForm, confirm_password: e.target.value })}
+                  style={styles.input}
+                  placeholder="Confirm new password"
+                />
+              </div>
+              <div style={styles.modalFooter}>
+                <button onClick={() => setShowPasswordModal(false)} style={styles.cancelBtn}>Cancel</button>
+                <button onClick={handleChangePassword} disabled={passwordSaving} style={styles.saveBtn}>
+                  {passwordSaving ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={16} />}
+                  {passwordSaving ? 'Saving...' : 'Update Password'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -306,6 +422,125 @@ const styles = {
     padding: '32px',
     minHeight: '100vh',
     overflowY: 'auto',
+  },
+  modalOverlay: {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0, 0, 0, 0.85)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+    padding: '20px',
+  },
+  modal: {
+    width: '100%',
+    maxWidth: '420px',
+    background: '#0a0a0a',
+    border: '1px solid #262626',
+  },
+  modalHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '20px 24px',
+    borderBottom: '1px solid #262626',
+  },
+  modalTitle: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '20px',
+    fontWeight: 700,
+    color: '#fff',
+    margin: 0,
+    letterSpacing: '1px',
+  },
+  closeBtn: {
+    background: 'none',
+    border: 'none',
+    color: '#ababab',
+    cursor: 'pointer',
+    padding: '4px',
+  },
+  modalBody: {
+    padding: '24px',
+  },
+  inputGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    marginBottom: '16px',
+  },
+  label: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '12px',
+    fontWeight: 600,
+    color: '#ababab',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  input: {
+    width: '100%',
+    padding: '12px 14px',
+    background: '#111111',
+    border: '1px solid #262626',
+    color: '#fff',
+    fontSize: '14px',
+    fontFamily: "'Montserrat', sans-serif",
+    outline: 'none',
+    boxSizing: 'border-box',
+  },
+  modalFooter: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '12px',
+    marginTop: '24px',
+  },
+  cancelBtn: {
+    padding: '12px 20px',
+    background: 'transparent',
+    border: '1px solid #262626',
+    color: '#ababab',
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    cursor: 'pointer',
+  },
+  saveBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 20px',
+    background: '#e80200',
+    border: 'none',
+    color: '#fff',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 700,
+    letterSpacing: '1px',
+    cursor: 'pointer',
+  },
+  errorBox: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '12px 14px',
+    background: 'rgba(239, 68, 68, 0.1)',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
+    color: '#ef4444',
+    fontSize: '13px',
+    marginBottom: '16px',
+    fontFamily: "'Montserrat', sans-serif",
+  },
+  successBox: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '12px 14px',
+    background: 'rgba(16, 185, 129, 0.1)',
+    border: '1px solid rgba(16, 185, 129, 0.3)',
+    color: '#10b981',
+    fontSize: '13px',
+    marginBottom: '16px',
+    fontFamily: "'Montserrat', sans-serif",
   },
 };
 

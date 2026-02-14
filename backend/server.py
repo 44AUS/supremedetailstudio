@@ -40,9 +40,9 @@ ACCESS_TOKEN_EXPIRE_HOURS = 24
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 security = HTTPBearer()
 
-# Admin credentials from env
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "supremeadmin123")
+# Default admin credentials (used for initial setup only)
+DEFAULT_ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+DEFAULT_ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "supremeadmin123")
 
 # ============== Models ==============
 
@@ -53,6 +53,10 @@ class LoginRequest(BaseModel):
 class TokenResponse(BaseModel):
     access_token: str
     token_type: str = "bearer"
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str
 
 class VehiclePricing(BaseModel):
     sedan: float
@@ -224,9 +228,24 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
 
 # ============== Auth Routes ==============
 
+async def get_admin_credentials():
+    """Get admin credentials from DB, or initialize from env defaults."""
+    admin = await db.admin.find_one({"type": "admin_credentials"})
+    if not admin:
+        # First run: store default credentials in DB with hashed password
+        hashed = pwd_context.hash(DEFAULT_ADMIN_PASSWORD)
+        await db.admin.insert_one({
+            "type": "admin_credentials",
+            "username": DEFAULT_ADMIN_USERNAME,
+            "password_hash": hashed,
+        })
+        return {"username": DEFAULT_ADMIN_USERNAME, "password_hash": hashed}
+    return admin
+
 @app.post("/api/auth/login", response_model=TokenResponse)
 async def login(request: LoginRequest):
-    if request.username == ADMIN_USERNAME and request.password == ADMIN_PASSWORD:
+    admin = await get_admin_credentials()
+    if request.username == admin["username"] and pwd_context.verify(request.password, admin["password_hash"]):
         token = create_access_token({"sub": request.username})
         return TokenResponse(access_token=token)
     raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -234,6 +253,19 @@ async def login(request: LoginRequest):
 @app.get("/api/auth/verify")
 async def verify_auth(username: str = Depends(verify_token)):
     return {"valid": True, "username": username}
+
+@app.put("/api/auth/change-password", dependencies=[Depends(verify_token)])
+async def change_password(request: ChangePasswordRequest):
+    """Change admin password (admin only)."""
+    admin = await get_admin_credentials()
+    if not pwd_context.verify(request.current_password, admin["password_hash"]):
+        raise HTTPException(status_code=400, detail="Current password is incorrect")
+    new_hash = pwd_context.hash(request.new_password)
+    await db.admin.update_one(
+        {"type": "admin_credentials"},
+        {"$set": {"password_hash": new_hash}}
+    )
+    return {"message": "Password changed successfully"}
 
 # ============== Categories Routes ==============
 
