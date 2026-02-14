@@ -5,7 +5,7 @@ import {
   Tag, X, Loader2, ChevronDown, Clock, Car
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
 
 export default function AdminCustomers() {
   const [customers, setCustomers] = useState([]);

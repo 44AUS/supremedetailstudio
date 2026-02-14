@@ -5,7 +5,7 @@ import {
   Phone, Mail, Loader2, AlertCircle, Home, Sparkles
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
 
 export default function BookingConfirmation() {
   const { bookingId } = useParams();

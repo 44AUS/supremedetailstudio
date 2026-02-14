@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Mail, MailOpen, Eye, Trash2, Loader2, X, Phone, User, Calendar } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
 
 export default function AdminContacts() {
   const [messages, setMessages] = useState([]);

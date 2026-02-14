@@ -22,7 +22,7 @@ const ContactForm = () => {
     setLoading(true);
 
     try {
-      const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+      const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
       const response = await fetch(`${API_URL}/api/contact`, {
         method: 'POST',
         headers: {

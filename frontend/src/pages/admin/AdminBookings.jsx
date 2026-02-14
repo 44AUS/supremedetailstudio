@@ -5,7 +5,7 @@ import {
   MapPin, Phone, Mail, Plus, Edit2, Save, X, Trash2
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
 
 const STATUS_CONFIG = {
   pending: { label: 'Pending', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },

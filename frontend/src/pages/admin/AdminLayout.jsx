@@ -5,7 +5,7 @@ import {
   LogOut, Menu, X, ChevronRight, Users, Mail
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
 
 export default function AdminLayout() {
   const navigate = useNavigate();

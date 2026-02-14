@@ -9,7 +9,7 @@ import {
   CarFront, Info, Zap
 } from 'lucide-react';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL;
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
 
 /* ---------------- DATA ---------------- */
 
