@@ -9,6 +9,7 @@ from bson import ObjectId
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 import os
+import httpx
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -96,6 +97,12 @@ class ScheduleSettings(BaseModel):
     business_hours: List[BusinessHours]
     closed_dates: List[ClosedDate]
 
+class BookingService(BaseModel):
+    service_id: str
+    service_name: str
+    base_price: float
+    duration_minutes: int
+
 class BookingCreate(BaseModel):
     customer_first_name: str
     customer_last_name: str
@@ -110,11 +117,13 @@ class BookingCreate(BaseModel):
     vehicle_model: str
     vehicle_type: str  # sedan, suv-2row, suv-3row
     vehicle_color: Optional[str] = None
-    service_id: str
-    service_name: str
+    service_id: str  # Primary service (for backward compatibility)
+    service_name: str  # Primary service name
+    services: Optional[List[BookingService]] = []  # All selected services (for multi-service bookings)
     booking_date: str  # YYYY-MM-DD
     booking_time: str  # HH:MM
     total_price: float
+    total_duration: Optional[int] = None  # Total duration in minutes for all services
     notes: Optional[str] = ""
 
 class BookingStatusUpdate(BaseModel):
@@ -169,12 +178,14 @@ class CategoryCreate(BaseModel):
     label: str
     description: Optional[str] = ""
     sort_order: Optional[int] = 0
+    can_combine_with: Optional[List[str]] = []  # List of category names this can be paired with
 
 class CategoryUpdate(BaseModel):
     name: Optional[str] = None
     label: Optional[str] = None
     description: Optional[str] = None
     sort_order: Optional[int] = None
+    can_combine_with: Optional[List[str]] = None
 
 class CategoryReorder(BaseModel):
     category_ids: List[str]  # List of category IDs in new order
@@ -188,6 +199,9 @@ class BusinessSettings(BaseModel):
     shop_email: Optional[str] = "info@supremedetailstudio.com"
     mobile_service_upcharge: Optional[float] = 50.0
     mobile_service_description: Optional[str] = "We come to you"
+    minimum_booking_notice_days: Optional[int] = 1  # Minimum days in advance for booking
+    enable_shop_bookings: Optional[bool] = True  # Enable/disable in-shop bookings
+    enable_mobile_bookings: Optional[bool] = True  # Enable/disable mobile bookings
 
 # ============== Auth Helpers ==============
 
@@ -311,20 +325,24 @@ async def delete_category(category_id: str):
 @app.get("/api/settings/business")
 async def get_business_settings():
     """Get business settings (public endpoint for booking page)"""
+    defaults = {
+        "shop_name": "Supreme Detail Studio",
+        "shop_address": "123 Main St, Marietta, GA 30060",
+        "shop_phone": "(502) 417-0690",
+        "shop_email": "info@supremedetailstudio.com",
+        "mobile_service_upcharge": 50.0,
+        "mobile_service_description": "We come to you",
+        "minimum_booking_notice_days": 1,
+        "enable_shop_bookings": True,
+        "enable_mobile_bookings": True
+    }
     settings = await db.settings.find_one({"type": "business"})
     if not settings:
-        # Return defaults
-        return {
-            "shop_name": "Supreme Detail Studio",
-            "shop_address": "123 Main St, Marietta, GA 30060",
-            "shop_phone": "(502) 417-0690",
-            "shop_email": "info@supremedetailstudio.com",
-            "mobile_service_upcharge": 50.0,
-            "mobile_service_description": "We come to you"
-        }
+        return defaults
     settings.pop("_id", None)
     settings.pop("type", None)
-    return settings
+    # Merge defaults with saved settings so new fields always have values
+    return {**defaults, **settings}
 
 @app.put("/api/settings/business", dependencies=[Depends(verify_token)])
 async def update_business_settings(settings: BusinessSettings):
@@ -396,22 +414,22 @@ async def delete_service(service_id: str):
 
 @app.get("/api/schedule")
 async def get_schedule():
+    default_hours = [
+        {"day": "monday", "is_open": True, "open_time": "09:00", "close_time": "18:00"},
+        {"day": "tuesday", "is_open": True, "open_time": "09:00", "close_time": "18:00"},
+        {"day": "wednesday", "is_open": True, "open_time": "09:00", "close_time": "18:00"},
+        {"day": "thursday", "is_open": True, "open_time": "09:00", "close_time": "18:00"},
+        {"day": "friday", "is_open": True, "open_time": "09:00", "close_time": "18:00"},
+        {"day": "saturday", "is_open": True, "open_time": "10:00", "close_time": "16:00"},
+        {"day": "sunday", "is_open": False, "open_time": "09:00", "close_time": "18:00"},
+    ]
+    defaults = {"business_hours": default_hours, "closed_dates": []}
     schedule = await db.schedule.find_one({"type": "settings"})
     if not schedule:
-        # Return default schedule
-        default_hours = [
-            {"day": "monday", "is_open": True, "open_time": "09:00", "close_time": "18:00"},
-            {"day": "tuesday", "is_open": True, "open_time": "09:00", "close_time": "18:00"},
-            {"day": "wednesday", "is_open": True, "open_time": "09:00", "close_time": "18:00"},
-            {"day": "thursday", "is_open": True, "open_time": "09:00", "close_time": "18:00"},
-            {"day": "friday", "is_open": True, "open_time": "09:00", "close_time": "18:00"},
-            {"day": "saturday", "is_open": True, "open_time": "10:00", "close_time": "16:00"},
-            {"day": "sunday", "is_open": False, "open_time": "09:00", "close_time": "18:00"},
-        ]
-        return {"business_hours": default_hours, "closed_dates": []}
+        return defaults
     schedule.pop("_id", None)
     schedule.pop("type", None)
-    return schedule
+    return {**defaults, **schedule}
 
 @app.put("/api/schedule", dependencies=[Depends(verify_token)])
 async def update_schedule(settings: ScheduleSettings):
@@ -507,14 +525,48 @@ async def get_availability(date: str, service_id: Optional[str] = None):
         "booking_date": date,
         "status": {"$ne": "cancelled"}
     }).to_list(100)
-    
+
+    # Mark slots as unavailable based on booking duration
     for booking in existing_bookings:
-        booked_time = booking.get("booking_time")
+        booked_time_str = booking.get("booking_time")
+        booked_service_id = booking.get("service_id")
+
+        # Get the service duration for this booking
+        # Use total_duration if available (for multi-service bookings), otherwise lookup service
+        booking_duration = booking.get("total_duration")
+        if not booking_duration:
+            booking_duration = 60  # default
+            if booked_service_id:
+                try:
+                    if len(booked_service_id) == 24:
+                        booked_service = await db.services.find_one({"_id": ObjectId(booked_service_id)})
+                        if booked_service:
+                            booking_duration = booked_service.get("duration_minutes", 60)
+                except Exception:
+                    pass
+
+        # Parse the booked time
+        try:
+            booked_time = datetime.strptime(booked_time_str, "%H:%M")
+        except:
+            continue
+
+        # Calculate end time of this booking + 1 hour buffer for cleanup/restocking
+        booking_end_time = booked_time + timedelta(minutes=booking_duration + 60)
+
+        # Mark all slots that overlap with this booking as unavailable
         for slot in slots:
-            if slot["time"] == booked_time:
-                slot["available"] = False
-                break
-    
+            try:
+                slot_time = datetime.strptime(slot["time"], "%H:%M")
+                slot_end_time = slot_time + timedelta(minutes=60)  # Each slot is 1 hour
+
+                # Check if this slot overlaps with the booking
+                # Block slot if it starts at or before the booking ends (includes buffer time)
+                if slot_time <= booking_end_time and slot_end_time > booked_time:
+                    slot["available"] = False
+            except:
+                continue
+
     return {"available": True, "slots": slots, "business_hours": business_hours}
 
 # ============== Bookings Routes ==============
@@ -993,6 +1045,163 @@ async def get_dashboard_stats():
         "active_services": active_services,
         "recent_bookings": recent_bookings
     }
+
+# ============== Contact Messages ==============
+
+class ContactMessage(BaseModel):
+    name: str
+    email: str
+    phone: str
+    message: str
+
+@app.post("/api/contact")
+async def submit_contact_form(contact: ContactMessage):
+    """
+    Submit a contact form message
+    Stores the message in the database for admin review
+    """
+    try:
+        contact_data = {
+            "name": contact.name,
+            "email": contact.email,
+            "phone": contact.phone,
+            "message": contact.message,
+            "created_at": datetime.now(timezone.utc),
+            "read": False
+        }
+
+        result = await db.contact_messages.insert_one(contact_data)
+
+        return {
+            "success": True,
+            "message": "Contact form submitted successfully",
+            "id": str(result.inserted_id)
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to submit contact form: {str(e)}")
+
+@app.get("/api/admin/contact-messages", dependencies=[Depends(verify_token)])
+async def get_contact_messages():
+    """
+    Get all contact form submissions (admin only)
+    Returns list of messages sorted by date
+    """
+    try:
+        messages = await db.contact_messages.find().sort("created_at", -1).to_list(1000)
+
+        for message in messages:
+            message["_id"] = str(message["_id"])
+            message["created_at"] = message["created_at"].isoformat()
+
+        return {"messages": messages}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch contact messages: {str(e)}")
+
+@app.patch("/api/admin/contact-messages/{message_id}/read", dependencies=[Depends(verify_token)])
+async def mark_message_read(
+    message_id: str,
+    read: bool
+):
+    """
+    Mark a contact message as read/unread (admin only)
+    """
+    try:
+        result = await db.contact_messages.update_one(
+            {"_id": ObjectId(message_id)},
+            {"$set": {"read": read}}
+        )
+
+        if result.matched_count == 0:
+            raise HTTPException(status_code=404, detail="Message not found")
+
+        return {"success": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to update message: {str(e)}")
+
+@app.delete("/api/admin/contact-messages/{message_id}", dependencies=[Depends(verify_token)])
+async def delete_contact_message(message_id: str):
+    """
+    Delete a contact message (admin only)
+    """
+    try:
+        result = await db.contact_messages.delete_one({"_id": ObjectId(message_id)})
+
+        if result.deleted_count == 0:
+            raise HTTPException(status_code=404, detail="Message not found")
+
+        return {"success": True}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete message: {str(e)}")
+
+# ============== Google Reviews ==============
+
+@app.get("/api/google-reviews")
+async def get_google_reviews():
+    """
+    Fetch reviews from Google Places API
+    Returns formatted review data for the GoogleReviews component
+    """
+    google_api_key = os.getenv("GOOGLE_PLACES_API_KEY")
+    place_id = "ChIJXSKDrJx8bYwRMLUuwiesXPY"  # Supreme Detail Garage - Ceramic Coating Specialists
+
+    if not google_api_key or google_api_key == "YOUR_API_KEY_HERE":
+        raise HTTPException(
+            status_code=503,
+            detail="Google Places API key not configured"
+        )
+
+    try:
+        # Fetch place details with reviews from Google Places API
+        async with httpx.AsyncClient() as client:
+            url = "https://maps.googleapis.com/maps/api/place/details/json"
+            params = {
+                "place_id": place_id,
+                "fields": "reviews,rating,user_ratings_total",
+                "key": google_api_key
+            }
+
+            response = await client.get(url, params=params, timeout=10.0)
+            data = response.json()
+
+            if data.get("status") != "OK":
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Google Places API error: {data.get('status')}"
+                )
+
+            result = data.get("result", {})
+            reviews_data = result.get("reviews", [])
+
+            # Format reviews for frontend component
+            formatted_reviews = []
+            for idx, review in enumerate(reviews_data):
+                author_name = review.get("author_name", "Anonymous")
+                # Get initials from name
+                name_parts = author_name.split()
+                if len(name_parts) >= 2:
+                    initials = (name_parts[0][0] + name_parts[-1][0]).upper()
+                else:
+                    initials = author_name[:2].upper()
+
+                formatted_reviews.append({
+                    "id": idx + 1,
+                    "author": author_name,
+                    "rating": review.get("rating", 5),
+                    "date": review.get("relative_time_description", ""),
+                    "text": review.get("text", ""),
+                    "avatar": initials
+                })
+
+            return {
+                "reviews": formatted_reviews,
+                "overallRating": result.get("rating", 5.0),
+                "totalReviews": result.get("user_ratings_total", len(formatted_reviews))
+            }
+
+    except httpx.TimeoutException:
+        raise HTTPException(status_code=504, detail="Google Places API timeout")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch reviews: {str(e)}")
 
 # ============== Health Check ==============
 
