@@ -698,19 +698,23 @@ const styles = {
   }),
   pickupOptionTitle: {
     color: '#fff',
-    fontWeight: 600,
+    fontWeight: 700,
     fontSize: '15px',
     marginBottom: '4px',
+    fontFamily: "'Oswald', sans-serif",
+    letterSpacing: '0.5px',
   },
   pickupOptionSubtitle: {
     color: 'rgba(255,255,255,0.5)',
     fontSize: '12px',
+    fontFamily: "'Montserrat', sans-serif",
   },
   pickupOptionPrice: {
-    color: '#ef4444',
+    color: '#4ade80',
     fontSize: '13px',
-    fontWeight: 600,
+    fontWeight: 500,
     marginTop: '8px',
+    fontFamily: "'Montserrat', sans-serif",
   },
   distanceNote: {
     display: 'flex',
@@ -741,14 +745,17 @@ const styles = {
   }),
   distanceLabel: {
     color: '#fff',
-    fontWeight: 500,
+    fontWeight: 700,
     fontSize: '14px',
     marginBottom: '4px',
+    fontFamily: "'Oswald', sans-serif",
+    letterSpacing: '0.5px',
   },
   distancePrice: {
-    color: '#ef4444',
+    color: '#4ade80',
     fontSize: '16px',
-    fontWeight: 700,
+    fontWeight: 500,
+    fontFamily: "'Montserrat', sans-serif",
   },
   // Mobile Utilities Styles
   utilitiesContainer: {
