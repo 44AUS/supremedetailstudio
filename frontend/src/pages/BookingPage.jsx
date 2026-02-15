@@ -804,10 +804,12 @@ const styles = {
   },
   checkboxLabel: {
     color: '#fff',
-    fontWeight: 600,
+    fontWeight: 700,
     fontSize: '15px',
     display: 'block',
     marginBottom: '10px',
+    fontFamily: "'Oswald', sans-serif",
+    letterSpacing: '0.5px',
   },
   checkboxItems: {
     display: 'flex',
@@ -820,6 +822,7 @@ const styles = {
     gap: '8px',
     color: 'rgba(255,255,255,0.7)',
     fontSize: '13px',
+    fontFamily: "'Montserrat', sans-serif",
   },
   utilitiesWarning: {
     display: 'flex',
