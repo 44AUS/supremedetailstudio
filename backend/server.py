@@ -74,6 +74,7 @@ class ServiceCreate(BaseModel):
     shop_available: bool = True
     mobile_available: bool = True
     image_url: Optional[str] = ""
+    applies_to_categories: Optional[List[str]] = []  # For add-on services: which categories this add-on appears for
 
 class ServiceUpdate(BaseModel):
     name: Optional[str] = None
@@ -86,6 +87,7 @@ class ServiceUpdate(BaseModel):
     shop_available: Optional[bool] = None
     mobile_available: Optional[bool] = None
     image_url: Optional[str] = None
+    applies_to_categories: Optional[List[str]] = None
 
 class BusinessHours(BaseModel):
     day: str  # monday, tuesday, etc.
@@ -183,6 +185,7 @@ class CategoryCreate(BaseModel):
     description: Optional[str] = ""
     sort_order: Optional[int] = 0
     can_combine_with: Optional[List[str]] = []  # List of category names this can be paired with
+    is_addon: Optional[bool] = False  # Whether this is an add-on category
 
 class CategoryUpdate(BaseModel):
     name: Optional[str] = None
@@ -190,6 +193,7 @@ class CategoryUpdate(BaseModel):
     description: Optional[str] = None
     sort_order: Optional[int] = None
     can_combine_with: Optional[List[str]] = None
+    is_addon: Optional[bool] = None
 
 class CategoryReorder(BaseModel):
     category_ids: List[str]  # List of category IDs in new order
@@ -284,7 +288,7 @@ async def get_categories():
             {"name": "exterior", "label": "Exterior Detail", "description": "Exterior wash and detailing services", "sort_order": 2},
             {"name": "full", "label": "Full Detail", "description": "Complete interior and exterior detailing", "sort_order": 3},
             {"name": "protection", "label": "Protection Services", "description": "Paint protection, ceramic coating, PPF", "sort_order": 4},
-            {"name": "addon", "label": "Add-On Services", "description": "Additional services and upgrades", "sort_order": 5},
+            {"name": "addon", "label": "Add-On Services", "description": "Additional services and upgrades", "sort_order": 5, "is_addon": True},
         ]
         for cat in default_categories:
             cat["created_at"] = datetime.now(timezone.utc).isoformat()

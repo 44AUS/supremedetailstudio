@@ -1421,8 +1421,11 @@ export default function BookAppointment() {
         if (response.ok) {
           const data = await response.json();
           setCategories(data);
-          // Select first category by default
-          if (data.length > 0) {
+          // Select first non-addon category by default
+          const firstNonAddon = data.find(c => !c.is_addon);
+          if (firstNonAddon) {
+            setSelectedCategory(firstNonAddon.name);
+          } else if (data.length > 0) {
             setSelectedCategory(data[0].name);
           }
         }
@@ -1709,8 +1712,19 @@ export default function BookAppointment() {
     const isSelected = selectedServices.some(s => s.id === service.id);
 
     if (isSelected) {
-      // Remove service
-      setSelectedServices(selectedServices.filter(s => s.id !== service.id));
+      // Remove service and clean up orphaned add-ons
+      const remaining = selectedServices.filter(s => s.id !== service.id);
+      const remainingMainCategories = remaining
+        .filter(s => !categories.find(c => c.name === s.category)?.is_addon)
+        .map(s => s.category);
+      // Remove add-ons that no longer apply to any remaining main service categories
+      const cleaned = remaining.filter(s => {
+        const cat = categories.find(c => c.name === s.category);
+        if (!cat?.is_addon) return true;
+        const appliesTo = s.applies_to_categories || [];
+        return appliesTo.some(c => remainingMainCategories.includes(c));
+      });
+      setSelectedServices(cleaned);
     } else {
       // Add service if compatible
       if (canCombineService(service)) {
@@ -1721,11 +1735,14 @@ export default function BookAppointment() {
 
   // Filter categories to only show compatible ones
   const getAvailableCategories = () => {
+    // Filter out add-on categories from the main tabs
+    const nonAddonCategories = categories.filter(c => !c.is_addon);
+
     if (selectedServices.length === 0) {
-      return categories;
+      return nonAddonCategories;
     }
 
-    return categories.filter(category => {
+    return nonAddonCategories.filter(category => {
       // Always show categories that already have selected services
       if (selectedServices.some(s => s.category === category.name)) {
         return true;
@@ -1739,6 +1756,19 @@ export default function BookAppointment() {
         const canCombineBackward = (selectedCategoryObj?.can_combine_with || []).includes(category.name);
         return canCombineForward || canCombineBackward;
       });
+    });
+  };
+
+  // Get relevant add-on services based on selected services' categories
+  const getRelevantAddons = () => {
+    if (selectedServices.length === 0) return [];
+    const selectedCategories = selectedServices.map(s => s.category);
+    return availableServices.filter(service => {
+      const serviceCategory = categories.find(c => c.name === service.category);
+      if (!serviceCategory?.is_addon) return false;
+      const appliesTo = service.applies_to_categories || [];
+      if (appliesTo.length === 0) return false;
+      return appliesTo.some(cat => selectedCategories.includes(cat));
     });
   };
 
@@ -2316,6 +2346,119 @@ export default function BookAppointment() {
                 </div>
               )}
             </>
+          )}
+
+          {/* Add-On Services Section */}
+          {selectedServices.length > 0 && getRelevantAddons().length > 0 && (
+            <div style={{ marginTop: '24px' }}>
+              <div style={styles.sectionTitle}>
+                <Zap size={18} style={{ color: '#ef4444' }} />
+                Add-On Services
+              </div>
+              <p style={{
+                fontFamily: "'Montserrat', sans-serif",
+                fontSize: '13px',
+                color: 'rgba(255,255,255,0.5)',
+                marginBottom: '16px',
+                marginTop: '-8px',
+              }}>
+                Enhance your detail with these add-ons
+              </p>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '12px',
+              }}>
+                {getRelevantAddons().map((addon) => {
+                  const isSelected = selectedServices.some(s => s.id === addon.id);
+                  const addonUpcharge = getServiceVehicleUpcharge(addon, vehicleType);
+                  const addonPrice = vehicleType
+                    ? addon.base_price + addonUpcharge + locationUpcharge + pickupDeliveryCharge
+                    : 'Select vehicle';
+                  return (
+                    <motion.button
+                      key={addon.id}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        if (isSelected) {
+                          setSelectedServices(selectedServices.filter(s => s.id !== addon.id));
+                        } else {
+                          setSelectedServices([...selectedServices, addon]);
+                        }
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '14px',
+                        padding: '16px',
+                        borderRadius: '14px',
+                        background: isSelected ? 'rgba(220, 38, 38, 0.15)' : 'rgba(255,255,255,0.03)',
+                        border: isSelected ? '2px solid #dc2626' : '1px solid rgba(255,255,255,0.08)',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        textAlign: 'left',
+                        boxShadow: isSelected ? '0 6px 20px rgba(220, 38, 38, 0.2)' : 'none',
+                        width: '100%',
+                      }}
+                      data-testid={`addon-${addon.id}`}
+                    >
+                      <div style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '6px',
+                        border: isSelected ? '2px solid #dc2626' : '2px solid rgba(255,255,255,0.2)',
+                        background: isSelected ? '#dc2626' : 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        transition: 'all 0.2s ease',
+                      }}>
+                        {isSelected && <CheckCircle2 size={14} style={{ color: '#fff' }} />}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontFamily: "'Oswald', sans-serif",
+                          fontSize: '15px',
+                          fontWeight: 600,
+                          color: '#fff',
+                          letterSpacing: '0.5px',
+                          textTransform: 'uppercase',
+                          marginBottom: '4px',
+                        }}>
+                          {addon.name}
+                        </div>
+                        {addon.description && (
+                          <div style={{
+                            fontFamily: "'Montserrat', sans-serif",
+                            fontSize: '12px',
+                            color: 'rgba(255,255,255,0.45)',
+                            lineHeight: '1.4',
+                          }}>
+                            {addon.description.split('\n').filter(l => l.trim()).slice(0, 2).map((line, i) => (
+                              <div key={i} style={{ display: 'flex', gap: '4px', alignItems: 'flex-start' }}>
+                                <span style={{ color: '#ef4444', flexShrink: 0, fontSize: '10px' }}>•</span>
+                                <span>{line.trim()}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      <div style={{
+                        fontFamily: "'Oswald', sans-serif",
+                        fontSize: '16px',
+                        fontWeight: 700,
+                        color: isSelected ? '#ef4444' : 'rgba(255,255,255,0.7)',
+                        whiteSpace: 'nowrap',
+                      }}>
+                        {typeof addonPrice === 'number' ? `+$${addonPrice}` : addonPrice}
+                      </div>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </div>
           )}
         </motion.div>
 

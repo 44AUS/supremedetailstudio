@@ -137,7 +137,7 @@ export default function AdminServices() {
   const [showSettingsForm, setShowSettingsForm] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [categoryFormData, setCategoryFormData] = useState({ name: '', label: '', description: '', sort_order: 0, can_combine_with: [] });
+  const [categoryFormData, setCategoryFormData] = useState({ name: '', label: '', description: '', sort_order: 0, can_combine_with: [], is_addon: false });
   const [businessSettings, setBusinessSettings] = useState({
     shop_name: '',
     shop_address: '',
@@ -168,6 +168,7 @@ export default function AdminServices() {
     shop_available: true,
     mobile_available: true,
     image_url: '',
+    applies_to_categories: [],
   };
 
   const [formData, setFormData] = useState(emptyService);
@@ -271,6 +272,7 @@ export default function AdminServices() {
       shop_available: service.shop_available !== false,
       mobile_available: service.mobile_available !== false,
       image_url: service.image_url || '',
+      applies_to_categories: service.applies_to_categories || [],
     });
     setShowForm(true);
   };
@@ -291,7 +293,7 @@ export default function AdminServices() {
   // Category CRUD functions
   const handleAddCategory = () => {
     setEditingCategory(null);
-    setCategoryFormData({ name: '', label: '', description: '', sort_order: categories.length + 1, can_combine_with: [] });
+    setCategoryFormData({ name: '', label: '', description: '', sort_order: categories.length + 1, can_combine_with: [], is_addon: false });
     setShowCategoryForm(true);
   };
 
@@ -302,7 +304,8 @@ export default function AdminServices() {
       label: category.label,
       description: category.description || '',
       sort_order: category.sort_order || 0,
-      can_combine_with: category.can_combine_with || []
+      can_combine_with: category.can_combine_with || [],
+      is_addon: category.is_addon || false,
     });
     setShowCategoryForm(true);
   };
@@ -678,6 +681,19 @@ export default function AdminServices() {
                 <span style={styles.helpText}>Select which categories can be booked together with this one</span>
               </div>
               <div style={styles.inputGroup}>
+                <label style={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    checked={categoryFormData.is_addon}
+                    onChange={(e) => setCategoryFormData({ ...categoryFormData, is_addon: e.target.checked })}
+                    style={styles.checkbox}
+                    data-testid="category-is-addon"
+                  />
+                  <span>Add-On Category</span>
+                </label>
+                <span style={styles.helpText}>Services in this category will appear as add-ons when customers select compatible services</span>
+              </div>
+              <div style={styles.inputGroup}>
                 <label style={styles.label}>Sort Order</label>
                 <input
                   type="number"
@@ -877,6 +893,36 @@ export default function AdminServices() {
                     data-testid="service-image-input"
                   />
                 </div>
+
+                {/* Applies To Categories - only for add-on category services */}
+                {categories.find(c => c.name === formData.category)?.is_addon && (
+                  <div style={{ ...styles.inputGroup, gridColumn: '1 / -1' }}>
+                    <label style={styles.label}>Applies To Categories</label>
+                    <span style={styles.helpText}>Select which categories this add-on should appear for when a customer selects a service</span>
+                    <div style={styles.checkboxGrid}>
+                      {categories
+                        .filter(cat => !cat.is_addon)
+                        .map(cat => (
+                          <label key={cat.name} style={styles.checkboxLabel}>
+                            <input
+                              type="checkbox"
+                              checked={(formData.applies_to_categories || []).includes(cat.name)}
+                              onChange={(e) => {
+                                const current = formData.applies_to_categories || [];
+                                const updated = e.target.checked
+                                  ? [...current, cat.name]
+                                  : current.filter(c => c !== cat.name);
+                                setFormData({ ...formData, applies_to_categories: updated });
+                              }}
+                              style={styles.checkbox}
+                              data-testid={`applies-to-${cat.name}`}
+                            />
+                            <span>{cat.label}</span>
+                          </label>
+                        ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
