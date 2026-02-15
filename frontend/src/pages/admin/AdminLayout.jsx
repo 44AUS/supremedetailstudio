@@ -12,6 +12,7 @@ export default function AdminLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [shopName, setShopName] = useState('');
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ current_password: '', new_password: '', confirm_password: '' });
   const [passwordSaving, setPasswordSaving] = useState(false);
@@ -66,6 +67,22 @@ export default function AdminLayout() {
     // Refresh count every 30 seconds
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Fetch shop name from business settings
+  useEffect(() => {
+    const fetchShopName = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/settings/business`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.shop_name) setShopName(data.shop_name);
+        }
+      } catch (err) {
+        console.error('Failed to fetch shop name:', err);
+      }
+    };
+    fetchShopName();
   }, []);
 
   const handleChangePassword = async () => {
@@ -135,7 +152,7 @@ export default function AdminLayout() {
         >
           {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-        <h1 style={styles.mobileTitle}>SUPREME DETAIL ADMIN</h1>
+        <h1 style={styles.mobileTitle}>{shopName ? `${shopName.toUpperCase()} ADMIN` : 'ADMIN'}</h1>
       </div>
 
       {/* Sidebar */}
@@ -144,7 +161,7 @@ export default function AdminLayout() {
         ...(sidebarOpen ? styles.sidebarOpen : {}),
       }}>
         <div style={styles.sidebarHeader}>
-          <h2 style={styles.logo}>SUPREME DETAIL</h2>
+          <h2 style={styles.logo}>{shopName ? shopName.toUpperCase() : 'ADMIN PANEL'}</h2>
           <span style={styles.badge}>ADMIN</span>
         </div>
 
