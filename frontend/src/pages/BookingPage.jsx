@@ -650,10 +650,11 @@ const styles = {
     fontFamily: "'Montserrat', sans-serif",
   },
   locationUpcharge: {
-    color: '#ef4444',
+    color: '#4ade80',
     fontSize: '14px',
-    fontWeight: 600,
+    fontWeight: 500,
     marginTop: '12px',
+    fontFamily: "'Montserrat', sans-serif",
   },
   // Pickup & Delivery Styles
   pickupDeliveryContainer: {
