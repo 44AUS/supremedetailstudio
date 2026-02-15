@@ -169,7 +169,7 @@ export default function AdminDashboard() {
       {/* Stats Grid */}
       <div style={{
         ...styles.statsGrid,
-        ...(isMobile && { gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '24px' }),
+        ...(isMobile && { gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', marginBottom: '24px' }),
       }}>
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
