@@ -1034,6 +1034,7 @@ const styles = {
     color: '#fff',
     fontWeight: 600,
     fontSize: '18px',
+    fontFamily: "'Montserrat', sans-serif",
   },
   calendarNav: {
     display: 'flex',
@@ -1064,6 +1065,7 @@ const styles = {
     fontWeight: 500,
     color: 'rgba(255,255,255,0.4)',
     padding: '8px 0',
+    fontFamily: "'Montserrat', sans-serif",
   },
   calendarDays: {
     display: 'grid',
@@ -1078,6 +1080,7 @@ const styles = {
     justifyContent: 'center',
     fontSize: '14px',
     fontWeight: 500,
+    fontFamily: "'Montserrat', sans-serif",
     cursor: (isPast || isClosed) ? 'not-allowed' : 'pointer',
     transition: 'all 0.2s ease',
     border: 'none',
@@ -1119,6 +1122,7 @@ const styles = {
     gap: '8px',
     fontSize: '14px',
     fontWeight: 500,
+    fontFamily: "'Montserrat', sans-serif",
     cursor: available ? 'pointer' : 'not-allowed',
     transition: 'all 0.2s ease',
     background: selected ? '#dc2626' : 'rgba(255,255,255,0.03)',
