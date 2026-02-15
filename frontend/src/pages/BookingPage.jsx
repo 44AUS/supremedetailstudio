@@ -2253,31 +2253,31 @@ export default function BookAppointment() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
-          style={styles.card}
+          style={{ ...styles.card, ...(isMobile && { padding: '20px 16px', borderRadius: '18px' }) }}
           data-testid="step-4-card"
         >
-          <div style={styles.stepHeader}>
-            <div style={styles.stepNumber}>4</div>
-            <h3 style={styles.stepTitle}>SELECT SERVICE(S)</h3>
-            <Sparkles size={20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
+          <div style={{ ...styles.stepHeader, ...(isMobile && { gap: '12px', marginBottom: '20px' }) }}>
+            <div style={{ ...styles.stepNumber, ...(isMobile && { width: '36px', height: '36px', fontSize: '14px', borderRadius: '10px' }) }}>4</div>
+            <h3 style={{ ...styles.stepTitle, ...(isMobile && { fontSize: '16px' }) }}>SELECT SERVICE(S)</h3>
+            <Sparkles size={isMobile ? 18 : 20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
           </div>
 
           {/* Multi-service info message */}
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '10px',
-            padding: '12px 16px',
+            gap: isMobile ? '8px' : '10px',
+            padding: isMobile ? '10px 12px' : '12px 16px',
             background: 'rgba(232, 2, 0, 0.1)',
             border: '1px solid rgba(232, 2, 0, 0.3)',
             borderRadius: '12px',
-            marginBottom: '20px',
+            marginBottom: isMobile ? '16px' : '20px',
           }}>
-            <Info size={18} style={{ color: '#e80200', flexShrink: 0 }} />
+            <Info size={isMobile ? 16 : 18} style={{ color: '#e80200', flexShrink: 0 }} />
             <p style={{
               margin: 0,
               color: 'rgba(255,255,255,0.8)',
-              fontSize: '13px',
+              fontSize: isMobile ? '12px' : '13px',
               lineHeight: 1.5,
               fontFamily: "'Montserrat', sans-serif",
             }}>
@@ -2292,14 +2292,20 @@ export default function BookAppointment() {
 
           {/* Category Tabs */}
           {categories.length > 0 && (
-            <div style={styles.categoryTabs}>
+            <div style={{
+              ...styles.categoryTabs,
+              ...(isMobile && { gap: '8px', marginBottom: '16px', overflowX: 'auto', flexWrap: 'nowrap', WebkitOverflowScrolling: 'touch', msOverflowStyle: 'none', scrollbarWidth: 'none' }),
+            }}>
               {getAvailableCategories().map((category) => (
                 <motion.button
                   key={category.name}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setSelectedCategory(category.name)}
-                  style={styles.categoryTab(selectedCategory === category.name)}
+                  style={{
+                    ...styles.categoryTab(selectedCategory === category.name),
+                    ...(isMobile && { padding: '8px 16px', fontSize: '12px', whiteSpace: 'nowrap', flexShrink: 0 }),
+                  }}
                   data-testid={`category-tab-${category.name}`}
                 >
                   {category.label}
@@ -2311,11 +2317,11 @@ export default function BookAppointment() {
           {/* Services filtered by category */}
           {selectedCategory && (
             <>
-              <div style={styles.sectionTitle}>
-                <Sparkles size={18} style={{ color: '#ef4444' }} />
+              <div style={{ ...styles.sectionTitle, ...(isMobile && { fontSize: '14px', marginBottom: '12px' }) }}>
+                <Sparkles size={isMobile ? 16 : 18} style={{ color: '#ef4444' }} />
                 {categories.find(c => c.name === selectedCategory)?.label || 'Services'}
               </div>
-              <div style={styles.serviceGrid}>
+              <div style={{ ...styles.serviceGrid, ...(isMobile && { gridTemplateColumns: '1fr', gap: '12px', marginBottom: '24px' }) }}>
                 {availableServices
                   .filter(service => service.category === selectedCategory)
                   .map((service) => {
@@ -2350,16 +2356,16 @@ export default function BookAppointment() {
 
           {/* Add-On Services Section */}
           {selectedServices.length > 0 && getRelevantAddons().length > 0 && (
-            <div style={{ marginTop: '24px' }}>
-              <div style={styles.sectionTitle}>
-                <Zap size={18} style={{ color: '#ef4444' }} />
+            <div style={{ marginTop: isMobile ? '16px' : '24px' }}>
+              <div style={{ ...styles.sectionTitle, ...(isMobile && { fontSize: '14px', marginBottom: '12px' }) }}>
+                <Zap size={isMobile ? 16 : 18} style={{ color: '#ef4444' }} />
                 Add-On Services
               </div>
               <p style={{
                 fontFamily: "'Montserrat', sans-serif",
-                fontSize: '13px',
+                fontSize: isMobile ? '12px' : '13px',
                 color: 'rgba(255,255,255,0.5)',
-                marginBottom: '16px',
+                marginBottom: isMobile ? '12px' : '16px',
                 marginTop: '-8px',
               }}>
                 Enhance your detail with these add-ons
@@ -2390,9 +2396,9 @@ export default function BookAppointment() {
                       style={{
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '14px',
-                        padding: '16px',
-                        borderRadius: '14px',
+                        gap: isMobile ? '10px' : '14px',
+                        padding: isMobile ? '12px' : '16px',
+                        borderRadius: isMobile ? '12px' : '14px',
                         background: isSelected ? 'rgba(220, 38, 38, 0.15)' : 'rgba(255,255,255,0.03)',
                         border: isSelected ? '2px solid #dc2626' : '1px solid rgba(255,255,255,0.08)',
                         cursor: 'pointer',
@@ -2404,8 +2410,8 @@ export default function BookAppointment() {
                       data-testid={`addon-${addon.id}`}
                     >
                       <div style={{
-                        width: '24px',
-                        height: '24px',
+                        width: isMobile ? '20px' : '24px',
+                        height: isMobile ? '20px' : '24px',
                         borderRadius: '6px',
                         border: isSelected ? '2px solid #dc2626' : '2px solid rgba(255,255,255,0.2)',
                         background: isSelected ? '#dc2626' : 'transparent',
@@ -2415,12 +2421,12 @@ export default function BookAppointment() {
                         flexShrink: 0,
                         transition: 'all 0.2s ease',
                       }}>
-                        {isSelected && <CheckCircle2 size={14} style={{ color: '#fff' }} />}
+                        {isSelected && <CheckCircle2 size={isMobile ? 12 : 14} style={{ color: '#fff' }} />}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{
                           fontFamily: "'Oswald', sans-serif",
-                          fontSize: '15px',
+                          fontSize: isMobile ? '13px' : '15px',
                           fontWeight: 600,
                           color: '#fff',
                           letterSpacing: '0.5px',
@@ -2432,7 +2438,7 @@ export default function BookAppointment() {
                         {addon.description && (
                           <div style={{
                             fontFamily: "'Montserrat', sans-serif",
-                            fontSize: '12px',
+                            fontSize: isMobile ? '11px' : '12px',
                             color: 'rgba(255,255,255,0.45)',
                             lineHeight: '1.4',
                           }}>
@@ -2447,7 +2453,7 @@ export default function BookAppointment() {
                       </div>
                       <div style={{
                         fontFamily: "'Oswald', sans-serif",
-                        fontSize: '16px',
+                        fontSize: isMobile ? '14px' : '16px',
                         fontWeight: 700,
                         color: isSelected ? '#ef4444' : 'rgba(255,255,255,0.7)',
                         whiteSpace: 'nowrap',
@@ -2741,6 +2747,7 @@ function VehicleTypeCard({ type, selected, onClick }) {
 function ServiceCard({ service, price, selected, onClick, disabled }) {
   const [hovered, setHovered] = useState(false);
   const Icon = service.icon;
+  const mobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   return (
     <motion.button
@@ -2754,18 +2761,19 @@ function ServiceCard({ service, price, selected, onClick, disabled }) {
         borderColor: hovered && !selected ? 'rgba(255,255,255,0.2)' : selected ? '#dc2626' : 'rgba(255,255,255,0.08)',
         opacity: disabled ? 0.4 : 1,
         cursor: disabled ? 'not-allowed' : 'pointer',
+        ...(mobile && { padding: '16px', borderRadius: '14px' }),
       }}
       data-testid={`service-${service.id}`}
       disabled={disabled}
     >
       {service.popular && (
-        <div style={styles.popularBadge}>POPULAR</div>
+        <div style={{ ...styles.popularBadge, ...(mobile && { top: '-8px', right: '12px', fontSize: '10px', padding: '3px 10px' }) }}>POPULAR</div>
       )}
       {selected && (
-        <CheckCircle2 size={20} style={styles.checkIcon} />
+        <CheckCircle2 size={mobile ? 18 : 20} style={styles.checkIcon} />
       )}
-      <div style={styles.serviceName}>{service.name}</div>
-      <div style={styles.serviceDesc}>
+      <div style={{ ...styles.serviceName, ...(mobile && { fontSize: '14px', marginBottom: '4px' }) }}>{service.name}</div>
+      <div style={{ ...styles.serviceDesc, ...(mobile && { fontSize: '12px', marginBottom: '10px' }) }}>
         {service.description?.split('\n').filter(line => line.trim()).map((line, i) => (
           <div key={i} style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
             <span style={{ color: '#ef4444', flexShrink: 0 }}>•</span>
@@ -2773,7 +2781,7 @@ function ServiceCard({ service, price, selected, onClick, disabled }) {
           </div>
         ))}
       </div>
-      <div style={styles.servicePrice}>
+      <div style={{ ...styles.servicePrice, ...(mobile && { fontSize: '18px' }) }}>
         {typeof price === 'number' ? `$${price}` : price}
       </div>
     </motion.button>
