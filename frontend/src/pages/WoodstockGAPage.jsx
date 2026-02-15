@@ -109,7 +109,7 @@ const WoodstockGAPage = () => {
         <Title className={classes.heroSubtitle}>WOODSTOCK'S PREMIER WINDOW TINTING EXPERTS</Title>
         <Title className={classes.heroTitle}>WINDOW TINTING IN WOODSTOCK, GA</Title>
         <div className={classes.buttonContainer}>
-          <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" rel="noopener noreferrer" className={classes.primaryButton}>Get Free Quote</Link>
+          <Link to="/book-appointment" rel="noopener noreferrer" className={classes.primaryButton}>Get Free Quote</Link>
           <Link to="tel:5024170690" className={classes.secondaryButton}>Call (502) 417-0690</Link>
         </div>
       </div>
@@ -151,7 +151,7 @@ const WoodstockGAPage = () => {
                   <li><Link to="/services/mobile-detailing" style={{ color: '#FFF' }}>Mobile Detailing Services</Link></li>
                 </ul>
                 <div className={classes.buttonContainer}>
-                  <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" rel="noopener noreferrer" className={classes.primaryButton}>Book Appointment</Link>
+                  <Link to="/book-appointment" rel="noopener noreferrer" className={classes.primaryButton}>Book Appointment</Link>
                   <Link to="tel:5024170690" className={classes.secondaryButton}>Call (502) 417-0690</Link>
                 </div>
               </div>

@@ -263,8 +263,8 @@ const SmyrnaGAPage = () => {
 
             <div className={classes.buttonContainer}>
               <Link
-                to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
-                target="_blank"
+                to="/book-appointment"
+               
                 rel="noopener noreferrer"
                 className={classes.primaryButton}
               >
@@ -338,7 +338,7 @@ const SmyrnaGAPage = () => {
                   <Link to="/service-areas/kennesaw-ga" style={{ color: '#fff', textDecoration: 'underline' }}>Kennesaw, GA</Link>
                 </SimpleGrid>
                 <div className={classes.buttonContainer}>
-                  <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" rel="noopener noreferrer" className={classes.primaryButton}>Get Free Quote</Link>
+                  <Link to="/book-appointment" rel="noopener noreferrer" className={classes.primaryButton}>Get Free Quote</Link>
                   <Link to="tel:5024170690" className={classes.secondaryButton}>Call (502) 417-0690</Link>
                 </div>
               </div>

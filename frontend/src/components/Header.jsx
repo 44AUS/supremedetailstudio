@@ -359,7 +359,7 @@ export default function HeaderMenu() {
       </Group>
       
       <Group spacing={5} className={classes.links}>
-        <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw" target="_blank" style={{ textDecoration: 'none' }}>
+        <Link to="/book-appointment" style={{ textDecoration: 'none' }}>
           <Button 
           size="lg" 
           className={classes.control}

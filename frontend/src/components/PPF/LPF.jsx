@@ -46,7 +46,7 @@ const LPFComponent = () => {
         packageDuration="DYNOshield gives your lights world class protection at the same time as an extremely clear glossy finish."
         included={LPFPackage}
         price="Starting at $150"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+        bookingLink="/book-appointment"
         />
 
                 <PackageCard
@@ -54,7 +54,7 @@ const LPFComponent = () => {
         packageDuration="Our lightest neutral gray color that compliments a huge variety headlights and taillights. DYNOstorm gives your lights world class protection at the same time as an extremely glossy finish and a subtle sense of sleek."
         included={LPFPackage}
         price="Starting at $150"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+        bookingLink="/book-appointment"
         />
 
       <PackageCard
@@ -62,7 +62,7 @@ const LPFComponent = () => {
         packageDuration="DYNOshade gives you a beautifully shaded light making a subtle difference that protects and enhances both lenses and housing."
         included={LPFPackage}
         price="Starting at $150"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+        bookingLink="/book-appointment"
         />
        
       <PackageCard
@@ -70,7 +70,7 @@ const LPFComponent = () => {
         packageDuration="DYNOshadow offers you a medium darkness with a beautiful charcoal color tone. Perfect for those wanting a sleek and mature look not quite as dark as DYNOsmoke."
         included={LPFPackage}
         price="Starting at $150"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+        bookingLink="/book-appointment"
         />
 
       <PackageCard
@@ -78,7 +78,7 @@ const LPFComponent = () => {
         packageDuration="DYNOsmoke is the darkest option for those pursuing a stealthy look. Perfect for toning down chrome housing or adding a touch of unique to your headlights, taillights and turn signals."
         included={LPFPackage}
         price="Starting at $150"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+        bookingLink="/book-appointment"
         />
         
         <PackageCard
@@ -86,7 +86,7 @@ const LPFComponent = () => {
         packageDuration="DYNOyellow is a classic yellow film. Inspired by race cultures across the globe, give your car or truck a track and off-road personality with worthy protection."
         included={LPFPackage}
         price="Starting at $150"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+        bookingLink="/book-appointment"
         />
         </SimpleGrid>
     </div>

@@ -132,8 +132,8 @@ const SandySpringsHero = () => {
           <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-6">
             <div className={classes.buttonContainer}>
               <Link 
-                to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" 
-                target="_blank" 
+                to="/book-appointment" 
+                
                 rel="noopener noreferrer"
                 className={classes.primaryButton}
                 aria-label="Book auto detailing appointment in Sandy Springs GA"

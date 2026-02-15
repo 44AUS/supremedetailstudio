@@ -131,7 +131,7 @@ const VideoIntroduction = (props) => {
             <div className={classes.textColumn}>
               <Title className={classes.introductionTitle}>{props.titleProp}</Title>
               <p className={classes.whatIsIt}>{props.descriptionProp}</p>
-              <Link to={props.buttonLink} target="_blank" rel="noopener noreferrer" className={classes.primaryButton}>
+              <Link to={props.buttonLink} rel="noopener noreferrer" className={classes.primaryButton}>
                 {props.buttonText}
               </Link>
             </div>

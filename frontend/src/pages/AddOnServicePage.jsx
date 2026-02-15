@@ -131,7 +131,7 @@ const AddOnServicesPage = () => {
           descriptionProp={`Sometimes your vehicle needs a little something extra such as stain removal, pet hair removal, HVAC cleaning, mold remediation, interior protection, exterior protection or car seat cleaning. Supreme Detail Studio has solutions to all your exterior and interior situations.`}
           videoProp='d'
           buttonText='View Our Add-on services'
-          buttonLink='https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/ESiDRkEcgVAtHaaJoMo4'
+          buttonLink='/book-appointment'
           />
     <WhyAddOns />
     <TrustedBrands />

@@ -143,7 +143,7 @@ const HeadlightRestoration = () => {
           descriptionProp={`Sometimes your headlights need a little TLC. Supreme Detail Studio can restore your headlights back to new condition. Our process includes a 4 step headlight restoration process, wet sanding, compounding, polishing and protecting with a 3 year ceramic coating.`}
           videoProp='d'
           buttonText='Book Appointment'
-          buttonLink='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD'
+          buttonLink='/book-appointment'
           />
     <ImportanceHeadlights />
     <TrustedBrands />
@@ -159,7 +159,7 @@ const HeadlightRestoration = () => {
         <div className="mx-auto mt-10 flex items-center justify-center max-w-2xl lg:mx-0 lg:max-w-none">
         <div className="grid grid-cols-1 gap-x-8 gap-y-6 text-base font-semibold leading-7 text-white sm:grid-cols-2 md:flex lg:gap-x-6">
 
-          <Link to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/ESiDRkEcgVAtHaaJoMo4?productServiceId=e6UmZy4E6B2KYgCP6Mah&sku=irC3RkUFCvxiMjoUw9ZA" target="_blank"  style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
+          <Link to="/book-appointment"  style={{ textDecoration: 'none', display: 'flex', justifyContent: 'center' }}>
           <Button 
           radius="none" size="md" variant="shadow" style={{ backgroundColor: 'rgb(232, 2, 0)', fontFamily: 'SceneProRg', letterSpacing: '3px', textTransform: 'uppercase' }}
           >

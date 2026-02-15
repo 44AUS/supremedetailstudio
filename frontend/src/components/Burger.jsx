@@ -221,8 +221,8 @@ const BurgerMenu = () => {
               className={({ isActive }) =>
               isActive ? `${classes.linkActive}` : `${classes.navlink}`}
               onClick={()=> setOpen(false)}
-              to="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw"
-              target="_blank"
+              to="/book-appointment"
+             
               >
                 Book Now
               </NavLink></li>

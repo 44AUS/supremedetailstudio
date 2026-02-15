@@ -201,7 +201,7 @@ const BlogPage = () => {
     <Container size="xl">
       <div className={classes.wrapper}>
         {/* <div className={classes.partner}>
-        <Link to="https://www.stek-usa.com/" target="_blank">
+        <Link to="https://www.stek-usa.com/">
         <Image src={StekRed} alt="Tesla Model S" className={classes.partnerLogo} />
         </Link>
         </div> */}

@@ -109,7 +109,7 @@ const JohnsCreekGAPage = () => {
         <Title className={classes.heroSubtitle}>JOHNS CREEK'S LUXURY AUTO DETAILING EXPERTS</Title>
         <Title className={classes.heroTitle}>LUXURY DETAILING IN JOHNS CREEK, GA</Title>
         <div className={classes.buttonContainer}>
-          <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" rel="noopener noreferrer" className={classes.primaryButton}>Book Appointment</Link>
+          <Link to="/book-appointment" rel="noopener noreferrer" className={classes.primaryButton}>Book Appointment</Link>
           <Link to="tel:5024170690" className={classes.secondaryButton}>Call (502) 417-0690</Link>
         </div>
       </div>
@@ -150,7 +150,7 @@ const JohnsCreekGAPage = () => {
                   <li><strong>Flexible Scheduling</strong> – Work around your busy schedule</li>
                 </ul>
                 <div className={classes.buttonContainer}>
-                  <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" rel="noopener noreferrer" className={classes.primaryButton}>Get Free Quote</Link>
+                  <Link to="/book-appointment" rel="noopener noreferrer" className={classes.primaryButton}>Get Free Quote</Link>
                   <Link to="tel:5024170690" className={classes.secondaryButton}>Call (502) 417-0690</Link>
                 </div>
               </div>

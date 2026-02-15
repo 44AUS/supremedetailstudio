@@ -214,8 +214,8 @@ const AlpharettaGAPage = () => {
 
             <div className={classes.buttonContainer}>
               <Link
-                to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
-                target="_blank"
+                to="/book-appointment"
+               
                 rel="noopener noreferrer"
                 className={classes.primaryButton}
               >

@@ -426,8 +426,8 @@ export default function NavBar() {
             
             {!isMinimalNav && (
             <Link 
-              to='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD' 
-              target="_blank"
+              to='/book-appointment' 
+             
               rel="noopener noreferrer"
               style={{
                 backgroundColor: '#e80200',
@@ -614,8 +614,8 @@ export default function NavBar() {
 
             {/* Book Button */}
             <Link
-              to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
-              target="_blank"
+              to="/book-appointment"
+             
               rel="noopener noreferrer"
               onClick={closeMenu}
               style={{

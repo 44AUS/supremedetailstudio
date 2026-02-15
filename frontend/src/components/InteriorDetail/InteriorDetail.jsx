@@ -45,14 +45,14 @@ const InteriorDetail = () => {
         packageDuration="4 - 5 Hours"
         included={deluxeInterior}
         price="Starting at $150"
-        bookingLink="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="Supreme Interior Detail"
         packageDuration="5 - 7 Hours"
         included={supremeInterior}
         price="Starting at $200"
-        bookingLink="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
+        bookingLink="/book-appointment"
         />
       </SimpleGrid>
     </div>

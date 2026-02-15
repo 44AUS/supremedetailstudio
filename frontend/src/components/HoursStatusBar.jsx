@@ -102,7 +102,7 @@ const isMinimalNav = minimalNavRoutes.some(route =>
 
       {/* CTA */}
       <Link
-        to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD"
+        to="/book-appointment"
         style={{
           color: '#fff',
           textDecoration: 'none',

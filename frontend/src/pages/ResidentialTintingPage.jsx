@@ -180,7 +180,7 @@ const ResidentialWindowTintPage = () => {
           descriptionProp={`In the Derby City, the sun shines with brilliance during all points of the year. Residents of the Kentuckiana area know that this can impact their home’s interior in many ways, while those who live in a more urban setting have passersby walking past frequently. Privacy, security, and temperature improvements are all important for your home, and Supreme Detail Studio has the answers! Imagine a space where the light is perfect, the temperature is always comfortable, and you and your family know you have the privacy you deserve. You get this with us.`}
           videoProp='Pz8x_kA7Ypc'
           buttonText='View Our Packages'
-          buttonLink='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD'
+          buttonLink='/book-appointment'
           />
     {/* <BenefitsOfPPF /> */}
     <BenefitsOfResidentialTint />

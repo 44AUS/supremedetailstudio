@@ -39,21 +39,21 @@ const PaintCorrectionComponent = () => {
         packageDuration="4 - 6 Hours"
         included={stageOne}
         price="$300 - $375"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/joHM8Dxh2Y2E9HsOXeF2"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="Two Stage Correction"
         packageDuration="8 - 12 Hours"
         included={stageTwo}
         price="$500 - $575"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/joHM8Dxh2Y2E9HsOXeF2"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="Wet sanding or by the hour paint correction"
         packageDuration="2 - 3 Days"
         included={stageThree}
         price="$150 Per Hour"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/joHM8Dxh2Y2E9HsOXeF2"
+        bookingLink="/book-appointment"
         />
       </SimpleGrid>
     </div>

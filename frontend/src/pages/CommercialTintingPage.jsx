@@ -179,7 +179,7 @@ const CommercialWindowTintPage = () => {
           descriptionProp={`We specialize in providing top-notch commercial window tinting services that cater to the unique needs of all of our valued local businesses. Each business is unique, and so are its needs. That's why we offer customized window tinting solutions that align perfectly with your requirements. Whether you want to lower energy costs, improve employee comfort, or elevate your property’s aesthetic value, our high-quality tints are designed to deliver.`}
           videoProp='Pz8x_kA7Ypc'
           buttonText='View Our Packages'
-          buttonLink='https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD'
+          buttonLink='/book-appointment'
           />
     <BenefitsOfCommercialTint />
     <FlatGlassCertifiedComponent />

@@ -29,28 +29,28 @@ const CeramicCoatingComponent = () => {
         packageDuration="9 Months"
         included={levelOne}
         price="$350"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv"
+        bookingLink="/book-appointment"
         />
                 <PackageCard
         packageTitle="DIAMOND SS"
         packageDuration="3 Years"
         included={levelOne}
         price="$650"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="PRO"
         packageDuration="6 Years"
         included={levelOne}
         price="$1,000"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="MAX G+"
         packageDuration="10 Years"
         included={levelOne}
         price="$1,850"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv"
+        bookingLink="/book-appointment"
         />
       </SimpleGrid>
     </div>

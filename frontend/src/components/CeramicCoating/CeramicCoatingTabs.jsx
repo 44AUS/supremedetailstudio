@@ -100,21 +100,21 @@ const CeramicTabs = () => {
         packageDuration="3 Years"
         included={levelOne}
         price="$650"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv?productServiceId=DLx0jIV9pgi9UQwiNZdK&sku=33MqtDKkpkAGWz2B1wIo"
+        bookingLink="/book-appointment"
         />
                 <PackageCard
         packageTitle="Quartz Pro 9h"
         packageDuration="5 Years"
         included={levelOne}
         price="$1,000"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv?productServiceId=NZY15ptgN9zac5msR7up&sku=IAWw6fS4v6SdiLHeP7Jp"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="Graphene Pro 10H & N1"
         packageDuration="10 Years"
         included={levelOne}
         price="$1,850"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv?productServiceId=NZY15ptgN9zac5msR7up&sku=IAWw6fS4v6SdiLHeP7Jp"
+        bookingLink="/book-appointment"
         />
       </SimpleGrid>
       </div>
@@ -136,21 +136,21 @@ const CeramicTabs = () => {
         packageDuration="3 Years"
         included={levelOne}
         price="$750"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv?productServiceId=DLx0jIV9pgi9UQwiNZdK&sku=33MqtDKkpkAGWz2B1wIo"
+        bookingLink="/book-appointment"
         />
                 <PackageCard
         packageTitle="Quartz Pro 9h"
         packageDuration="5 Years"
         included={levelOne}
         price="$1,100"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv?productServiceId=NZY15ptgN9zac5msR7up&sku=IAWw6fS4v6SdiLHeP7Jp"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="Graphene Pro 10H & N1"
         packageDuration="10 Years"
         included={levelOne}
         price="$1,950"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv?productServiceId=NZY15ptgN9zac5msR7up&sku=IAWw6fS4v6SdiLHeP7Jp"
+        bookingLink="/book-appointment"
         />
       </SimpleGrid>
       </div>
@@ -172,21 +172,21 @@ const CeramicTabs = () => {
         packageDuration="3 Years"
         included={levelOne}
         price="$850"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv?productServiceId=DLx0jIV9pgi9UQwiNZdK&sku=33MqtDKkpkAGWz2B1wIo"
+        bookingLink="/book-appointment"
         />
                 <PackageCard
         packageTitle="Quartz Pro 9h"
         packageDuration="5 Years"
         included={levelOne}
         price="$1,200"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv?productServiceId=NZY15ptgN9zac5msR7up&sku=IAWw6fS4v6SdiLHeP7Jp"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="Graphene Pro 10H & N1"
         packageDuration="10 Years"
         included={levelOne}
         price="$2,050"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/1gpKkNQfkhpYPNy1i0Mv?productServiceId=NZY15ptgN9zac5msR7up&sku=IAWw6fS4v6SdiLHeP7Jp"
+        bookingLink="/book-appointment"
         />
       </SimpleGrid>
       </div>

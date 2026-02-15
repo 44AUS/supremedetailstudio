@@ -102,21 +102,21 @@ const CommercialTintComponent = () => {
         packageDuration="For good heat rejection, privacy and style."
         included={stageTwo}
         price="$325"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         /> */}
         {/* <PackageCard
         packageTitle="Ceramic Pro Nano"
         packageDuration="This option has great heat rejection, advanced nanoceramic IR-blocking technology, and no sacrifices."
         included={stageThree}
         price="CALL FOR PRICING"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="Apex Ultra"
         packageDuration="For our best heat rejection, advanced multi-layer nanoceramic IR-blocking technology, and no sacrifices."
         included={apex}
         price="CALL FOR PRICING"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         /> */}
       </SimpleGrid>
       </div>
@@ -138,28 +138,28 @@ const CommercialTintComponent = () => {
         packageDuration="For privacy and style."
         included={stageOne}
         price="Starting at $120"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
         {/* <PackageCard
         packageTitle="Ceramic C2"
         packageDuration="For good heat rejection, privacy and style."
         included={stageTwo}
         price="$325"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         /> */}
         <PackageCard
         packageTitle="Ceramic Pro Nano"
         packageDuration="This option has great heat rejection, advanced nanoceramic IR-blocking technology, and no sacrifices."
         included={stageThree}
         price="CALL FOR PRICING"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="Apex Ultra"
         packageDuration="For our best heat rejection, advanced multi-layer nanoceramic IR-blocking technology, and no sacrifices."
         included={apex}
         price="CALL FOR PRICING"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
       </SimpleGrid>
       </div>
@@ -181,28 +181,28 @@ const CommercialTintComponent = () => {
         packageDuration="For privacy and style."
         included={stageOne}
         price="CALL FOR PRICING"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
         {/* <PackageCard
         packageTitle="Ceramic C2"
         packageDuration="For good heat rejection, privacy and style."
         included={stageTwo}
         price="$325"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         /> */}
         <PackageCard
         packageTitle="Ceramic Pro Nano"
         packageDuration="This option has great heat rejection, advanced nanoceramic IR-blocking technology, and no sacrifices."
         included={stageThree}
         price="CALL FOR PRICING"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="Apex Ultra"
         packageDuration="For our best heat rejection, advanced multi-layer nanoceramic IR-blocking technology, and no sacrifices."
         included={apex}
         price="CALL FOR PRICING"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
       </SimpleGrid>
       </div>
@@ -224,28 +224,28 @@ const CommercialTintComponent = () => {
         packageDuration="For privacy and style."
         included={stageOne}
         price="Starting at $50"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
         {/* <PackageCard
         packageTitle="Ceramic C2"
         packageDuration="For good heat rejection, privacy and style."
         included={stageTwo}
         price="$325"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         /> */}
         <PackageCard
         packageTitle="Ceramic Pro Nano"
         packageDuration="This option has great heat rejection, advanced nanoceramic IR-blocking technology, and no sacrifices."
         included={stageThree}
         price="Starting at $100"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="Apex Ultra"
         packageDuration="For our best heat rejection, advanced multi-layer nanoceramic IR-blocking technology, and no sacrifices."
         included={apex}
         price="CALL FOR PRICING"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
       </SimpleGrid>
       </div>
@@ -267,28 +267,28 @@ const CommercialTintComponent = () => {
         packageDuration="For privacy and style."
         included={stageOne}
         price="CALL FOR PRICING"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
         {/* <PackageCard
         packageTitle="Ceramic C2"
         packageDuration="For good heat rejection, privacy and style."
         included={stageTwo}
         price="$325"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         /> */}
         <PackageCard
         packageTitle="Ceramic Pro Nano"
         packageDuration="This option has great heat rejection, advanced nanoceramic IR-blocking technology, and no sacrifices."
         included={stageThree}
         price="CALL FOR PRICING"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
         <PackageCard
         packageTitle="Apex Ultra"
         packageDuration="For our best heat rejection, advanced multi-layer nanoceramic IR-blocking technology, and no sacrifices."
         included={apex}
         price="CALL FOR PRICING"
-        bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/KPFUIkM7NOncFN6UCQoI"
+        bookingLink="/book-appointment"
         />
       </SimpleGrid>
       </div>

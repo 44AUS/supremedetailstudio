@@ -342,7 +342,7 @@ const ResidentialTintingHero = () => {
         </Text>
 
         {/* CTA Button */}
-                                <Link to="https://app.urable.com/virtual-shop/SxuPVxIQ2P7KOV77y6qD" target="_blank" className={classes.primaryButton}>
+                                <Link to="/book-appointment" className={classes.primaryButton}>
                                   Book Appointment
                                 </Link>
 

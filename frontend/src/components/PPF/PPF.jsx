@@ -116,7 +116,7 @@ const PPFComponent = () => {
               packageDuration="3 - 4 Days"
               included={partialFront}
               price="Starting at $1,450"
-              bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+              bookingLink="/book-appointment"
             />
           </div>
           <div className={classes.imageColumn}>
@@ -133,7 +133,7 @@ const PPFComponent = () => {
               packageDuration="3 - 4 Days"
               included={fullFrontEnd}
               price="Starting at $1,850"
-              bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+              bookingLink="/book-appointment"
             />
           </div>
           <div className={classes.imageColumn}>
@@ -150,7 +150,7 @@ const PPFComponent = () => {
               packageDuration="3 - 4 Days"
               included={trackPackage}
               price="Starting at $2,750"
-              bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+              bookingLink="/book-appointment"
             />
           </div>
           <div className={classes.imageColumn}>
@@ -167,7 +167,7 @@ const PPFComponent = () => {
               packageDuration="4 - 5 Days"
               included={fullBody}
               price="Starting at $5,500"
-              bookingLink="https://app.urable.com/virtual-shop/rB9FHJFIfifYgU8Ty9Yw/pOUCf7sLZ7O0rn1N9gsl"
+              bookingLink="/book-appointment"
             />
           </div>
           <div className={classes.imageColumn}>

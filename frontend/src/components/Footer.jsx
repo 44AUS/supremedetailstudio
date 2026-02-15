@@ -281,7 +281,7 @@ const Footer2 = () => {
     )}
     {!isMinimalNav && (
     <div className={classes.footerContainer2}>
-      <a href="#" target="_blank" rel="noopener noreferrer" className={classes.credits}>
+      <a href="#" rel="noopener noreferrer" className={classes.credits}>
         {/* <img src="https://www.flattdevelopment.com/images/logo-time.png" loading="lazy" width="100" alt="Flatt Development" className={classes.flogo} /> */}
         <div className={classes.footerBottomText}>Website by <span className={classes.textSpan}>Flatt Development</span></div>
       </a>
@@ -290,7 +290,7 @@ const Footer2 = () => {
     )}
     {isMinimalNav && (
     <div className={classes.footerContainer2}>
-      <a href="#" target="_blank" rel="noopener noreferrer" className={classes.credits}>
+      <a href="#" rel="noopener noreferrer" className={classes.credits}>
         {/* <img src="https://www.flattdevelopment.com/images/logo-time.png" loading="lazy" width="100" alt="Flatt Development" className={classes.flogo} /> */}
         <div className={classes.footerBottomText}>Developed by <span className={classes.textSpan}>Flatt Development</span></div>
       </a>

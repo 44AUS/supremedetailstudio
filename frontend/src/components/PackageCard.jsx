@@ -186,7 +186,7 @@ export default function PackageCard(props) {
       </Card.Section>
 
       <Card.Section className={classes.sectionButton}>
-          <Link to={props.bookingLink} target="_blank">
+          <Link to={props.bookingLink}>
           <Button 
             radius="md" 
             styles={(theme) => ({
