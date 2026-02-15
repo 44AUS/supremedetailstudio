@@ -638,13 +638,16 @@ const styles = {
   },
   locationLabel: {
     color: '#fff',
-    fontWeight: 600,
+    fontWeight: 700,
     fontSize: '18px',
     marginBottom: '6px',
+    fontFamily: "'Oswald', sans-serif",
+    letterSpacing: '0.5px',
   },
   locationDesc: {
     color: 'rgba(255,255,255,0.5)',
     fontSize: '13px',
+    fontFamily: "'Montserrat', sans-serif",
   },
   locationUpcharge: {
     color: '#ef4444',
@@ -992,11 +995,13 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     gap: '2px',
+    fontFamily: "'Montserrat', sans-serif",
   },
   servicePrice: {
     color: '#fff',
     fontSize: '22px',
     fontWeight: 700,
+    fontFamily: "'Oswald', sans-serif",
   },
   twoColGrid: {
     display: 'grid',
