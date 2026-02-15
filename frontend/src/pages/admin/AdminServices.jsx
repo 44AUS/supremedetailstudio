@@ -940,7 +940,14 @@ export default function AdminServices() {
               </div>
 
               <h3 style={styles.serviceName}>{service.name}</h3>
-              <p style={styles.serviceDesc}>{service.description || 'No description'}</p>
+              <div style={styles.serviceDesc}>
+                {service.description ? service.description.split('\n').filter(line => line.trim()).map((line, i) => (
+                  <div key={i} style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+                    <span style={{ color: '#ef4444', flexShrink: 0 }}>•</span>
+                    <span>{line.trim()}</span>
+                  </div>
+                )) : 'No description'}
+              </div>
 
               <div style={styles.serviceInfo}>
                 <div style={styles.infoItem}>

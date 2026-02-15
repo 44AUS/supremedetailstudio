@@ -988,6 +988,10 @@ const styles = {
     fontSize: '13px',
     marginBottom: '12px',
     lineHeight: 1.5,
+    textAlign: 'left',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
   },
   servicePrice: {
     color: '#fff',
@@ -2596,7 +2600,14 @@ function ServiceCard({ service, price, selected, onClick, disabled }) {
         <Icon size={20} style={{ color: '#ef4444' }} />
       </div>
       <div style={styles.serviceName}>{service.name}</div>
-      <div style={styles.serviceDesc}>{service.description}</div>
+      <div style={styles.serviceDesc}>
+        {service.description?.split('\n').filter(line => line.trim()).map((line, i) => (
+          <div key={i} style={{ display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
+            <span style={{ color: '#ef4444', flexShrink: 0 }}>•</span>
+            <span>{line.trim()}</span>
+          </div>
+        ))}
+      </div>
       <div style={styles.servicePrice}>
         {typeof price === 'number' ? `$${price}` : price}
       </div>
