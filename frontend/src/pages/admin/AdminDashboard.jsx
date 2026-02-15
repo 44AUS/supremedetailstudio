@@ -1,26 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Calendar, Clock, Users, CheckCircle, AlertCircle, 
-  TrendingUp, Package, Loader2, ArrowRight
+import {
+  Calendar, Clock, Users, CheckCircle, AlertCircle,
+  TrendingUp, Package, Loader2, ArrowRight, ChevronLeft,
+  ChevronRight, XCircle, User, Phone, Mail, MapPin, Car, Eye
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
+
+const STATUS_CONFIG = {
+  pending: { label: 'Pending', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
+  in_progress: { label: 'In Progress', color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.15)' },
+  complete: { label: 'Complete', color: '#10b981', bg: 'rgba(16, 185, 129, 0.15)' },
+  incomplete: { label: 'Incomplete', color: '#ef4444', bg: 'rgba(239, 68, 68, 0.15)' },
+  cancelled: { label: 'Cancelled', color: '#6b7280', bg: 'rgba(107, 114, 128, 0.15)' },
+};
+
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  // Calendar state
+  const [calendarDate, setCalendarDate] = useState(new Date());
+  const [allBookings, setAllBookings] = useState([]);
+  const [bookingsLoading, setBookingsLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState(null);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+
+  const getToken = () => localStorage.getItem('adminToken');
+
   useEffect(() => {
     fetchStats();
+    fetchAllBookings();
   }, []);
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${API_URL}/api/dashboard/stats`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${getToken()}` },
       });
       if (!response.ok) throw new Error('Failed to fetch stats');
       const data = await response.json();
@@ -31,6 +52,74 @@ export default function AdminDashboard() {
       setLoading(false);
     }
   };
+
+  const fetchAllBookings = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/bookings`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (!response.ok) throw new Error('Failed to fetch bookings');
+      const data = await response.json();
+      setAllBookings(data);
+    } catch (err) {
+      console.error('Failed to load bookings for calendar');
+    } finally {
+      setBookingsLoading(false);
+    }
+  };
+
+  const updateBookingStatus = async (bookingId, newStatus) => {
+    setUpdatingStatus(true);
+    try {
+      const response = await fetch(`${API_URL}/api/bookings/${bookingId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      if (!response.ok) throw new Error('Failed to update status');
+      setAllBookings(prev =>
+        prev.map(b => (b.id === bookingId ? { ...b, status: newStatus } : b))
+      );
+      if (selectedBooking?.id === bookingId) {
+        setSelectedBooking({ ...selectedBooking, status: newStatus });
+      }
+    } catch (err) {
+      console.error('Error updating status:', err);
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  // Group bookings by date
+  const bookingsByDate = {};
+  allBookings.forEach(booking => {
+    const date = booking.booking_date;
+    if (!bookingsByDate[date]) bookingsByDate[date] = [];
+    bookingsByDate[date].push(booking);
+  });
+
+  // Calendar helpers
+  const viewMonth = calendarDate.getMonth();
+  const viewYear = calendarDate.getFullYear();
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const firstDayOfMonth = new Date(viewYear, viewMonth, 1).getDay();
+  const monthName = calendarDate.toLocaleString('default', { month: 'long' });
+
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+  const prevMonth = () => setCalendarDate(new Date(viewYear, viewMonth - 1, 1));
+  const nextMonth = () => setCalendarDate(new Date(viewYear, viewMonth + 1, 1));
+
+  const handleDayClick = (day) => {
+    const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    setSelectedDate(selectedDate === dateStr ? null : dateStr);
+  };
+
+  const selectedDayBookings = selectedDate ? (bookingsByDate[selectedDate] || []) : [];
 
   if (loading) {
     return (
@@ -60,13 +149,7 @@ export default function AdminDashboard() {
   ];
 
   const getStatusStyle = (status) => {
-    const statusStyles = {
-      pending: { bg: 'rgba(245, 158, 11, 0.15)', color: '#f59e0b', text: 'Pending' },
-      in_progress: { bg: 'rgba(139, 92, 246, 0.15)', color: '#8b5cf6', text: 'In Progress' },
-      complete: { bg: 'rgba(16, 185, 129, 0.15)', color: '#10b981', text: 'Complete' },
-      incomplete: { bg: 'rgba(239, 68, 68, 0.15)', color: '#ef4444', text: 'Incomplete' },
-    };
-    return statusStyles[status] || statusStyles.pending;
+    return STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   };
 
   return (
@@ -92,6 +175,146 @@ export default function AdminDashboard() {
             </div>
           );
         })}
+      </div>
+
+      {/* Booking Calendar */}
+      <div style={styles.section}>
+        <div style={styles.sectionHeader}>
+          <h2 style={styles.sectionTitle}>
+            <Calendar size={20} style={{ marginRight: '8px' }} />
+            BOOKING CALENDAR
+          </h2>
+        </div>
+
+        <div style={styles.calendarContainer}>
+          {/* Month Navigation */}
+          <div style={styles.calendarNav}>
+            <button onClick={prevMonth} style={styles.calendarNavBtn}>
+              <ChevronLeft size={20} />
+            </button>
+            <h3 style={styles.calendarMonth}>{monthName} {viewYear}</h3>
+            <button onClick={nextMonth} style={styles.calendarNavBtn}>
+              <ChevronRight size={20} />
+            </button>
+          </div>
+
+          {/* Weekday Headers */}
+          <div style={styles.weekdayRow}>
+            {WEEKDAYS.map(day => (
+              <div key={day} style={styles.weekdayLabel}>{day}</div>
+            ))}
+          </div>
+
+          {/* Day Grid */}
+          {bookingsLoading ? (
+            <div style={{ display: 'flex', justifyContent: 'center', padding: '40px', color: '#ababab' }}>
+              <Loader2 size={24} style={{ animation: 'spin 1s linear infinite' }} />
+            </div>
+          ) : (
+            <div style={styles.dayGrid}>
+              {/* Empty cells before first day */}
+              {Array.from({ length: firstDayOfMonth }).map((_, i) => (
+                <div key={`empty-${i}`} style={styles.dayEmpty} />
+              ))}
+
+              {/* Day cells */}
+              {Array.from({ length: daysInMonth }).map((_, i) => {
+                const day = i + 1;
+                const dateStr = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const dayBookings = bookingsByDate[dateStr] || [];
+                const isToday = dateStr === todayStr;
+                const isSelected = dateStr === selectedDate;
+                const bookingCount = dayBookings.length;
+
+                return (
+                  <button
+                    key={day}
+                    onClick={() => handleDayClick(day)}
+                    style={{
+                      ...styles.dayCell,
+                      ...(isToday ? styles.dayCellToday : {}),
+                      ...(isSelected ? styles.dayCellSelected : {}),
+                    }}
+                  >
+                    <span style={{
+                      ...styles.dayNumber,
+                      color: isSelected ? '#fff' : isToday ? '#e80200' : '#fff',
+                    }}>
+                      {day}
+                    </span>
+                    {bookingCount > 0 && (
+                      <div style={styles.bookingDots}>
+                        {bookingCount <= 3 ? (
+                          dayBookings.slice(0, 3).map((b, idx) => {
+                            const sc = getStatusStyle(b.status);
+                            return <span key={idx} style={{ ...styles.dot, background: sc.color }} />;
+                          })
+                        ) : (
+                          <span style={styles.bookingCount}>{bookingCount}</span>
+                        )}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Selected Day Bookings Panel */}
+          {selectedDate && (
+            <div style={styles.dayDetailPanel}>
+              <div style={styles.dayDetailHeader}>
+                <h3 style={styles.dayDetailTitle}>
+                  {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                </h3>
+                <span style={styles.dayDetailCount}>
+                  {selectedDayBookings.length} booking{selectedDayBookings.length !== 1 ? 's' : ''}
+                </span>
+              </div>
+
+              {selectedDayBookings.length > 0 ? (
+                <div style={styles.dayBookingsList}>
+                  {selectedDayBookings
+                    .sort((a, b) => (a.booking_time || '').localeCompare(b.booking_time || ''))
+                    .map(booking => {
+                      const sc = getStatusStyle(booking.status);
+                      return (
+                        <button
+                          key={booking.id}
+                          onClick={() => setSelectedBooking(booking)}
+                          style={styles.dayBookingItem}
+                        >
+                          <div style={styles.dayBookingTime}>
+                            <Clock size={14} style={{ color: '#e80200' }} />
+                            <span>{booking.booking_time}</span>
+                          </div>
+                          <div style={styles.dayBookingInfo}>
+                            <span style={styles.dayBookingCustomer}>
+                              {booking.customer_first_name} {booking.customer_last_name}
+                            </span>
+                            <span style={styles.dayBookingService}>{booking.service_name}</span>
+                          </div>
+                          <span style={{
+                            ...styles.dayBookingStatus,
+                            background: sc.bg,
+                            color: sc.color,
+                          }}>
+                            {sc.label}
+                          </span>
+                          <Eye size={16} style={{ color: '#525252', flexShrink: 0 }} />
+                        </button>
+                      );
+                    })}
+                </div>
+              ) : (
+                <div style={styles.dayEmpty2}>
+                  <Calendar size={24} style={{ color: '#525252' }} />
+                  <span>No bookings on this day</span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Recent Bookings */}
@@ -128,7 +351,7 @@ export default function AdminDashboard() {
                       background: statusStyle.bg,
                       color: statusStyle.color,
                     }}>
-                      {statusStyle.text}
+                      {statusStyle.label}
                     </span>
                   </span>
                 </div>
@@ -161,6 +384,219 @@ export default function AdminDashboard() {
           </Link>
         </div>
       </div>
+
+      {/* Booking Detail Modal */}
+      {selectedBooking && (
+        <div style={styles.modalOverlay} onClick={() => setSelectedBooking(null)}>
+          <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.modalHeader}>
+              <h2 style={styles.modalTitle}>BOOKING DETAILS</h2>
+              <button onClick={() => setSelectedBooking(null)} style={styles.closeBtn}>
+                <XCircle size={24} />
+              </button>
+            </div>
+
+            <div style={styles.modalContent}>
+              {/* Booking Reference */}
+              <div style={styles.bookingReference}>
+                <span style={styles.referenceLabel}>Customer Ref:</span>
+                <span style={styles.referenceValue}>#{selectedBooking.id?.slice(-8).toUpperCase()}</span>
+              </div>
+
+              {/* Status Section */}
+              <div style={styles.statusSection}>
+                <span style={styles.modalLabel}>Status:</span>
+                <div style={styles.statusButtons}>
+                  {Object.entries(STATUS_CONFIG).map(([status, config]) => (
+                    <button
+                      key={status}
+                      onClick={() => updateBookingStatus(selectedBooking.id, status)}
+                      disabled={updatingStatus}
+                      style={{
+                        ...styles.statusBtn,
+                        background: selectedBooking.status === status ? config.bg : 'transparent',
+                        color: selectedBooking.status === status ? config.color : '#ababab',
+                        borderColor: selectedBooking.status === status ? config.color : '#262626',
+                      }}
+                    >
+                      {config.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Customer Info */}
+              <div style={styles.infoSection}>
+                <h3 style={styles.infoTitle}>
+                  <User size={18} />
+                  Customer
+                </h3>
+                <div style={styles.infoGrid}>
+                  <div style={styles.infoItem}>
+                    <User size={14} style={{ color: '#ababab' }} />
+                    <span>{selectedBooking.customer_first_name} {selectedBooking.customer_last_name}</span>
+                  </div>
+                  <div style={styles.infoItem}>
+                    <Phone size={14} style={{ color: '#ababab' }} />
+                    <span>{selectedBooking.customer_phone}</span>
+                  </div>
+                  <div style={styles.infoItem}>
+                    <Mail size={14} style={{ color: '#ababab' }} />
+                    <span>{selectedBooking.customer_email}</span>
+                  </div>
+                  <div style={styles.infoItem}>
+                    <MapPin size={14} style={{ color: '#ababab' }} />
+                    <span>{selectedBooking.customer_address || 'N/A'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Vehicle Info */}
+              <div style={styles.infoSection}>
+                <h3 style={styles.infoTitle}>
+                  <Car size={18} />
+                  Vehicle
+                </h3>
+                <div style={styles.vehicleInfo}>
+                  <span style={styles.vehicleMake}>
+                    {selectedBooking.vehicle_year} {selectedBooking.vehicle_make} {selectedBooking.vehicle_model}
+                  </span>
+                  <span style={styles.vehicleType}>Type: {selectedBooking.vehicle_type}</span>
+                  {selectedBooking.vehicle_color && (
+                    <span style={styles.vehicleType}>Color: {selectedBooking.vehicle_color}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Appointment Info */}
+              <div style={styles.infoSection}>
+                <h3 style={styles.infoTitle}>
+                  <Calendar size={18} />
+                  Appointment
+                </h3>
+                <div style={styles.appointmentInfo}>
+                  <div style={styles.appointmentItem}>
+                    <Calendar size={16} style={{ color: '#e80200' }} />
+                    <span>{selectedBooking.booking_date}</span>
+                  </div>
+                  <div style={styles.appointmentItem}>
+                    <Clock size={16} style={{ color: '#e80200' }} />
+                    <span>{selectedBooking.booking_time}</span>
+                  </div>
+                  <div style={styles.appointmentItem}>
+                    <MapPin size={16} style={{ color: '#e80200' }} />
+                    <span>{selectedBooking.service_location === 'shop' ? 'In Shop' : 'Mobile Service'}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Service Details */}
+              <div style={styles.infoSection}>
+                <h3 style={styles.infoTitle}>Service Details</h3>
+                <div style={styles.serviceDetailsGrid}>
+                  <div style={styles.detailItem}>
+                    <span style={styles.detailLabel}>Service:</span>
+                    <span style={styles.detailValue}>{selectedBooking.service_name}</span>
+                  </div>
+                  <div style={styles.detailItem}>
+                    <span style={styles.detailLabel}>Location:</span>
+                    <span style={styles.detailValue}>
+                      {selectedBooking.service_location === 'shop' ? 'In Shop' : 'Mobile Service'}
+                    </span>
+                  </div>
+                  {selectedBooking.pickup_delivery === 'yes' && (
+                    <div style={styles.detailItem}>
+                      <span style={styles.detailLabel}>Pickup & Delivery:</span>
+                      <span style={styles.detailValue}>
+                        {selectedBooking.pickup_distance === 'under15' ? 'Under 15 miles (+$50)' : 'Over 15 miles (+$75)'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Price */}
+              <div style={styles.infoSection}>
+                <h3 style={styles.infoTitle}>Price</h3>
+                <div style={styles.priceBreakdown}>
+                  {selectedBooking.services && selectedBooking.services.length > 0 ? (
+                    selectedBooking.services.map((service, idx) => (
+                      <div key={idx} style={styles.priceRow}>
+                        <span style={styles.priceLabel}>
+                          {service.service_name}
+                          {service.duration_minutes && (
+                            <span style={{ fontSize: '11px', color: '#6b7280', marginLeft: '8px' }}>
+                              ({service.duration_minutes} min)
+                            </span>
+                          )}
+                        </span>
+                        <span style={styles.priceValue}>${service.base_price?.toFixed(2)}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div style={styles.priceRow}>
+                      <span style={styles.priceLabel}>{selectedBooking.service_name}</span>
+                      <span style={styles.priceValue}>—</span>
+                    </div>
+                  )}
+
+                  {selectedBooking.vehicle_type && selectedBooking.vehicle_type !== 'sedan' && (
+                    <div style={styles.priceRow}>
+                      <span style={styles.priceLabel}>
+                        Vehicle Size ({selectedBooking.vehicle_type === 'suv-2row' ? '2-Row SUV' : '3-Row SUV'})
+                      </span>
+                      <span style={styles.priceValue}>
+                        +${selectedBooking.vehicle_type === 'suv-2row' ? '50.00' : '100.00'}
+                      </span>
+                    </div>
+                  )}
+
+                  {selectedBooking.service_location === 'mobile' && (
+                    <div style={styles.priceRow}>
+                      <span style={styles.priceLabel}>Mobile Service Fee</span>
+                      <span style={styles.priceValue}>+$50.00</span>
+                    </div>
+                  )}
+
+                  {selectedBooking.pickup_delivery === 'yes' && (
+                    <div style={styles.priceRow}>
+                      <span style={styles.priceLabel}>
+                        Pickup & Delivery ({selectedBooking.pickup_distance === 'over15' ? '>15mi' : '<15mi'})
+                      </span>
+                      <span style={styles.priceValue}>
+                        +${selectedBooking.pickup_distance === 'over15' ? '75.00' : '50.00'}
+                      </span>
+                    </div>
+                  )}
+
+                  <div style={{ ...styles.priceRow, ...styles.totalRow }}>
+                    <span style={styles.totalLabel}>TOTAL</span>
+                    <span style={styles.totalPrice}>${selectedBooking.total_price?.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {selectedBooking.notes && (
+                <div style={styles.infoSection}>
+                  <h3 style={styles.infoTitle}>Notes</h3>
+                  <p style={styles.notesText}>{selectedBooking.notes}</p>
+                </div>
+              )}
+
+              {/* View Full Details Link */}
+              <div style={{ marginTop: '20px', paddingTop: '20px', borderTop: '1px solid #262626' }}>
+                <Link
+                  to="/admin/bookings"
+                  style={styles.viewFullLink}
+                  onClick={() => setSelectedBooking(null)}
+                >
+                  View in Bookings Page <ArrowRight size={16} />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         @keyframes spin {
@@ -255,6 +691,8 @@ const styles = {
     marginBottom: '20px',
   },
   sectionTitle: {
+    display: 'flex',
+    alignItems: 'center',
     fontFamily: "'Oswald', sans-serif",
     fontSize: '18px',
     fontWeight: 700,
@@ -272,6 +710,210 @@ const styles = {
     fontSize: '14px',
     fontWeight: 500,
   },
+
+  // Calendar styles
+  calendarContainer: {
+    background: '#111111',
+    border: '1px solid #262626',
+    padding: '24px',
+  },
+  calendarNav: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: '20px',
+  },
+  calendarNavBtn: {
+    width: '40px',
+    height: '40px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#0a0a0a',
+    border: '1px solid #262626',
+    color: '#fff',
+    cursor: 'pointer',
+  },
+  calendarMonth: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '22px',
+    fontWeight: 700,
+    color: '#fff',
+    margin: 0,
+    letterSpacing: '1px',
+  },
+  weekdayRow: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(7, 1fr)',
+    gap: '4px',
+    marginBottom: '8px',
+  },
+  weekdayLabel: {
+    textAlign: 'center',
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '12px',
+    fontWeight: 600,
+    color: '#525252',
+    padding: '8px 0',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+  },
+  dayGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(7, 1fr)',
+    gap: '4px',
+  },
+  dayEmpty: {
+    aspectRatio: '1',
+  },
+  dayCell: {
+    aspectRatio: '1',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '4px',
+    background: '#0a0a0a',
+    border: '1px solid #1a1a1a',
+    cursor: 'pointer',
+    padding: '4px',
+    transition: 'all 0.15s ease',
+  },
+  dayCellToday: {
+    border: '1px solid rgba(232, 2, 0, 0.5)',
+    background: 'rgba(232, 2, 0, 0.05)',
+  },
+  dayCellSelected: {
+    background: '#e80200',
+    border: '1px solid #e80200',
+  },
+  dayNumber: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+  },
+  bookingDots: {
+    display: 'flex',
+    gap: '3px',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  dot: {
+    width: '6px',
+    height: '6px',
+    borderRadius: '50%',
+    flexShrink: 0,
+  },
+  bookingCount: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '10px',
+    fontWeight: 700,
+    color: '#fff',
+    background: 'rgba(232, 2, 0, 0.6)',
+    borderRadius: '50%',
+    width: '18px',
+    height: '18px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  // Day detail panel
+  dayDetailPanel: {
+    marginTop: '16px',
+    borderTop: '1px solid #262626',
+    paddingTop: '16px',
+  },
+  dayDetailHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '12px',
+  },
+  dayDetailTitle: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '16px',
+    fontWeight: 700,
+    color: '#fff',
+    margin: 0,
+    letterSpacing: '0.5px',
+  },
+  dayDetailCount: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '13px',
+    color: '#ababab',
+  },
+  dayBookingsList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  dayBookingItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    padding: '14px 16px',
+    background: '#0a0a0a',
+    border: '1px solid #262626',
+    cursor: 'pointer',
+    width: '100%',
+    textAlign: 'left',
+    transition: 'border-color 0.15s ease',
+  },
+  dayBookingTime: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#fff',
+    minWidth: '80px',
+    flexShrink: 0,
+  },
+  dayBookingInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '2px',
+    flex: 1,
+    minWidth: 0,
+  },
+  dayBookingCustomer: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#fff',
+  },
+  dayBookingService: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '12px',
+    color: '#ababab',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  dayBookingStatus: {
+    display: 'inline-block',
+    padding: '4px 10px',
+    fontSize: '11px',
+    fontWeight: 600,
+    fontFamily: "'Oswald', sans-serif",
+    letterSpacing: '0.5px',
+    textTransform: 'uppercase',
+    flexShrink: 0,
+  },
+  dayEmpty2: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
+    padding: '32px',
+    color: '#525252',
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+  },
+
+  // Bookings table
   bookingsTable: {
     background: '#111111',
     border: '1px solid #262626',
@@ -334,5 +976,254 @@ const styles = {
     fontSize: '14px',
     fontWeight: 500,
     transition: 'all 0.2s ease',
+  },
+
+  // Modal styles
+  modalOverlay: {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0, 0, 0, 0.85)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 1000,
+    padding: '20px',
+  },
+  modal: {
+    width: '100%',
+    maxWidth: '600px',
+    maxHeight: '90vh',
+    overflowY: 'auto',
+    background: '#111111',
+    border: '1px solid #262626',
+  },
+  modalHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '20px 24px',
+    borderBottom: '1px solid #262626',
+  },
+  modalTitle: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '20px',
+    fontWeight: 700,
+    color: '#fff',
+    margin: 0,
+    letterSpacing: '1px',
+  },
+  closeBtn: {
+    background: 'transparent',
+    border: 'none',
+    color: '#ababab',
+    cursor: 'pointer',
+    padding: '4px',
+  },
+  modalContent: {
+    padding: '24px',
+  },
+  bookingReference: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '16px',
+    background: 'rgba(232, 2, 0, 0.05)',
+    border: '1px solid rgba(232, 2, 0, 0.2)',
+    marginBottom: '24px',
+  },
+  referenceLabel: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '12px',
+    fontWeight: 700,
+    color: '#ababab',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  referenceValue: {
+    fontFamily: "'Courier New', monospace",
+    fontSize: '18px',
+    fontWeight: 700,
+    color: '#e80200',
+    letterSpacing: '1px',
+  },
+  statusSection: {
+    marginBottom: '24px',
+    paddingBottom: '24px',
+    borderBottom: '1px solid #262626',
+  },
+  modalLabel: {
+    display: 'block',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '12px',
+    fontWeight: 700,
+    color: '#ababab',
+    marginBottom: '12px',
+    letterSpacing: '1px',
+  },
+  statusButtons: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '8px',
+  },
+  statusBtn: {
+    padding: '8px 14px',
+    border: '1px solid #262626',
+    fontSize: '12px',
+    fontFamily: "'Oswald', sans-serif",
+    fontWeight: 600,
+    letterSpacing: '0.5px',
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+    background: 'transparent',
+  },
+  infoSection: {
+    marginBottom: '20px',
+  },
+  infoTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 700,
+    color: '#e80200',
+    margin: '0 0 12px 0',
+    letterSpacing: '0.5px',
+  },
+  infoGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '12px',
+  },
+  infoItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    fontSize: '14px',
+    color: '#fff',
+    fontFamily: "'Montserrat', sans-serif",
+  },
+  vehicleInfo: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  vehicleMake: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '18px',
+    fontWeight: 600,
+    color: '#fff',
+  },
+  vehicleType: {
+    fontSize: '14px',
+    color: '#ababab',
+    fontFamily: "'Montserrat', sans-serif",
+  },
+  appointmentInfo: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '20px',
+  },
+  appointmentItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '16px',
+    fontWeight: 600,
+    color: '#fff',
+    fontFamily: "'Montserrat', sans-serif",
+  },
+  serviceDetailsGrid: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    padding: '16px',
+    background: '#0a0a0a',
+    border: '1px solid #262626',
+  },
+  detailItem: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  detailLabel: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '13px',
+    color: '#ababab',
+  },
+  detailValue: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#fff',
+  },
+  priceBreakdown: {
+    padding: '16px',
+    background: '#0a0a0a',
+    border: '1px solid #262626',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+  },
+  priceRow: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingBottom: '8px',
+  },
+  priceLabel: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    color: '#ababab',
+  },
+  priceValue: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#fff',
+  },
+  totalRow: {
+    paddingTop: '12px',
+    borderTop: '2px solid #262626',
+    marginTop: '4px',
+    paddingBottom: 0,
+  },
+  totalLabel: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '16px',
+    fontWeight: 700,
+    color: '#fff',
+    letterSpacing: '1px',
+  },
+  totalPrice: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '24px',
+    fontWeight: 700,
+    color: '#e80200',
+  },
+  notesText: {
+    padding: '14px',
+    background: '#0a0a0a',
+    border: '1px solid #262626',
+    color: '#ababab',
+    fontSize: '14px',
+    fontFamily: "'Montserrat', sans-serif",
+    lineHeight: 1.6,
+    margin: 0,
+  },
+  viewFullLink: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '8px',
+    padding: '12px 20px',
+    background: 'transparent',
+    border: '1px solid #262626',
+    color: '#ababab',
+    textDecoration: 'none',
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    fontWeight: 500,
+    transition: 'all 0.2s',
   },
 };
