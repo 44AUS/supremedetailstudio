@@ -142,9 +142,10 @@ export default function AdminLayout() {
   ];
 
   return (
-    <div style={styles.layout} data-testid="admin-layout">
+    <div className="admin-layout" style={styles.layout} data-testid="admin-layout">
+      <style>{mediaQuery}</style>
       {/* Mobile Header */}
-      <div style={styles.mobileHeader}>
+      <div className="mobile-header" style={styles.mobileHeader}>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           style={styles.menuBtn}
@@ -156,10 +157,7 @@ export default function AdminLayout() {
       </div>
 
       {/* Sidebar */}
-      <aside style={{
-        ...styles.sidebar,
-        ...(sidebarOpen ? styles.sidebarOpen : {}),
-      }}>
+      <aside className={`sidebar${sidebarOpen ? ' open' : ''}`} style={styles.sidebar}>
         <div style={styles.sidebarHeader}>
           <h2 style={styles.logo}>{shopName ? shopName.toUpperCase() : 'ADMIN PANEL'}</h2>
           <span style={styles.badge}>ADMIN</span>
@@ -209,11 +207,11 @@ export default function AdminLayout() {
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
-        <div style={styles.overlay} onClick={() => setSidebarOpen(false)} />
+        <div className="overlay" style={styles.overlay} onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Main Content */}
-      <main style={styles.main}>
+      <main className="main" style={styles.main}>
         <Outlet />
       </main>
 
@@ -563,14 +561,15 @@ const styles = {
 
 // Add responsive styles
 const mediaQuery = `
-  @media (max-width: 1024px) {
-    .admin-layout .mobileHeader { display: flex !important; }
-    .admin-layout .sidebar { 
+  @media (max-width: 768px) {
+    .admin-layout .mobile-header { display: flex !important; }
+    .admin-layout .sidebar {
       transform: translateX(-100%);
       transition: transform 0.3s ease;
+      z-index: 50;
     }
     .admin-layout .sidebar.open { transform: translateX(0); }
-    .admin-layout .main { margin-left: 0; padding-top: 80px; }
+    .admin-layout .main { margin-left: 0 !important; padding: 16px !important; padding-top: 76px !important; }
     .admin-layout .overlay { display: block !important; }
   }
 `;
