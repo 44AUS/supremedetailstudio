@@ -57,6 +57,11 @@ export default function AdminBookings() {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [customerSearch, setCustomerSearch] = useState('');
+  const [customerResults, setCustomerResults] = useState([]);
+  const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
+  const [customerSearchLoading, setCustomerSearchLoading] = useState(false);
+  const customerSearchRef = React.useRef(null);
 
   useEffect(() => {
     fetchBookings();
@@ -126,10 +131,89 @@ export default function AdminBookings() {
     }
   };
 
+  // Customer search with debounce
+  const searchTimeoutRef = React.useRef(null);
+  const searchCustomers = (query) => {
+    setCustomerSearch(query);
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+    if (!query || query.length < 2) {
+      setCustomerResults([]);
+      setShowCustomerDropdown(false);
+      return;
+    }
+    searchTimeoutRef.current = setTimeout(async () => {
+      setCustomerSearchLoading(true);
+      try {
+        const response = await fetch(`${API_URL}/api/customers?search=${encodeURIComponent(query)}`, {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setCustomerResults(data);
+          setShowCustomerDropdown(data.length > 0);
+        }
+      } catch (err) {
+        console.error('Customer search error:', err);
+      } finally {
+        setCustomerSearchLoading(false);
+      }
+    }, 300);
+  };
+
+  const selectCustomer = async (customer) => {
+    setBookingForm(prev => ({
+      ...prev,
+      customer_first_name: customer.first_name || '',
+      customer_last_name: customer.last_name || '',
+      customer_phone: customer.phone || '',
+      customer_email: customer.email || '',
+      customer_address: customer.address || '',
+    }));
+    setCustomerSearch(`${customer.first_name} ${customer.last_name}`);
+    setShowCustomerDropdown(false);
+
+    // Try to fetch last booking to auto-fill vehicle info
+    try {
+      const response = await fetch(`${API_URL}/api/customers/${customer.id}/bookings`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (response.ok) {
+        const bookings = await response.json();
+        if (bookings.length > 0) {
+          const lastBooking = bookings[0];
+          setBookingForm(prev => ({
+            ...prev,
+            vehicle_year: lastBooking.vehicle_year || prev.vehicle_year,
+            vehicle_make: lastBooking.vehicle_make || prev.vehicle_make,
+            vehicle_model: lastBooking.vehicle_model || prev.vehicle_model,
+            vehicle_type: lastBooking.vehicle_type || prev.vehicle_type,
+            vehicle_color: lastBooking.vehicle_color || prev.vehicle_color,
+          }));
+        }
+      }
+    } catch (err) {
+      // Silently fail - vehicle info is optional
+    }
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (customerSearchRef.current && !customerSearchRef.current.contains(e.target)) {
+        setShowCustomerDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   // Open create/edit modal
   const openCreateBooking = () => {
     setEditingBooking(null);
     setBookingForm(emptyBookingForm);
+    setCustomerSearch('');
+    setCustomerResults([]);
+    setShowCustomerDropdown(false);
     setError('');
     setShowEditModal(true);
   };
@@ -648,6 +732,56 @@ export default function AdminBookings() {
               {/* Customer Info */}
               <div style={styles.formSection}>
                 <h3 style={styles.formSectionTitle}>Customer Information</h3>
+
+                {/* Customer Search */}
+                <div ref={customerSearchRef} style={{ position: 'relative', marginBottom: '16px' }}>
+                  <label style={styles.formLabel}>Search Existing Customer</label>
+                  <div style={{ position: 'relative', marginTop: '8px' }}>
+                    <Search size={16} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#525252' }} />
+                    <input
+                      type="text"
+                      value={customerSearch}
+                      onChange={(e) => searchCustomers(e.target.value)}
+                      onFocus={() => { if (customerResults.length > 0) setShowCustomerDropdown(true); }}
+                      style={{ ...styles.formInput, paddingLeft: '38px' }}
+                      placeholder="Type name, email, or phone..."
+                      data-testid="customer-search-input"
+                    />
+                    {customerSearchLoading && (
+                      <Loader2 size={16} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', color: '#ababab', animation: 'spin 1s linear infinite' }} />
+                    )}
+                  </div>
+                  {showCustomerDropdown && (
+                    <div style={styles.customerDropdown}>
+                      {customerResults.map(customer => (
+                        <button
+                          key={customer.id}
+                          onClick={() => selectCustomer(customer)}
+                          style={styles.customerOption}
+                          data-testid={`customer-option-${customer.id}`}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={styles.customerAvatar}>
+                              <User size={14} />
+                            </div>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div style={styles.customerOptionName}>
+                                {customer.first_name} {customer.last_name}
+                              </div>
+                              <div style={styles.customerOptionDetails}>
+                                {customer.email} {customer.phone ? `· ${customer.phone}` : ''}
+                              </div>
+                            </div>
+                            <div style={styles.customerBookingCount}>
+                              {customer.total_bookings || 0} booking{(customer.total_bookings || 0) !== 1 ? 's' : ''}
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 <div style={styles.formGrid}>
                   <div style={styles.formGroup}>
                     <label style={styles.formLabel}>First Name *</label>
@@ -1511,5 +1645,60 @@ const styles = {
     fontSize: '14px',
     marginBottom: '20px',
     fontFamily: "'Montserrat', sans-serif",
+  },
+  customerDropdown: {
+    position: 'absolute',
+    top: '100%',
+    left: 0,
+    right: 0,
+    background: '#111111',
+    border: '1px solid #262626',
+    borderTop: 'none',
+    maxHeight: '240px',
+    overflowY: 'auto',
+    zIndex: 10,
+  },
+  customerOption: {
+    width: '100%',
+    padding: '12px 14px',
+    background: 'transparent',
+    border: 'none',
+    borderBottom: '1px solid #1a1a1a',
+    cursor: 'pointer',
+    textAlign: 'left',
+    transition: 'background 0.15s ease',
+    color: '#fff',
+  },
+  customerAvatar: {
+    width: '32px',
+    height: '32px',
+    borderRadius: '50%',
+    background: 'rgba(232, 2, 0, 0.15)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: '#e80200',
+    flexShrink: 0,
+  },
+  customerOptionName: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#fff',
+  },
+  customerOptionDetails: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '12px',
+    color: '#6b7280',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  customerBookingCount: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '11px',
+    color: '#ababab',
+    whiteSpace: 'nowrap',
+    flexShrink: 0,
   },
 };
