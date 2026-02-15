@@ -854,14 +854,17 @@ const styles = {
   },
   vehicleLabel: {
     color: '#fff',
-    fontWeight: 600,
+    fontWeight: 700,
     fontSize: '15px',
     marginBottom: '4px',
+    fontFamily: "'Oswald', sans-serif",
+    letterSpacing: '0.5px',
   },
   vehicleUpcharge: {
-    color: '#ef4444',
+    color: '#4ade80',
     fontSize: '14px',
     fontWeight: 500,
+    fontFamily: "'Montserrat', sans-serif",
   },
   checkIcon: {
     position: 'absolute',
@@ -982,9 +985,11 @@ const styles = {
   },
   serviceName: {
     color: '#fff',
-    fontWeight: 600,
+    fontWeight: 700,
     fontSize: '16px',
     marginBottom: '6px',
+    fontFamily: "'Oswald', sans-serif",
+    letterSpacing: '0.5px',
   },
   serviceDesc: {
     color: 'rgba(255,255,255,0.4)',
@@ -2601,9 +2606,6 @@ function ServiceCard({ service, price, selected, onClick, disabled }) {
       {selected && (
         <CheckCircle2 size={20} style={styles.checkIcon} />
       )}
-      <div style={styles.serviceIconWrapper}>
-        <Icon size={20} style={{ color: '#ef4444' }} />
-      </div>
       <div style={styles.serviceName}>{service.name}</div>
       <div style={styles.serviceDesc}>
         {service.description?.split('\n').filter(line => line.trim()).map((line, i) => (
