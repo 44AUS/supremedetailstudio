@@ -212,6 +212,8 @@ const useStyles = createStyles((theme) => ({
       gap: '24px',
     },
     [theme.fn.smallerThan('sm')]: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(2, 1fr)',
       gap: '16px',
     },
   },
@@ -219,7 +221,7 @@ const useStyles = createStyles((theme) => ({
     textAlign: 'center',
     minWidth: '120px',
     [theme.fn.smallerThan('sm')]: {
-      minWidth: '70px',
+      minWidth: 'unset',
     },
   },
   statNumber: {
