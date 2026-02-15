@@ -32,6 +32,13 @@ export default function AdminDashboard() {
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
   const getToken = () => localStorage.getItem('adminToken');
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     fetchStats();
@@ -154,23 +161,33 @@ export default function AdminDashboard() {
 
   return (
     <div data-testid="admin-dashboard">
-      <div style={styles.header}>
-        <h1 style={styles.title}>DASHBOARD</h1>
-        <p style={styles.subtitle}>Welcome back! Here's your business overview.</p>
+      <div style={{ ...styles.header, ...(isMobile && { marginBottom: '20px' }) }}>
+        <h1 style={{ ...styles.title, ...(isMobile && { fontSize: '24px', letterSpacing: '1px' }) }}>DASHBOARD</h1>
+        <p style={{ ...styles.subtitle, ...(isMobile && { fontSize: '13px' }) }}>Welcome back! Here's your business overview.</p>
       </div>
 
       {/* Stats Grid */}
-      <div style={styles.statsGrid}>
+      <div style={{
+        ...styles.statsGrid,
+        ...(isMobile && { gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px', marginBottom: '24px' }),
+      }}>
         {statCards.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <div key={index} style={styles.statCard} data-testid={`stat-${stat.label.toLowerCase().replace(/\s/g, '-')}`}>
-              <div style={{ ...styles.statIcon, background: `${stat.color}20` }}>
-                <Icon size={24} color={stat.color} />
+            <div key={index} style={{
+              ...styles.statCard,
+              ...(isMobile && { padding: '14px 10px', flexDirection: 'column', gap: '8px', textAlign: 'center' }),
+            }} data-testid={`stat-${stat.label.toLowerCase().replace(/\s/g, '-')}`}>
+              <div style={{
+                ...styles.statIcon,
+                background: `${stat.color}20`,
+                ...(isMobile && { width: '36px', height: '36px' }),
+              }}>
+                <Icon size={isMobile ? 18 : 24} color={stat.color} />
               </div>
-              <div style={styles.statContent}>
-                <span style={styles.statValue}>{stat.value}</span>
-                <span style={styles.statLabel}>{stat.label}</span>
+              <div style={{ ...styles.statContent, ...(isMobile && { alignItems: 'center' }) }}>
+                <span style={{ ...styles.statValue, ...(isMobile && { fontSize: '20px' }) }}>{stat.value}</span>
+                <span style={{ ...styles.statLabel, ...(isMobile && { fontSize: '10px' }) }}>{stat.label}</span>
               </div>
             </div>
           );
@@ -178,15 +195,15 @@ export default function AdminDashboard() {
       </div>
 
       {/* Booking Calendar */}
-      <div style={styles.section}>
-        <div style={styles.sectionHeader}>
-          <h2 style={styles.sectionTitle}>
-            <Calendar size={20} style={{ marginRight: '8px' }} />
+      <div style={{ ...styles.section, ...(isMobile && { marginBottom: '24px' }) }}>
+        <div style={{ ...styles.sectionHeader, ...(isMobile && { marginBottom: '12px' }) }}>
+          <h2 style={{ ...styles.sectionTitle, ...(isMobile && { fontSize: '15px' }) }}>
+            <Calendar size={isMobile ? 16 : 20} style={{ marginRight: '8px' }} />
             BOOKING CALENDAR
           </h2>
         </div>
 
-        <div style={styles.calendarContainer}>
+        <div style={{ ...styles.calendarContainer, ...(isMobile && { padding: '14px', maxWidth: '100%' }) }}>
           {/* Month Navigation */}
           <div style={styles.calendarNav}>
             <button onClick={prevMonth} style={styles.calendarNavBtn}>
@@ -263,8 +280,8 @@ export default function AdminDashboard() {
           {/* Selected Day Bookings Panel */}
           {selectedDate && (
             <div style={styles.dayDetailPanel}>
-              <div style={styles.dayDetailHeader}>
-                <h3 style={styles.dayDetailTitle}>
+              <div style={{ ...styles.dayDetailHeader, ...(isMobile && { flexDirection: 'column', alignItems: 'flex-start', gap: '4px' }) }}>
+                <h3 style={{ ...styles.dayDetailTitle, ...(isMobile && { fontSize: '14px' }) }}>
                   {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
                 </h3>
                 <span style={styles.dayDetailCount}>
@@ -282,26 +299,30 @@ export default function AdminDashboard() {
                         <button
                           key={booking.id}
                           onClick={() => setSelectedBooking(booking)}
-                          style={styles.dayBookingItem}
+                          style={{
+                            ...styles.dayBookingItem,
+                            ...(isMobile && { flexWrap: 'wrap', gap: '8px', padding: '12px' }),
+                          }}
                         >
-                          <div style={styles.dayBookingTime}>
+                          <div style={{ ...styles.dayBookingTime, ...(isMobile && { minWidth: 'auto', fontSize: '13px' }) }}>
                             <Clock size={14} style={{ color: '#e80200' }} />
                             <span>{booking.booking_time}</span>
                           </div>
-                          <div style={styles.dayBookingInfo}>
-                            <span style={styles.dayBookingCustomer}>
+                          <div style={{ ...styles.dayBookingInfo, ...(isMobile && { flex: '1 1 auto', minWidth: '120px' }) }}>
+                            <span style={{ ...styles.dayBookingCustomer, ...(isMobile && { fontSize: '13px' }) }}>
                               {booking.customer_first_name} {booking.customer_last_name}
                             </span>
-                            <span style={styles.dayBookingService}>{booking.service_name}</span>
+                            <span style={{ ...styles.dayBookingService, ...(isMobile && { fontSize: '11px' }) }}>{booking.service_name}</span>
                           </div>
                           <span style={{
                             ...styles.dayBookingStatus,
                             background: sc.bg,
                             color: sc.color,
+                            ...(isMobile && { fontSize: '10px', padding: '3px 8px' }),
                           }}>
                             {sc.label}
                           </span>
-                          <Eye size={16} style={{ color: '#525252', flexShrink: 0 }} />
+                          <Eye size={isMobile ? 14 : 16} style={{ color: '#525252', flexShrink: 0 }} />
                         </button>
                       );
                     })}
@@ -318,46 +339,89 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Bookings */}
-      <div style={styles.section}>
-        <div style={styles.sectionHeader}>
-          <h2 style={styles.sectionTitle}>RECENT BOOKINGS</h2>
-          <Link to="/admin/bookings" style={styles.viewAllLink}>
-            View All <ArrowRight size={16} />
+      <div style={{ ...styles.section, ...(isMobile && { marginBottom: '24px' }) }}>
+        <div style={{ ...styles.sectionHeader, ...(isMobile && { marginBottom: '12px' }) }}>
+          <h2 style={{ ...styles.sectionTitle, ...(isMobile && { fontSize: '15px' }) }}>RECENT BOOKINGS</h2>
+          <Link to="/admin/bookings" style={{ ...styles.viewAllLink, ...(isMobile && { fontSize: '12px' }) }}>
+            View All <ArrowRight size={14} />
           </Link>
         </div>
 
         {stats?.recent_bookings?.length > 0 ? (
-          <div style={styles.bookingsTable}>
-            <div style={styles.tableHeader}>
-              <span style={{ flex: 2 }}>Customer</span>
-              <span style={{ flex: 2 }}>Service</span>
-              <span style={{ flex: 1 }}>Date</span>
-              <span style={{ flex: 1 }}>Time</span>
-              <span style={{ flex: 1 }}>Status</span>
+          isMobile ? (
+            /* Mobile: Card Layout */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {stats.recent_bookings.map((booking) => {
+                const statusStyle = getStatusStyle(booking.status);
+                return (
+                  <div key={booking.id} style={{
+                    background: '#111111',
+                    border: '1px solid #262626',
+                    padding: '14px',
+                  }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '14px', fontWeight: 600, color: '#fff' }}>
+                        {booking.customer_first_name} {booking.customer_last_name}
+                      </span>
+                      <span style={{
+                        ...styles.statusBadge,
+                        background: statusStyle.bg,
+                        color: statusStyle.color,
+                        fontSize: '10px',
+                        padding: '3px 8px',
+                      }}>
+                        {statusStyle.label}
+                      </span>
+                    </div>
+                    <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: '#ababab', marginBottom: '6px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      {booking.service_name}
+                    </div>
+                    <div style={{ display: 'flex', gap: '12px', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: '#6b7280' }}>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Calendar size={12} /> {booking.booking_date}
+                      </span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Clock size={12} /> {booking.booking_time}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-            {stats.recent_bookings.map((booking) => {
-              const statusStyle = getStatusStyle(booking.status);
-              return (
-                <div key={booking.id} style={styles.tableRow}>
-                  <span style={{ flex: 2, color: '#fff' }}>
-                    {booking.customer_first_name} {booking.customer_last_name}
-                  </span>
-                  <span style={{ flex: 2 }}>{booking.service_name}</span>
-                  <span style={{ flex: 1 }}>{booking.booking_date}</span>
-                  <span style={{ flex: 1 }}>{booking.booking_time}</span>
-                  <span style={{ flex: 1 }}>
-                    <span style={{
-                      ...styles.statusBadge,
-                      background: statusStyle.bg,
-                      color: statusStyle.color,
-                    }}>
-                      {statusStyle.label}
+          ) : (
+            /* Desktop: Table Layout */
+            <div style={styles.bookingsTable}>
+              <div style={styles.tableHeader}>
+                <span style={{ flex: 2 }}>Customer</span>
+                <span style={{ flex: 2 }}>Service</span>
+                <span style={{ flex: 1 }}>Date</span>
+                <span style={{ flex: 1 }}>Time</span>
+                <span style={{ flex: 1 }}>Status</span>
+              </div>
+              {stats.recent_bookings.map((booking) => {
+                const statusStyle = getStatusStyle(booking.status);
+                return (
+                  <div key={booking.id} style={styles.tableRow}>
+                    <span style={{ flex: 2, color: '#fff' }}>
+                      {booking.customer_first_name} {booking.customer_last_name}
                     </span>
-                  </span>
-                </div>
-              );
-            })}
-          </div>
+                    <span style={{ flex: 2 }}>{booking.service_name}</span>
+                    <span style={{ flex: 1 }}>{booking.booking_date}</span>
+                    <span style={{ flex: 1 }}>{booking.booking_time}</span>
+                    <span style={{ flex: 1 }}>
+                      <span style={{
+                        ...styles.statusBadge,
+                        background: statusStyle.bg,
+                        color: statusStyle.color,
+                      }}>
+                        {statusStyle.label}
+                      </span>
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )
         ) : (
           <div style={styles.emptyState}>
             <Calendar size={48} style={{ color: '#525252' }} />
@@ -367,46 +431,49 @@ export default function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div style={styles.section}>
+      <div style={{ ...styles.section, ...(isMobile && { marginBottom: '24px' }) }}>
         <h2 style={styles.sectionTitle}>QUICK ACTIONS</h2>
-        <div style={styles.actionsGrid}>
-          <Link to="/admin/services" style={styles.actionCard}>
-            <Package size={24} />
-            <span>Manage Services</span>
+        <div style={{ ...styles.actionsGrid, ...(isMobile && { gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }) }}>
+          <Link to="/admin/services" style={{ ...styles.actionCard, ...(isMobile && { padding: '16px 10px', fontSize: '11px', gap: '8px' }) }}>
+            <Package size={isMobile ? 20 : 24} />
+            <span>Services</span>
           </Link>
-          <Link to="/admin/schedule" style={styles.actionCard}>
-            <Calendar size={24} />
-            <span>Update Schedule</span>
+          <Link to="/admin/schedule" style={{ ...styles.actionCard, ...(isMobile && { padding: '16px 10px', fontSize: '11px', gap: '8px' }) }}>
+            <Calendar size={isMobile ? 20 : 24} />
+            <span>Schedule</span>
           </Link>
-          <Link to="/admin/bookings" style={styles.actionCard}>
-            <Users size={24} />
-            <span>View All Bookings</span>
+          <Link to="/admin/bookings" style={{ ...styles.actionCard, ...(isMobile && { padding: '16px 10px', fontSize: '11px', gap: '8px' }) }}>
+            <Users size={isMobile ? 20 : 24} />
+            <span>Bookings</span>
           </Link>
         </div>
       </div>
 
       {/* Booking Detail Modal */}
       {selectedBooking && (
-        <div style={styles.modalOverlay} onClick={() => setSelectedBooking(null)}>
-          <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div style={styles.modalHeader}>
-              <h2 style={styles.modalTitle}>BOOKING DETAILS</h2>
+        <div style={{ ...styles.modalOverlay, ...(isMobile && { padding: '0' }) }} onClick={() => setSelectedBooking(null)}>
+          <div style={{
+            ...styles.modal,
+            ...(isMobile && { maxWidth: '100%', maxHeight: '100vh', height: '100vh', borderRadius: 0 }),
+          }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ ...styles.modalHeader, ...(isMobile && { padding: '16px' }) }}>
+              <h2 style={{ ...styles.modalTitle, ...(isMobile && { fontSize: '16px' }) }}>BOOKING DETAILS</h2>
               <button onClick={() => setSelectedBooking(null)} style={styles.closeBtn}>
-                <XCircle size={24} />
+                <XCircle size={isMobile ? 22 : 24} />
               </button>
             </div>
 
-            <div style={styles.modalContent}>
+            <div style={{ ...styles.modalContent, ...(isMobile && { padding: '16px' }) }}>
               {/* Booking Reference */}
-              <div style={styles.bookingReference}>
+              <div style={{ ...styles.bookingReference, ...(isMobile && { padding: '12px', marginBottom: '16px' }) }}>
                 <span style={styles.referenceLabel}>Customer Ref:</span>
-                <span style={styles.referenceValue}>#{selectedBooking.id?.slice(-8).toUpperCase()}</span>
+                <span style={{ ...styles.referenceValue, ...(isMobile && { fontSize: '15px' }) }}>#{selectedBooking.id?.slice(-8).toUpperCase()}</span>
               </div>
 
               {/* Status Section */}
               <div style={styles.statusSection}>
                 <span style={styles.modalLabel}>Status:</span>
-                <div style={styles.statusButtons}>
+                <div style={{ ...styles.statusButtons, ...(isMobile && { gap: '6px' }) }}>
                   {Object.entries(STATUS_CONFIG).map(([status, config]) => (
                     <button
                       key={status}
@@ -417,6 +484,7 @@ export default function AdminDashboard() {
                         background: selectedBooking.status === status ? config.bg : 'transparent',
                         color: selectedBooking.status === status ? config.color : '#ababab',
                         borderColor: selectedBooking.status === status ? config.color : '#262626',
+                        ...(isMobile && { padding: '6px 10px', fontSize: '11px' }),
                       }}
                     >
                       {config.label}
@@ -428,23 +496,23 @@ export default function AdminDashboard() {
               {/* Customer Info */}
               <div style={styles.infoSection}>
                 <h3 style={styles.infoTitle}>
-                  <User size={18} />
+                  <User size={isMobile ? 16 : 18} />
                   Customer
                 </h3>
-                <div style={styles.infoGrid}>
-                  <div style={styles.infoItem}>
+                <div style={{ ...styles.infoGrid, ...(isMobile && { gridTemplateColumns: '1fr', gap: '10px' }) }}>
+                  <div style={{ ...styles.infoItem, ...(isMobile && { fontSize: '13px' }) }}>
                     <User size={14} style={{ color: '#ababab' }} />
                     <span>{selectedBooking.customer_first_name} {selectedBooking.customer_last_name}</span>
                   </div>
-                  <div style={styles.infoItem}>
+                  <div style={{ ...styles.infoItem, ...(isMobile && { fontSize: '13px' }) }}>
                     <Phone size={14} style={{ color: '#ababab' }} />
                     <span>{selectedBooking.customer_phone}</span>
                   </div>
-                  <div style={styles.infoItem}>
+                  <div style={{ ...styles.infoItem, ...(isMobile && { fontSize: '13px' }) }}>
                     <Mail size={14} style={{ color: '#ababab' }} />
-                    <span>{selectedBooking.customer_email}</span>
+                    <span style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>{selectedBooking.customer_email}</span>
                   </div>
-                  <div style={styles.infoItem}>
+                  <div style={{ ...styles.infoItem, ...(isMobile && { fontSize: '13px' }) }}>
                     <MapPin size={14} style={{ color: '#ababab' }} />
                     <span>{selectedBooking.customer_address || 'N/A'}</span>
                   </div>
