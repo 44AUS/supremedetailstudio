@@ -120,6 +120,12 @@ const useStyles = createStyles((theme) => ({
     paddingTop: '45px',
     display: 'flex',
     position: 'relative',
+    [theme.fn.smallerThan('sm')]: {
+      flexDirection: 'column',
+      gap: '8px',
+      paddingTop: '24px',
+      textAlign: 'center',
+    },
   },
   footerSocialLink: {
     maxWidth: '100%',
@@ -167,12 +173,19 @@ const useStyles = createStyles((theme) => ({
     color: '#fff',
     fontSize: '14px',
     fontWeight: 500,
+    [theme.fn.smallerThan('sm')]: {
+      fontSize: '11px',
+    },
   },
   textSpan: {
     letterSpacing: '2px',
     textTransform: 'uppercase',
     fontSize: '14px',
     fontWeight: 600,
+    [theme.fn.smallerThan('sm')]: {
+      fontSize: '11px',
+      letterSpacing: '1px',
+    },
   },
 }));
 
