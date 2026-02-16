@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import {
   Calendar, Clock, Users, CheckCircle, AlertCircle,
   TrendingUp, Package, Loader2, ArrowRight, ChevronLeft,
-  ChevronRight, XCircle, User, Phone, Mail, MapPin, Car, Eye
+  ChevronRight, XCircle, User, Phone, Mail, MapPin, Car, Eye,
+  DollarSign
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -100,6 +101,28 @@ export default function AdminDashboard() {
     }
   };
 
+  const togglePaid = async (bookingId, currentPaid) => {
+    try {
+      const response = await fetch(`${API_URL}/api/bookings/${bookingId}/paid`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ is_paid: !currentPaid }),
+      });
+      if (!response.ok) throw new Error('Failed to update payment status');
+      setAllBookings(prev =>
+        prev.map(b => (b.id === bookingId ? { ...b, is_paid: !currentPaid } : b))
+      );
+      if (selectedBooking?.id === bookingId) {
+        setSelectedBooking({ ...selectedBooking, is_paid: !currentPaid });
+      }
+    } catch (err) {
+      console.error('Error updating payment status:', err);
+    }
+  };
+
   // Group bookings by date
   const bookingsByDate = {};
   allBookings.forEach(booking => {
@@ -146,6 +169,11 @@ export default function AdminDashboard() {
     );
   }
 
+  const formatCurrency = (val) => {
+    if (val >= 1000) return `$${(val / 1000).toFixed(1)}k`;
+    return `$${val.toFixed(0)}`;
+  };
+
   const statCards = [
     { label: "Today's Bookings", value: stats?.today_bookings || 0, icon: Calendar, color: '#3b82f6' },
     { label: 'Pending', value: stats?.pending_bookings || 0, icon: Clock, color: '#f59e0b' },
@@ -153,6 +181,8 @@ export default function AdminDashboard() {
     { label: 'Completed', value: stats?.completed_bookings || 0, icon: CheckCircle, color: '#10b981' },
     { label: 'Total Bookings', value: stats?.total_bookings || 0, icon: Users, color: '#e80200' },
     { label: 'Active Services', value: stats?.active_services || 0, icon: Package, color: '#06b6d4' },
+    { label: "Today's Revenue", value: formatCurrency(stats?.today_revenue || 0), icon: DollarSign, color: '#10b981', isRevenue: true },
+    { label: 'Total Revenue', value: formatCurrency(stats?.total_revenue || 0), icon: DollarSign, color: '#f59e0b', isRevenue: true },
   ];
 
   const getStatusStyle = (status) => {
@@ -284,9 +314,20 @@ export default function AdminDashboard() {
                 <h3 style={{ ...styles.dayDetailTitle, ...(isMobile && { fontSize: '14px' }) }}>
                   {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
                 </h3>
-                <span style={styles.dayDetailCount}>
-                  {selectedDayBookings.length} booking{selectedDayBookings.length !== 1 ? 's' : ''}
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span style={styles.dayDetailCount}>
+                    {selectedDayBookings.length} booking{selectedDayBookings.length !== 1 ? 's' : ''}
+                  </span>
+                  {selectedDayBookings.some(b => b.is_paid) && (
+                    <span style={styles.dayRevenueTag}>
+                      <DollarSign size={12} />
+                      ${selectedDayBookings
+                        .filter(b => b.is_paid)
+                        .reduce((sum, b) => sum + (b.total_price || 0), 0)
+                        .toFixed(2)} revenue
+                    </span>
+                  )}
+                </div>
               </div>
 
               {selectedDayBookings.length > 0 ? (
@@ -322,6 +363,11 @@ export default function AdminDashboard() {
                           }}>
                             {sc.label}
                           </span>
+                          {booking.is_paid && (
+                            <span style={styles.paidMiniTag}>
+                              <DollarSign size={10} /> Paid
+                            </span>
+                          )}
                           <Eye size={isMobile ? 14 : 16} style={{ color: '#525252', flexShrink: 0 }} />
                         </button>
                       );
@@ -491,6 +537,23 @@ export default function AdminDashboard() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Payment Status */}
+              <div style={styles.paymentSection}>
+                <span style={styles.modalLabel}>Payment:</span>
+                <button
+                  onClick={() => togglePaid(selectedBooking.id, selectedBooking.is_paid)}
+                  style={{
+                    ...styles.paidToggleBtn,
+                    background: selectedBooking.is_paid ? 'rgba(16, 185, 129, 0.15)' : 'rgba(107, 114, 128, 0.15)',
+                    color: selectedBooking.is_paid ? '#10b981' : '#6b7280',
+                    borderColor: selectedBooking.is_paid ? '#10b981' : '#525252',
+                  }}
+                >
+                  <DollarSign size={16} />
+                  {selectedBooking.is_paid ? 'PAID' : 'UNPAID'}
+                </button>
               </div>
 
               {/* Customer Info */}
@@ -1293,6 +1356,49 @@ const styles = {
     fontFamily: "'Montserrat', sans-serif",
     fontSize: '14px',
     fontWeight: 500,
+    transition: 'all 0.2s',
+  },
+  dayRevenueTag: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    padding: '3px 10px',
+    background: 'rgba(16, 185, 129, 0.1)',
+    color: '#10b981',
+    fontSize: '12px',
+    fontWeight: 600,
+    fontFamily: "'Montserrat', sans-serif",
+  },
+  paidMiniTag: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '2px',
+    padding: '2px 8px',
+    background: 'rgba(16, 185, 129, 0.1)',
+    color: '#10b981',
+    fontSize: '10px',
+    fontWeight: 600,
+    fontFamily: "'Oswald', sans-serif",
+    letterSpacing: '0.5px',
+    textTransform: 'uppercase',
+    flexShrink: 0,
+  },
+  paymentSection: {
+    marginBottom: '24px',
+    paddingBottom: '24px',
+    borderBottom: '1px solid #262626',
+  },
+  paidToggleBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '10px 20px',
+    fontSize: '14px',
+    fontWeight: 700,
+    fontFamily: "'Oswald', sans-serif",
+    letterSpacing: '1px',
+    cursor: 'pointer',
+    border: '1px solid #262626',
     transition: 'all 0.2s',
   },
 };

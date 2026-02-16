@@ -135,6 +135,9 @@ class BookingCreate(BaseModel):
 class BookingStatusUpdate(BaseModel):
     status: str  # pending, in_progress, complete, incomplete
 
+class BookingPaidUpdate(BaseModel):
+    is_paid: bool
+
 class BookingUpdate(BaseModel):
     customer_first_name: Optional[str] = None
     customer_last_name: Optional[str] = None
@@ -664,9 +667,10 @@ async def create_booking(booking: BookingCreate):
     booking_dict = booking.model_dump()
     booking_dict["customer_id"] = customer_id
     booking_dict["status"] = "pending"
+    booking_dict["is_paid"] = False
     booking_dict["created_at"] = datetime.now(timezone.utc).isoformat()
     booking_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
-    
+
     result = await db.bookings.insert_one(booking_dict)
     booking_dict["id"] = str(result.inserted_id)
     booking_dict.pop("_id", None)
@@ -713,6 +717,21 @@ async def update_booking_status(booking_id: str, status_update: BookingStatusUpd
             )
     
     return {"message": "Booking status updated successfully"}
+
+@app.put("/api/bookings/{booking_id}/paid", dependencies=[Depends(verify_token)])
+async def update_booking_paid(booking_id: str, paid_update: BookingPaidUpdate):
+    booking = await db.bookings.find_one({"_id": ObjectId(booking_id)})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+
+    await db.bookings.update_one(
+        {"_id": ObjectId(booking_id)},
+        {"$set": {
+            "is_paid": paid_update.is_paid,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    return {"message": "Booking payment status updated successfully"}
 
 @app.put("/api/bookings/{booking_id}", dependencies=[Depends(verify_token)])
 async def update_booking(booking_id: str, booking_update: BookingUpdate):
@@ -773,6 +792,7 @@ async def create_booking_admin(booking: BookingCreate):
     booking_dict = booking.model_dump()
     booking_dict["customer_id"] = customer_id
     booking_dict["status"] = "pending"
+    booking_dict["is_paid"] = False
     booking_dict["created_at"] = datetime.now(timezone.utc).isoformat()
     booking_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
     booking_dict["created_by"] = "admin"
@@ -1070,7 +1090,24 @@ async def get_dashboard_stats():
     async for booking in db.bookings.find().sort("created_at", -1).limit(5):
         booking["id"] = str(booking.pop("_id"))
         recent_bookings.append(booking)
-    
+
+    # Revenue totals (only paid bookings)
+    total_revenue = 0
+    today_revenue = 0
+    pipeline_total = [
+        {"$match": {"is_paid": True}},
+        {"$group": {"_id": None, "total": {"$sum": "$total_price"}}}
+    ]
+    async for doc in db.bookings.aggregate(pipeline_total):
+        total_revenue = doc.get("total", 0)
+
+    pipeline_today = [
+        {"$match": {"is_paid": True, "booking_date": today}},
+        {"$group": {"_id": None, "total": {"$sum": "$total_price"}}}
+    ]
+    async for doc in db.bookings.aggregate(pipeline_today):
+        today_revenue = doc.get("total", 0)
+
     return {
         "total_bookings": total_bookings,
         "today_bookings": today_bookings,
@@ -1079,7 +1116,9 @@ async def get_dashboard_stats():
         "completed_bookings": completed_bookings,
         "total_services": total_services,
         "active_services": active_services,
-        "recent_bookings": recent_bookings
+        "recent_bookings": recent_bookings,
+        "total_revenue": total_revenue,
+        "today_revenue": today_revenue
     }
 
 # ============== Contact Messages ==============

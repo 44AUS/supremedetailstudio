@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, Filter, Eye, CheckCircle, Clock, AlertCircle, 
+import {
+  Search, Filter, Eye, CheckCircle, Clock, AlertCircle,
   XCircle, Loader2, ChevronDown, Calendar, User, Car,
-  MapPin, Phone, Mail, Plus, Edit2, Save, X, Trash2
+  MapPin, Phone, Mail, Plus, Edit2, Save, X, Trash2,
+  DollarSign
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
@@ -128,6 +129,28 @@ export default function AdminBookings() {
       console.error('Error updating status:', err);
     } finally {
       setUpdatingStatus(false);
+    }
+  };
+
+  const togglePaid = async (bookingId, currentPaid) => {
+    try {
+      const response = await fetch(`${API_URL}/api/bookings/${bookingId}/paid`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+        body: JSON.stringify({ is_paid: !currentPaid }),
+      });
+      if (!response.ok) throw new Error('Failed to update payment status');
+      setBookings(prev =>
+        prev.map(b => (b.id === bookingId ? { ...b, is_paid: !currentPaid } : b))
+      );
+      if (selectedBooking?.id === bookingId) {
+        setSelectedBooking({ ...selectedBooking, is_paid: !currentPaid });
+      }
+    } catch (err) {
+      console.error('Error updating payment status:', err);
     }
   };
 
@@ -413,6 +436,7 @@ export default function AdminBookings() {
                 <th style={styles.th}>SERVICE</th>
                 <th style={styles.th}>VEHICLE</th>
                 <th style={styles.th}>STATUS</th>
+                <th style={styles.th}>PAID</th>
                 <th style={styles.th}>ACTIONS</th>
               </tr>
             </thead>
@@ -444,6 +468,20 @@ export default function AdminBookings() {
                       }}>
                         {statusConfig.label}
                       </span>
+                    </td>
+                    <td style={styles.td}>
+                      <button
+                        onClick={() => togglePaid(booking.id, booking.is_paid)}
+                        style={{
+                          ...styles.paidBadge,
+                          background: booking.is_paid ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                          color: booking.is_paid ? '#10b981' : '#6b7280',
+                          border: `1px solid ${booking.is_paid ? '#10b98130' : '#6b728030'}`,
+                        }}
+                      >
+                        <DollarSign size={12} />
+                        {booking.is_paid ? 'Paid' : 'Unpaid'}
+                      </button>
                     </td>
                     <td style={styles.td}>
                       <button
@@ -513,6 +551,23 @@ export default function AdminBookings() {
                     </button>
                   ))}
                 </div>
+              </div>
+
+              {/* Payment Status */}
+              <div style={styles.paymentSection}>
+                <span style={styles.modalLabel}>Payment:</span>
+                <button
+                  onClick={() => togglePaid(selectedBooking.id, selectedBooking.is_paid)}
+                  style={{
+                    ...styles.paidToggleBtn,
+                    background: selectedBooking.is_paid ? 'rgba(16, 185, 129, 0.15)' : 'rgba(107, 114, 128, 0.15)',
+                    color: selectedBooking.is_paid ? '#10b981' : '#6b7280',
+                    borderColor: selectedBooking.is_paid ? '#10b981' : '#525252',
+                  }}
+                >
+                  <DollarSign size={16} />
+                  {selectedBooking.is_paid ? 'PAID' : 'UNPAID'}
+                </button>
               </div>
 
               {/* Customer Info */}
@@ -1700,5 +1755,36 @@ const styles = {
     color: '#ababab',
     whiteSpace: 'nowrap',
     flexShrink: 0,
+  },
+  paidBadge: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    padding: '6px 12px',
+    fontSize: '12px',
+    fontWeight: 600,
+    fontFamily: "'Oswald', sans-serif",
+    letterSpacing: '0.5px',
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    background: 'transparent',
+  },
+  paymentSection: {
+    marginBottom: '24px',
+    paddingBottom: '24px',
+    borderBottom: '1px solid #262626',
+  },
+  paidToggleBtn: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '10px 20px',
+    fontSize: '14px',
+    fontWeight: 700,
+    fontFamily: "'Oswald', sans-serif",
+    letterSpacing: '1px',
+    cursor: 'pointer',
+    border: '1px solid #262626',
+    transition: 'all 0.2s',
   },
 };
