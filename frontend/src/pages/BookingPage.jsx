@@ -2373,7 +2373,7 @@ export default function BookAppointment() {
               </p>
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr' : 'repeat(auto-fit, minmax(220px, 1fr))',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)',
                 gap: '12px',
               }}>
                 {getRelevantAddons().map((addon) => {
