@@ -1202,6 +1202,7 @@ const styles = {
   confirmBtn: {
     display: 'inline-flex',
     alignItems: 'center',
+    justifyContent: 'center',
     gap: '10px',
     padding: '16px 32px',
     borderRadius: '14px',
@@ -2520,21 +2521,24 @@ export default function BookAppointment() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
               transition={{ duration: 0.5 }}
-              style={styles.confirmCard}
+              style={{ ...styles.confirmCard, ...(isMobile && { padding: '20px 16px', borderRadius: '18px', marginTop: '24px' }) }}
               data-testid="confirmation-card"
             >
-              <div style={styles.confirmContent}>
-                <div>
-                  <h3 style={styles.confirmTitle}>CONFIRM YOUR BOOKING</h3>
-                  <div style={styles.confirmDetails}>
+              <div style={{
+                ...styles.confirmContent,
+                ...(isMobile && { flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '24px' }),
+              }}>
+                <div style={isMobile ? { width: '100%', textAlign: 'center' } : undefined}>
+                  <h3 style={{ ...styles.confirmTitle, ...(isMobile && { fontSize: '18px', marginBottom: '16px' }) }}>CONFIRM YOUR BOOKING</h3>
+                  <div style={{ ...styles.confirmDetails, ...(isMobile && { alignItems: 'center' }) }}>
                     {selectedServices.map((service, idx) => (
-                      <div key={service.id} style={styles.confirmDetail}>
-                        <Sparkles size={16} style={styles.confirmIcon} />
+                      <div key={service.id} style={{ ...styles.confirmDetail, ...(isMobile && { fontSize: '13px', justifyContent: 'center' }) }}>
+                        <Sparkles size={isMobile ? 14 : 16} style={styles.confirmIcon} />
                         {service.name} ({service.duration_minutes || 60} min)
                       </div>
                     ))}
-                    <div style={styles.confirmDetail}>
-                      <MapPin size={16} style={styles.confirmIcon} />
+                    <div style={{ ...styles.confirmDetail, ...(isMobile && { fontSize: '13px', justifyContent: 'center' }) }}>
+                      <MapPin size={isMobile ? 14 : 16} style={styles.confirmIcon} />
                       {serviceLocation?.label}
                       {serviceLocation?.id === 'mobile' && locationUpcharge > 0 && (
                         <span style={{ color: '#ef4444' }}> (+${locationUpcharge} fee)</span>
@@ -2543,38 +2547,38 @@ export default function BookAppointment() {
                         <span style={{ color: '#ef4444' }}> + Pickup & Delivery ({pickupDistance === 'over15' ? '>15mi' : '<15mi'})</span>
                       )}
                     </div>
-                    <div style={styles.confirmDetail}>
-                      <Calendar size={16} style={styles.confirmIcon} />
+                    <div style={{ ...styles.confirmDetail, ...(isMobile && { fontSize: '13px', justifyContent: 'center', flexWrap: 'wrap' }) }}>
+                      <Calendar size={isMobile ? 14 : 16} style={styles.confirmIcon} />
                       {selectedDate?.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })} at {selectedTime}
                     </div>
                     {vehicleType && (
-                      <div style={styles.confirmDetail}>
-                        <Car size={16} style={styles.confirmIcon} />
+                      <div style={{ ...styles.confirmDetail, ...(isMobile && { fontSize: '13px', justifyContent: 'center' }) }}>
+                        <Car size={isMobile ? 14 : 16} style={styles.confirmIcon} />
                         {vehicle.year} {vehicle.make} {vehicle.model} ({vehicleType.label})
                       </div>
                     )}
                     {selectedColor && (
-                      <div style={styles.confirmDetail}>
-                        <Palette size={16} style={styles.confirmIcon} />
+                      <div style={{ ...styles.confirmDetail, ...(isMobile && { fontSize: '13px', justifyContent: 'center' }) }}>
+                        <Palette size={isMobile ? 14 : 16} style={styles.confirmIcon} />
                         {selectedColor.name} ({selectedColor.code})
                       </div>
                     )}
                     {serviceLocation?.id === 'mobile' && mobileUtilitiesConfirmed && (
-                      <div style={styles.confirmDetail}>
-                        <CheckCircle2 size={16} style={{ color: '#22c55e' }} />
+                      <div style={{ ...styles.confirmDetail, ...(isMobile && { fontSize: '13px', justifyContent: 'center' }) }}>
+                        <CheckCircle2 size={isMobile ? 14 : 16} style={{ color: '#22c55e' }} />
                         <span style={{ color: '#22c55e' }}>Water & Electric Access Confirmed</span>
                       </div>
                     )}
                   </div>
                 </div>
 
-                <div style={styles.confirmRight}>
+                <div style={{ ...styles.confirmRight, ...(isMobile && { textAlign: 'center', width: '100%' }) }}>
                   {/* Price Breakdown */}
-                  <div style={{ marginBottom: '16px', textAlign: 'right' }}>
+                  <div style={{ marginBottom: '16px', textAlign: isMobile ? 'center' : 'right' }}>
                     {selectedServices.map((service) => {
                       const svcVehicleUp = getServiceVehicleUpcharge(service, vehicleType);
                       return (
-                        <div key={service.id} style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>
+                        <div key={service.id} style={{ fontSize: isMobile ? '12px' : '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>
                           {service.name}: ${service.base_price + svcVehicleUp}
                           {svcVehicleUp > 0 && (
                             <span style={{ color: 'rgba(255,255,255,0.3)' }}> (incl. +${svcVehicleUp} {vehicleType?.label})</span>
@@ -2583,19 +2587,19 @@ export default function BookAppointment() {
                       );
                     })}
                     {locationUpcharge > 0 && (
-                      <div style={{ fontSize: '13px', color: '#ef4444', marginBottom: '4px' }}>
+                      <div style={{ fontSize: isMobile ? '12px' : '13px', color: '#ef4444', marginBottom: '4px' }}>
                         Mobile Service Fee: +${locationUpcharge}
                       </div>
                     )}
                     {pickupDeliveryCharge > 0 && (
-                      <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>
+                      <div style={{ fontSize: isMobile ? '12px' : '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>
                         Pickup & Delivery: +${pickupDeliveryCharge}
                       </div>
                     )}
                     <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '8px', paddingTop: '8px' }} />
                   </div>
                   <div style={styles.totalLabel}>Total</div>
-                  <div style={styles.totalPrice}>${totalPrice}</div>
+                  <div style={{ ...styles.totalPrice, ...(isMobile && { fontSize: '32px', marginBottom: '12px' }) }}>${totalPrice}</div>
                   {submitError && (
                     <div style={{ color: '#ef4444', fontSize: '13px', marginBottom: '12px', fontFamily: "'Montserrat', sans-serif" }}>
                       {submitError}
@@ -2610,6 +2614,7 @@ export default function BookAppointment() {
                       ...styles.confirmBtn,
                       opacity: submitting ? 0.7 : 1,
                       cursor: submitting ? 'not-allowed' : 'pointer',
+                      ...(isMobile && { width: '100%', padding: '14px 24px', fontSize: '15px' }),
                     }}
                     data-testid="confirm-appointment-btn"
                   >
@@ -2631,7 +2636,7 @@ export default function BookAppointment() {
                   placeholder="Any special requests? (optional)"
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  style={{ ...styles.textarea, maxWidth: '100%', marginTop: '24px' }}
+                  style={{ ...styles.textarea, maxWidth: '100%', marginTop: isMobile ? '16px' : '24px' }}
                   data-testid="special-requests-textarea"
                 />
               </div>
