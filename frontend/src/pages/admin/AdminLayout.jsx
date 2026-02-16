@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Settings, Calendar, ClipboardList,
-  LogOut, Menu, X, ChevronRight, Users, Mail, Lock, Save, Loader2, AlertCircle, CheckCircle
+  LogOut, Menu, X, ChevronRight, Users, Mail, Lock, Save, Loader2, AlertCircle, CheckCircle,
+  Bell, Clock, User
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
@@ -12,6 +13,9 @@ export default function AdminLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [unseenCount, setUnseenCount] = useState(0);
+  const [unseenBookings, setUnseenBookings] = useState([]);
+  const [showNotifications, setShowNotifications] = useState(false);
   const [shopName, setShopName] = useState('');
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ current_password: '', new_password: '', confirm_password: '' });
@@ -68,6 +72,67 @@ export default function AdminLayout() {
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  // Fetch unseen booking count
+  useEffect(() => {
+    const fetchUnseenCount = async () => {
+      const token = localStorage.getItem('adminToken');
+      if (!token) return;
+      try {
+        const response = await fetch(`${API_URL}/api/bookings/unseen-count`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUnseenCount(data.count);
+        }
+      } catch (error) {
+        console.error('Failed to fetch unseen count:', error);
+      }
+    };
+    fetchUnseenCount();
+    const interval = setInterval(fetchUnseenCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchUnseenBookings = async () => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) return;
+    try {
+      const response = await fetch(`${API_URL}/api/bookings/unseen`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setUnseenBookings(data.bookings);
+      }
+    } catch (error) {
+      console.error('Failed to fetch unseen bookings:', error);
+    }
+  };
+
+  const handleOpenNotifications = () => {
+    if (!showNotifications) {
+      fetchUnseenBookings();
+    }
+    setShowNotifications(!showNotifications);
+  };
+
+  const handleMarkAllSeen = async () => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) return;
+    try {
+      await fetch(`${API_URL}/api/bookings/mark-seen`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUnseenCount(0);
+      setUnseenBookings([]);
+      setShowNotifications(false);
+    } catch (error) {
+      console.error('Failed to mark bookings as seen:', error);
+    }
+  };
 
   // Fetch shop name from business settings
   useEffect(() => {
@@ -154,13 +219,25 @@ export default function AdminLayout() {
           {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
         <h1 style={styles.mobileTitle}>{shopName ? `${shopName.toUpperCase()} ADMIN` : 'ADMIN'}</h1>
+        <button onClick={handleOpenNotifications} style={styles.notifBellBtn} data-testid="mobile-notif-bell">
+          <Bell size={20} />
+          {unseenCount > 0 && <span style={styles.notifBellBadge}>{unseenCount > 9 ? '9+' : unseenCount}</span>}
+        </button>
       </div>
 
       {/* Sidebar */}
       <aside className={`sidebar${sidebarOpen ? ' open' : ''}`} style={styles.sidebar}>
         <div style={styles.sidebarHeader}>
-          <h2 style={styles.logo}>{shopName ? shopName.toUpperCase() : 'ADMIN PANEL'}</h2>
-          <span style={styles.badge}>ADMIN</span>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <h2 style={styles.logo}>{shopName ? shopName.toUpperCase() : 'ADMIN PANEL'}</h2>
+              <span style={styles.badge}>ADMIN</span>
+            </div>
+            <button onClick={handleOpenNotifications} style={styles.notifBellBtn} data-testid="notif-bell">
+              <Bell size={20} />
+              {unseenCount > 0 && <span style={styles.notifBellBadge}>{unseenCount > 9 ? '9+' : unseenCount}</span>}
+            </button>
+          </div>
         </div>
 
         <nav style={styles.nav}>
@@ -208,6 +285,60 @@ export default function AdminLayout() {
       {/* Overlay for mobile */}
       {sidebarOpen && (
         <div className="overlay" style={styles.overlay} onClick={() => setSidebarOpen(false)} />
+      )}
+
+      {/* Notification Panel */}
+      {showNotifications && (
+        <div style={styles.notifOverlay} onClick={() => setShowNotifications(false)}>
+          <div style={styles.notifPanel} onClick={(e) => e.stopPropagation()}>
+            <div style={styles.notifHeader}>
+              <h3 style={styles.notifTitle}>
+                <Bell size={16} />
+                NEW BOOKINGS
+              </h3>
+              {unseenBookings.length > 0 && (
+                <button onClick={handleMarkAllSeen} style={styles.markSeenBtn}>
+                  Mark All Seen
+                </button>
+              )}
+            </div>
+            {unseenBookings.length > 0 ? (
+              <div style={styles.notifList}>
+                {unseenBookings.map((booking) => (
+                  <NavLink
+                    key={booking.id}
+                    to="/admin/bookings"
+                    onClick={() => { setShowNotifications(false); handleMarkAllSeen(); }}
+                    style={styles.notifItem}
+                  >
+                    <div style={styles.notifIcon}>
+                      <User size={16} color="#e80200" />
+                    </div>
+                    <div style={styles.notifContent}>
+                      <span style={styles.notifCustomer}>
+                        {booking.customer_first_name} {booking.customer_last_name}
+                      </span>
+                      <span style={styles.notifService}>{booking.service_name}</span>
+                      <div style={styles.notifMeta}>
+                        <span style={styles.notifDate}>
+                          <Calendar size={11} /> {booking.booking_date}
+                        </span>
+                        <span style={styles.notifTime}>
+                          <Clock size={11} /> {booking.booking_time}
+                        </span>
+                      </div>
+                    </div>
+                  </NavLink>
+                ))}
+              </div>
+            ) : (
+              <div style={styles.notifEmpty}>
+                <Bell size={24} style={{ color: '#525252' }} />
+                <span>No new bookings</span>
+              </div>
+            )}
+          </div>
+        </div>
       )}
 
       {/* Main Content */}
@@ -556,6 +687,158 @@ const styles = {
     fontSize: '13px',
     marginBottom: '16px',
     fontFamily: "'Montserrat', sans-serif",
+  },
+  notifBellBtn: {
+    position: 'relative',
+    background: 'none',
+    border: '1px solid #262626',
+    color: '#ababab',
+    cursor: 'pointer',
+    padding: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'all 0.2s',
+  },
+  notifBellBadge: {
+    position: 'absolute',
+    top: '-4px',
+    right: '-4px',
+    minWidth: '18px',
+    height: '18px',
+    padding: '0 4px',
+    borderRadius: '9px',
+    background: '#e80200',
+    color: '#fff',
+    fontSize: '10px',
+    fontWeight: 700,
+    fontFamily: "'Montserrat', sans-serif",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  notifOverlay: {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(0, 0, 0, 0.6)',
+    zIndex: 200,
+    display: 'flex',
+    justifyContent: 'center',
+    paddingTop: '80px',
+  },
+  notifPanel: {
+    width: '380px',
+    maxHeight: '500px',
+    background: '#0a0a0a',
+    border: '1px solid #262626',
+    display: 'flex',
+    flexDirection: 'column',
+    alignSelf: 'flex-start',
+  },
+  notifHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px 20px',
+    borderBottom: '1px solid #262626',
+  },
+  notifTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 700,
+    color: '#fff',
+    margin: 0,
+    letterSpacing: '1px',
+  },
+  markSeenBtn: {
+    background: 'transparent',
+    border: '1px solid #262626',
+    color: '#ababab',
+    padding: '6px 12px',
+    fontSize: '11px',
+    fontFamily: "'Montserrat', sans-serif",
+    fontWeight: 600,
+    cursor: 'pointer',
+    transition: 'all 0.2s',
+  },
+  notifList: {
+    overflowY: 'auto',
+    flex: 1,
+  },
+  notifItem: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '12px',
+    padding: '14px 20px',
+    borderBottom: '1px solid #1a1a1a',
+    textDecoration: 'none',
+    transition: 'background 0.15s',
+    cursor: 'pointer',
+  },
+  notifIcon: {
+    width: '32px',
+    height: '32px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'rgba(232, 2, 0, 0.1)',
+    flexShrink: 0,
+  },
+  notifContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '3px',
+    flex: 1,
+    minWidth: 0,
+  },
+  notifCustomer: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '13px',
+    fontWeight: 600,
+    color: '#fff',
+  },
+  notifService: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '12px',
+    color: '#ababab',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  notifMeta: {
+    display: 'flex',
+    gap: '12px',
+    marginTop: '2px',
+  },
+  notifDate: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '11px',
+    color: '#6b7280',
+  },
+  notifTime: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '11px',
+    color: '#6b7280',
+  },
+  notifEmpty: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
+    padding: '40px 20px',
+    color: '#525252',
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '13px',
   },
 };
 

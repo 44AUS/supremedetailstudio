@@ -668,6 +668,7 @@ async def create_booking(booking: BookingCreate):
     booking_dict["customer_id"] = customer_id
     booking_dict["status"] = "pending"
     booking_dict["is_paid"] = False
+    booking_dict["seen_by_admin"] = False
     booking_dict["created_at"] = datetime.now(timezone.utc).isoformat()
     booking_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
 
@@ -793,6 +794,7 @@ async def create_booking_admin(booking: BookingCreate):
     booking_dict["customer_id"] = customer_id
     booking_dict["status"] = "pending"
     booking_dict["is_paid"] = False
+    booking_dict["seen_by_admin"] = True
     booking_dict["created_at"] = datetime.now(timezone.utc).isoformat()
     booking_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
     booking_dict["created_by"] = "admin"
@@ -808,6 +810,35 @@ async def delete_booking(booking_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Booking not found")
     return {"message": "Booking deleted successfully"}
+
+@app.get("/api/bookings/unseen-count", dependencies=[Depends(verify_token)])
+async def get_unseen_booking_count():
+    count = await db.bookings.count_documents({"seen_by_admin": {"$ne": True}})
+    return {"count": count}
+
+@app.get("/api/bookings/unseen", dependencies=[Depends(verify_token)])
+async def get_unseen_bookings():
+    bookings = await db.bookings.find({"seen_by_admin": {"$ne": True}}).sort("created_at", -1).to_list(10)
+    result = []
+    for b in bookings:
+        result.append({
+            "id": str(b["_id"]),
+            "customer_first_name": b.get("customer_first_name", ""),
+            "customer_last_name": b.get("customer_last_name", ""),
+            "service_name": b.get("service_name", ""),
+            "booking_date": b.get("booking_date", ""),
+            "booking_time": b.get("booking_time", ""),
+            "created_at": b.get("created_at", ""),
+        })
+    return {"bookings": result}
+
+@app.put("/api/bookings/mark-seen", dependencies=[Depends(verify_token)])
+async def mark_bookings_seen():
+    await db.bookings.update_many(
+        {"seen_by_admin": {"$ne": True}},
+        {"$set": {"seen_by_admin": True}}
+    )
+    return {"message": "All bookings marked as seen"}
 
 # ============== Customer Helper ==============
 
