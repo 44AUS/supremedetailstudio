@@ -232,7 +232,7 @@ export default function AdminDashboard() {
         </div>
 
         <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', ...(isMobile && { flexDirection: 'column' }) }}>
-        <div style={{ ...styles.calendarContainer, flexShrink: 0, ...(isMobile && { padding: '14px', maxWidth: '100%' }) }}>
+        <div style={{ ...styles.calendarContainer, width: '600px', flexShrink: 0, ...(isMobile && { padding: '14px', width: '100%', maxWidth: '100%' }) }}>
           {/* Month Navigation */}
           <div style={styles.calendarNav}>
             <button onClick={prevMonth} style={styles.calendarNavBtn}>
