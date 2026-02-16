@@ -1108,6 +1108,29 @@ async def get_dashboard_stats():
     async for doc in db.bookings.aggregate(pipeline_today):
         today_revenue = doc.get("total", 0)
 
+    # Monthly revenue (current month)
+    monthly_revenue = 0
+    now = datetime.now(timezone.utc)
+    month_start = now.strftime("%Y-%m-01")
+    month_end = f"{now.strftime('%Y-%m')}-31"
+    pipeline_monthly = [
+        {"$match": {"is_paid": True, "booking_date": {"$gte": month_start, "$lte": month_end}}},
+        {"$group": {"_id": None, "total": {"$sum": "$total_price"}}}
+    ]
+    async for doc in db.bookings.aggregate(pipeline_monthly):
+        monthly_revenue = doc.get("total", 0)
+
+    # Yearly revenue (current year)
+    yearly_revenue = 0
+    year_start = now.strftime("%Y-01-01")
+    year_end = now.strftime("%Y-12-31")
+    pipeline_yearly = [
+        {"$match": {"is_paid": True, "booking_date": {"$gte": year_start, "$lte": year_end}}},
+        {"$group": {"_id": None, "total": {"$sum": "$total_price"}}}
+    ]
+    async for doc in db.bookings.aggregate(pipeline_yearly):
+        yearly_revenue = doc.get("total", 0)
+
     return {
         "total_bookings": total_bookings,
         "today_bookings": today_bookings,
@@ -1118,7 +1141,9 @@ async def get_dashboard_stats():
         "active_services": active_services,
         "recent_bookings": recent_bookings,
         "total_revenue": total_revenue,
-        "today_revenue": today_revenue
+        "today_revenue": today_revenue,
+        "monthly_revenue": monthly_revenue,
+        "yearly_revenue": yearly_revenue
     }
 
 # ============== Contact Messages ==============

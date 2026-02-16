@@ -169,11 +169,6 @@ export default function AdminDashboard() {
     );
   }
 
-  const formatCurrency = (val) => {
-    if (val >= 1000) return `$${(val / 1000).toFixed(1)}k`;
-    return `$${val.toFixed(0)}`;
-  };
-
   const statCards = [
     { label: "Today's Bookings", value: stats?.today_bookings || 0, icon: Calendar, color: '#3b82f6' },
     { label: 'Pending', value: stats?.pending_bookings || 0, icon: Clock, color: '#f59e0b' },
@@ -383,25 +378,34 @@ export default function AdminDashboard() {
         </div>
 
         {/* Revenue Panel */}
-        <div style={{ ...styles.revenuePanel, ...(isMobile && { flexDirection: 'row', gap: '10px' }) }}>
+        <div style={{ ...styles.revenuePanel, ...(isMobile && { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }) }}>
           <div style={styles.revenueCard}>
             <div style={{ ...styles.revenueIconWrap, background: 'rgba(16, 185, 129, 0.15)' }}>
               <DollarSign size={20} color="#10b981" />
             </div>
             <span style={styles.revenueValue}>${(stats?.today_revenue || 0).toFixed(2)}</span>
-            <span style={styles.revenueLabel}>Today's Revenue</span>
+            <span style={styles.revenueLabel}>Today</span>
+          </div>
+          <div style={styles.revenueCard}>
+            <div style={{ ...styles.revenueIconWrap, background: 'rgba(59, 130, 246, 0.15)' }}>
+              <DollarSign size={20} color="#3b82f6" />
+            </div>
+            <span style={styles.revenueValue}>${(stats?.monthly_revenue || 0).toFixed(2)}</span>
+            <span style={styles.revenueLabel}>This Month</span>
+          </div>
+          <div style={styles.revenueCard}>
+            <div style={{ ...styles.revenueIconWrap, background: 'rgba(139, 92, 246, 0.15)' }}>
+              <DollarSign size={20} color="#8b5cf6" />
+            </div>
+            <span style={styles.revenueValue}>${(stats?.yearly_revenue || 0).toFixed(2)}</span>
+            <span style={styles.revenueLabel}>This Year</span>
           </div>
           <div style={styles.revenueCard}>
             <div style={{ ...styles.revenueIconWrap, background: 'rgba(245, 158, 11, 0.15)' }}>
               <DollarSign size={20} color="#f59e0b" />
             </div>
             <span style={styles.revenueValue}>${(stats?.total_revenue || 0).toFixed(2)}</span>
-            <span style={styles.revenueLabel}>Total Revenue</span>
-          </div>
-          <div style={{ ...styles.revenuePaidNote }}>
-            <span style={{ fontSize: '11px', color: '#525252', fontFamily: "'Montserrat', sans-serif" }}>
-              Revenue totals reflect paid bookings only
-            </span>
+            <span style={styles.revenueLabel}>All Time</span>
           </div>
         </div>
         </div>
@@ -1382,10 +1386,10 @@ const styles = {
     transition: 'all 0.2s',
   },
   revenuePanel: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px',
-    minWidth: '200px',
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '12px',
+    minWidth: '280px',
   },
   revenueCard: {
     display: 'flex',
