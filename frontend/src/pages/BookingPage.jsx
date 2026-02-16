@@ -2804,6 +2804,24 @@ function ServiceCard({ service, price, selected, onClick, disabled }) {
           </div>
         ))}
       </div>
+      {service.duration_minutes && (
+        <div style={{
+          fontFamily: "'Montserrat', sans-serif",
+          fontSize: mobile ? '12px' : '13px',
+          color: 'rgba(255,255,255,0.5)',
+          marginBottom: '8px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '5px',
+        }}>
+          <svg width={mobile ? 13 : 14} height={mobile ? 13 : 14} viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Est. {service.duration_minutes >= 60
+            ? (service.duration_minutes % 60 === 0
+              ? `${service.duration_minutes / 60} hr${service.duration_minutes / 60 !== 1 ? 's' : ''}`
+              : `${(service.duration_minutes / 60).toFixed(1)} hrs`)
+            : `${service.duration_minutes} min`}
+        </div>
+      )}
       <div style={{ ...styles.servicePrice, ...(mobile && { fontSize: '18px' }) }}>
         {typeof price === 'number' ? `$${fmt(price)}` : price}
       </div>
