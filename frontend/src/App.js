@@ -59,6 +59,7 @@ import AdminBookings from './pages/admin/AdminBookings';
 import AdminCustomers from './pages/admin/AdminCustomers';
 import AdminContacts from './pages/admin/AdminContacts';
 import AdminQuotes from './pages/admin/AdminQuotes';
+import StarlightHeadlinerPage from './pages/StarlightHeadlinerPage';
 
 function MainApp() {
 
@@ -103,6 +104,7 @@ function MainApp() {
             <Route path='/services/automotive-tinting' element={<VehicleWindowTintingPage />} />
             <Route path='/services/residential-tinting' element={<ResidentialWindowTintPage />} />
             <Route path='/services/commercial-tinting' element={<CommercialWindowTintPage />} />
+            <Route path='/services/starlight-headliners' element={<StarlightHeadlinerPage />} />
 
             <Route path='/service-areas/marietta-ga' element={<LouisvilleKYPage />} />
             <Route path='/service-areas/atlanta-ga' element={<CrestwoodKYPage />} />
