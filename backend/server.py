@@ -214,6 +214,19 @@ class BusinessSettings(BaseModel):
     enable_shop_bookings: Optional[bool] = True  # Enable/disable in-shop bookings
     enable_mobile_bookings: Optional[bool] = True  # Enable/disable mobile bookings
 
+# ============== Quote Request Model ==============
+
+class QuoteRequest(BaseModel):
+    service_type: str  # automotive, residential, commercial, security
+    first_name: str
+    last_name: str
+    email: str
+    phone: str
+    vehicle_year: Optional[str] = ""
+    vehicle_make: Optional[str] = ""
+    vehicle_model: Optional[str] = ""
+    description: str
+
 # ============== Auth Helpers ==============
 
 def create_access_token(data: dict):
@@ -1246,17 +1259,6 @@ async def delete_quote(quote_id: str):
     return {"success": True}
 
 # ============== Contact Messages ==============
-
-class QuoteRequest(BaseModel):
-    service_type: str  # automotive, residential, commercial, security
-    first_name: str
-    last_name: str
-    email: str
-    phone: str
-    vehicle_year: Optional[str] = ""
-    vehicle_make: Optional[str] = ""
-    vehicle_model: Optional[str] = ""
-    description: str
 
 class ContactMessage(BaseModel):
     name: str
