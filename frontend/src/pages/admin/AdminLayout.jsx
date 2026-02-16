@@ -219,7 +219,7 @@ export default function AdminLayout() {
           {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
         <h1 style={styles.mobileTitle}>{shopName ? `${shopName.toUpperCase()} ADMIN` : 'ADMIN'}</h1>
-        <button onClick={handleOpenNotifications} style={styles.notifBellBtn} data-testid="mobile-notif-bell">
+        <button onClick={handleOpenNotifications} style={{ ...styles.notifBellBtn, marginLeft: 'auto' }} data-testid="mobile-notif-bell">
           <Bell size={20} />
           {unseenCount > 0 && <span style={styles.notifBellBadge}>{unseenCount > 9 ? '9+' : unseenCount}</span>}
         </button>
@@ -228,16 +228,8 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside className={`sidebar${sidebarOpen ? ' open' : ''}`} style={styles.sidebar}>
         <div style={styles.sidebarHeader}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-            <div>
-              <h2 style={styles.logo}>{shopName ? shopName.toUpperCase() : 'ADMIN PANEL'}</h2>
-              <span style={styles.badge}>ADMIN</span>
-            </div>
-            <button onClick={handleOpenNotifications} style={styles.notifBellBtn} data-testid="notif-bell">
-              <Bell size={20} />
-              {unseenCount > 0 && <span style={styles.notifBellBadge}>{unseenCount > 9 ? '9+' : unseenCount}</span>}
-            </button>
-          </div>
+          <h2 style={styles.logo}>{shopName ? shopName.toUpperCase() : 'ADMIN PANEL'}</h2>
+          <span style={styles.badge}>ADMIN</span>
         </div>
 
         <nav style={styles.nav}>
@@ -287,62 +279,73 @@ export default function AdminLayout() {
         <div className="overlay" style={styles.overlay} onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Notification Panel */}
+      {/* Click-away overlay for notifications */}
       {showNotifications && (
-        <div style={styles.notifOverlay} onClick={() => setShowNotifications(false)}>
-          <div style={styles.notifPanel} onClick={(e) => e.stopPropagation()}>
-            <div style={styles.notifHeader}>
-              <h3 style={styles.notifTitle}>
-                <Bell size={16} />
-                NEW BOOKINGS
-              </h3>
-              {unseenBookings.length > 0 && (
-                <button onClick={handleMarkAllSeen} style={styles.markSeenBtn}>
-                  Mark All Seen
-                </button>
-              )}
-            </div>
-            {unseenBookings.length > 0 ? (
-              <div style={styles.notifList}>
-                {unseenBookings.map((booking) => (
-                  <NavLink
-                    key={booking.id}
-                    to="/admin/bookings"
-                    onClick={() => { setShowNotifications(false); handleMarkAllSeen(); }}
-                    style={styles.notifItem}
-                  >
-                    <div style={styles.notifIcon}>
-                      <User size={16} color="#e80200" />
-                    </div>
-                    <div style={styles.notifContent}>
-                      <span style={styles.notifCustomer}>
-                        {booking.customer_first_name} {booking.customer_last_name}
-                      </span>
-                      <span style={styles.notifService}>{booking.service_name}</span>
-                      <div style={styles.notifMeta}>
-                        <span style={styles.notifDate}>
-                          <Calendar size={11} /> {booking.booking_date}
-                        </span>
-                        <span style={styles.notifTime}>
-                          <Clock size={11} /> {booking.booking_time}
-                        </span>
-                      </div>
-                    </div>
-                  </NavLink>
-                ))}
-              </div>
-            ) : (
-              <div style={styles.notifEmpty}>
-                <Bell size={24} style={{ color: '#525252' }} />
-                <span>No new bookings</span>
-              </div>
-            )}
-          </div>
-        </div>
+        <div style={{ position: 'fixed', inset: 0, zIndex: 149 }} onClick={() => setShowNotifications(false)} />
       )}
 
       {/* Main Content */}
       <main className="main" style={styles.main}>
+        <div style={styles.topBar}>
+          <div style={{ flex: 1 }} />
+          <div style={{ position: 'relative' }}>
+            <button onClick={handleOpenNotifications} style={styles.notifBellBtn} data-testid="notif-bell">
+              <Bell size={20} />
+              {unseenCount > 0 && <span style={styles.notifBellBadge}>{unseenCount > 9 ? '9+' : unseenCount}</span>}
+            </button>
+            {/* Notification Dropdown */}
+            {showNotifications && (
+              <div style={styles.notifDropdown}>
+                <div style={styles.notifHeader}>
+                  <h3 style={styles.notifTitle}>
+                    <Bell size={16} />
+                    NEW BOOKINGS
+                  </h3>
+                  {unseenBookings.length > 0 && (
+                    <button onClick={handleMarkAllSeen} style={styles.markSeenBtn}>
+                      Mark All Seen
+                    </button>
+                  )}
+                </div>
+                {unseenBookings.length > 0 ? (
+                  <div style={styles.notifList}>
+                    {unseenBookings.map((booking) => (
+                      <NavLink
+                        key={booking.id}
+                        to="/admin/bookings"
+                        onClick={() => { setShowNotifications(false); handleMarkAllSeen(); }}
+                        style={styles.notifItem}
+                      >
+                        <div style={styles.notifIcon}>
+                          <User size={16} color="#e80200" />
+                        </div>
+                        <div style={styles.notifContent}>
+                          <span style={styles.notifCustomer}>
+                            {booking.customer_first_name} {booking.customer_last_name}
+                          </span>
+                          <span style={styles.notifService}>{booking.service_name}</span>
+                          <div style={styles.notifMeta}>
+                            <span style={styles.notifDate}>
+                              <Calendar size={11} /> {booking.booking_date}
+                            </span>
+                            <span style={styles.notifTime}>
+                              <Clock size={11} /> {booking.booking_time}
+                            </span>
+                          </div>
+                        </div>
+                      </NavLink>
+                    ))}
+                  </div>
+                ) : (
+                  <div style={styles.notifEmpty}>
+                    <Bell size={24} style={{ color: '#525252' }} />
+                    <span>No new bookings</span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
         <Outlet />
       </main>
 
@@ -717,23 +720,25 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  notifOverlay: {
-    position: 'fixed',
-    inset: 0,
-    background: 'rgba(0, 0, 0, 0.6)',
-    zIndex: 200,
+  topBar: {
     display: 'flex',
-    justifyContent: 'center',
-    paddingTop: '80px',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginBottom: '20px',
   },
-  notifPanel: {
+  notifDropdown: {
+    position: 'absolute',
+    top: '100%',
+    right: 0,
+    marginTop: '8px',
     width: '380px',
-    maxHeight: '500px',
+    maxHeight: '460px',
     background: '#0a0a0a',
     border: '1px solid #262626',
     display: 'flex',
     flexDirection: 'column',
-    alignSelf: 'flex-start',
+    zIndex: 150,
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.5)',
   },
   notifHeader: {
     display: 'flex',
