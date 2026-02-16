@@ -22,6 +22,8 @@ import { CSS } from '@dnd-kit/utilities';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
 
+const fmt = (n) => Number(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
 // Sortable Category Card Component
 function SortableCategoryCard({ category, onEdit, onDelete }) {
   const {
@@ -998,7 +1000,7 @@ export default function AdminServices() {
               <div style={styles.serviceInfo}>
                 <div style={styles.infoItem}>
                   <DollarSign size={16} />
-                  <span>From ${service.base_price}</span>
+                  <span>From ${fmt(service.base_price)}</span>
                 </div>
                 <div style={styles.infoItem}>
                   <Clock size={16} />

@@ -8,6 +8,8 @@ import {
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
 
+const fmt = (n) => Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 const STATUS_CONFIG = {
   pending: { label: 'Pending', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.1)' },
   in_progress: { label: 'In Progress', color: '#3b82f6', bg: 'rgba(59, 130, 246, 0.1)' },
@@ -683,7 +685,7 @@ export default function AdminBookings() {
                             ({service.duration_minutes || 60} min)
                           </span>
                         </span>
-                        <span style={styles.priceValue}>${service.base_price?.toFixed(2)}</span>
+                        <span style={styles.priceValue}>${fmt(service.base_price || 0)}</span>
                       </div>
                     ))
                   ) : (
@@ -694,7 +696,7 @@ export default function AdminBookings() {
                           // Find the service to get base price
                           const service = services.find(s => s.id === selectedBooking.service_id);
                           if (service) {
-                            return `$${service.base_price?.toFixed(2)}`;
+                            return `$${fmt(service.base_price || 0)}`;
                           }
                           return 'Base price';
                         })()}
@@ -737,7 +739,7 @@ export default function AdminBookings() {
                   {/* Total */}
                   <div style={{...styles.priceRow, ...styles.totalRow}}>
                     <span style={styles.totalLabel}>TOTAL</span>
-                    <span style={styles.totalPrice}>${selectedBooking.total_price?.toFixed(2)}</span>
+                    <span style={styles.totalPrice}>${fmt(selectedBooking.total_price || 0)}</span>
                   </div>
                 </div>
               </div>
@@ -973,7 +975,7 @@ export default function AdminBookings() {
                     >
                       <option value="">Select a service...</option>
                       {services.map(s => (
-                        <option key={s.id} value={s.id}>{s.name} - ${s.base_price}</option>
+                        <option key={s.id} value={s.id}>{s.name} - ${fmt(s.base_price || 0)}</option>
                       ))}
                     </select>
                   </div>

@@ -9,6 +9,8 @@ import { Link } from 'react-router-dom';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
 
+const fmt = (n) => Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 const STATUS_CONFIG = {
   pending: { label: 'Pending', color: '#f59e0b', bg: 'rgba(245, 158, 11, 0.15)' },
   in_progress: { label: 'In Progress', color: '#8b5cf6', bg: 'rgba(139, 92, 246, 0.15)' },
@@ -315,10 +317,9 @@ export default function AdminDashboard() {
                   {selectedDayBookings.some(b => b.is_paid) && (
                     <span style={styles.dayRevenueTag}>
                       <DollarSign size={12} />
-                      ${selectedDayBookings
+                      ${fmt(selectedDayBookings
                         .filter(b => b.is_paid)
-                        .reduce((sum, b) => sum + (b.total_price || 0), 0)
-                        .toFixed(2)} revenue
+                        .reduce((sum, b) => sum + (b.total_price || 0), 0))} revenue
                     </span>
                   )}
                 </div>
@@ -383,28 +384,28 @@ export default function AdminDashboard() {
             <div style={{ ...styles.revenueIconWrap, background: 'rgba(16, 185, 129, 0.15)' }}>
               <DollarSign size={20} color="#10b981" />
             </div>
-            <span style={styles.revenueValue}>${(stats?.today_revenue || 0).toFixed(2)}</span>
+            <span style={styles.revenueValue}>${fmt(stats?.today_revenue || 0)}</span>
             <span style={styles.revenueLabel}>Today</span>
           </div>
           <div style={styles.revenueCard}>
             <div style={{ ...styles.revenueIconWrap, background: 'rgba(59, 130, 246, 0.15)' }}>
               <DollarSign size={20} color="#3b82f6" />
             </div>
-            <span style={styles.revenueValue}>${(stats?.monthly_revenue || 0).toFixed(2)}</span>
+            <span style={styles.revenueValue}>${fmt(stats?.monthly_revenue || 0)}</span>
             <span style={styles.revenueLabel}>This Month</span>
           </div>
           <div style={styles.revenueCard}>
             <div style={{ ...styles.revenueIconWrap, background: 'rgba(139, 92, 246, 0.15)' }}>
               <DollarSign size={20} color="#8b5cf6" />
             </div>
-            <span style={styles.revenueValue}>${(stats?.yearly_revenue || 0).toFixed(2)}</span>
+            <span style={styles.revenueValue}>${fmt(stats?.yearly_revenue || 0)}</span>
             <span style={styles.revenueLabel}>This Year</span>
           </div>
           <div style={styles.revenueCard}>
             <div style={{ ...styles.revenueIconWrap, background: 'rgba(245, 158, 11, 0.15)' }}>
               <DollarSign size={20} color="#f59e0b" />
             </div>
-            <span style={styles.revenueValue}>${(stats?.total_revenue || 0).toFixed(2)}</span>
+            <span style={styles.revenueValue}>${fmt(stats?.total_revenue || 0)}</span>
             <span style={styles.revenueLabel}>All Time</span>
           </div>
         </div>
@@ -688,7 +689,7 @@ export default function AdminDashboard() {
                             </span>
                           )}
                         </span>
-                        <span style={styles.priceValue}>${service.base_price?.toFixed(2)}</span>
+                        <span style={styles.priceValue}>${fmt(service.base_price || 0)}</span>
                       </div>
                     ))
                   ) : (
@@ -729,7 +730,7 @@ export default function AdminDashboard() {
 
                   <div style={{ ...styles.priceRow, ...styles.totalRow }}>
                     <span style={styles.totalLabel}>TOTAL</span>
-                    <span style={styles.totalPrice}>${selectedBooking.total_price?.toFixed(2)}</span>
+                    <span style={styles.totalPrice}>${fmt(selectedBooking.total_price || 0)}</span>
                   </div>
                 </div>
               </div>

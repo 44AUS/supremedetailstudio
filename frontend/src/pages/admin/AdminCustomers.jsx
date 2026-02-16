@@ -7,6 +7,8 @@ import {
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
 
+const fmt = (n) => Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 export default function AdminCustomers() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -312,7 +314,7 @@ export default function AdminCustomers() {
                     <span style={styles.bookingsCount}>{customer.total_bookings || 0}</span>
                   </td>
                   <td style={styles.td}>
-                    <span style={styles.totalSpent}>${(customer.total_spent || 0).toFixed(2)}</span>
+                    <span style={styles.totalSpent}>${fmt(customer.total_spent || 0)}</span>
                   </td>
                   <td style={styles.td}>
                     <span style={styles.lastVisit}>
@@ -393,7 +395,7 @@ export default function AdminCustomers() {
                 </div>
                 <div style={styles.statBox}>
                   <DollarSign size={20} style={{ color: '#10b981' }} />
-                  <span style={styles.statValue}>${(selectedCustomer.total_spent || 0).toFixed(2)}</span>
+                  <span style={styles.statValue}>${fmt(selectedCustomer.total_spent || 0)}</span>
                   <span style={styles.statLabel}>Total Spent</span>
                 </div>
                 <div style={styles.statBox}>
@@ -475,7 +477,7 @@ export default function AdminCustomers() {
                             }}>
                               {booking.status?.replace('_', ' ')}
                             </span>
-                            <span style={styles.bookingPrice}>${booking.total_price?.toFixed(2)}</span>
+                            <span style={styles.bookingPrice}>${fmt(booking.total_price || 0)}</span>
                           </div>
                         </div>
                       );

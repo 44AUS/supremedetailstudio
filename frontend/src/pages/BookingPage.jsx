@@ -11,6 +11,8 @@ import {
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
 
+const fmt = (n) => Number(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
 /* ---------------- DATA ---------------- */
 
 // Default service locations - will be updated from API
@@ -2461,7 +2463,7 @@ export default function BookAppointment() {
                         color: isSelected ? '#ef4444' : 'rgba(255,255,255,0.7)',
                         whiteSpace: 'nowrap',
                       }}>
-                        {typeof addonPrice === 'number' ? `+$${addonPrice}` : addonPrice}
+                        {typeof addonPrice === 'number' ? `+$${fmt(addonPrice)}` : addonPrice}
                       </div>
                     </motion.button>
                   );
@@ -2581,27 +2583,27 @@ export default function BookAppointment() {
                       const svcVehicleUp = getServiceVehicleUpcharge(service, vehicleType);
                       return (
                         <div key={service.id} style={{ fontSize: isMobile ? '12px' : '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>
-                          {service.name}: ${service.base_price + svcVehicleUp}
+                          {service.name}: ${fmt(service.base_price + svcVehicleUp)}
                           {svcVehicleUp > 0 && (
-                            <span style={{ color: 'rgba(255,255,255,0.3)' }}> (incl. +${svcVehicleUp} {vehicleType?.label})</span>
+                            <span style={{ color: 'rgba(255,255,255,0.3)' }}> (incl. +${fmt(svcVehicleUp)} {vehicleType?.label})</span>
                           )}
                         </div>
                       );
                     })}
                     {locationUpcharge > 0 && (
                       <div style={{ fontSize: isMobile ? '12px' : '13px', color: '#ef4444', marginBottom: '4px' }}>
-                        Mobile Service Fee: +${locationUpcharge}
+                        Mobile Service Fee: +${fmt(locationUpcharge)}
                       </div>
                     )}
                     {pickupDeliveryCharge > 0 && (
                       <div style={{ fontSize: isMobile ? '12px' : '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '4px' }}>
-                        Pickup & Delivery: +${pickupDeliveryCharge}
+                        Pickup & Delivery: +${fmt(pickupDeliveryCharge)}
                       </div>
                     )}
                     <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '8px', paddingTop: '8px' }} />
                   </div>
                   <div style={styles.totalLabel}>Total</div>
-                  <div style={{ ...styles.totalPrice, ...(isMobile && { fontSize: '32px', marginBottom: '12px' }) }}>${totalPrice}</div>
+                  <div style={{ ...styles.totalPrice, ...(isMobile && { fontSize: '32px', marginBottom: '12px' }) }}>${fmt(totalPrice)}</div>
                   {submitError && (
                     <div style={{ color: '#ef4444', fontSize: '13px', marginBottom: '12px', fontFamily: "'Montserrat', sans-serif" }}>
                       {submitError}
@@ -2803,7 +2805,7 @@ function ServiceCard({ service, price, selected, onClick, disabled }) {
         ))}
       </div>
       <div style={{ ...styles.servicePrice, ...(mobile && { fontSize: '18px' }) }}>
-        {typeof price === 'number' ? `$${price}` : price}
+        {typeof price === 'number' ? `$${fmt(price)}` : price}
       </div>
     </motion.button>
   );
