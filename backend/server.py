@@ -1177,7 +1177,86 @@ async def get_dashboard_stats():
         "yearly_revenue": yearly_revenue
     }
 
+# ============== Quote Requests ==============
+
+@app.post("/api/quotes")
+async def submit_quote_request(quote: QuoteRequest):
+    """Submit a quote request (public endpoint)"""
+    quote_data = quote.model_dump()
+    quote_data["created_at"] = datetime.now(timezone.utc).isoformat()
+    quote_data["seen_by_admin"] = False
+    quote_data["status"] = "new"  # new, contacted, closed
+    result = await db.quotes.insert_one(quote_data)
+    return {"success": True, "message": "Quote request submitted successfully", "id": str(result.inserted_id)}
+
+@app.get("/api/quotes/unseen-count", dependencies=[Depends(verify_token)])
+async def get_unseen_quote_count():
+    count = await db.quotes.count_documents({"seen_by_admin": {"$ne": True}})
+    return {"count": count}
+
+@app.get("/api/quotes/unseen", dependencies=[Depends(verify_token)])
+async def get_unseen_quotes():
+    quotes = await db.quotes.find({"seen_by_admin": {"$ne": True}}).sort("created_at", -1).to_list(10)
+    result = []
+    for q in quotes:
+        result.append({
+            "id": str(q["_id"]),
+            "first_name": q.get("first_name", ""),
+            "last_name": q.get("last_name", ""),
+            "service_type": q.get("service_type", ""),
+            "created_at": q.get("created_at", ""),
+        })
+    return {"quotes": result}
+
+@app.put("/api/quotes/mark-seen", dependencies=[Depends(verify_token)])
+async def mark_quotes_seen():
+    await db.quotes.update_many(
+        {"seen_by_admin": {"$ne": True}},
+        {"$set": {"seen_by_admin": True}}
+    )
+    return {"message": "All quotes marked as seen"}
+
+@app.get("/api/admin/quotes", dependencies=[Depends(verify_token)])
+async def get_quotes():
+    """Get all quote requests (admin only)"""
+    quotes = []
+    async for quote in db.quotes.find().sort("created_at", -1):
+        quote["_id"] = str(quote["_id"])
+        quotes.append(quote)
+    return {"quotes": quotes}
+
+@app.patch("/api/admin/quotes/{quote_id}/status", dependencies=[Depends(verify_token)])
+async def update_quote_status(quote_id: str, status: str):
+    valid = ["new", "contacted", "closed"]
+    if status not in valid:
+        raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid}")
+    result = await db.quotes.update_one(
+        {"_id": ObjectId(quote_id)},
+        {"$set": {"status": status, "seen_by_admin": True}}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    return {"success": True}
+
+@app.delete("/api/admin/quotes/{quote_id}", dependencies=[Depends(verify_token)])
+async def delete_quote(quote_id: str):
+    result = await db.quotes.delete_one({"_id": ObjectId(quote_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Quote not found")
+    return {"success": True}
+
 # ============== Contact Messages ==============
+
+class QuoteRequest(BaseModel):
+    service_type: str  # automotive, residential, commercial, security
+    first_name: str
+    last_name: str
+    email: str
+    phone: str
+    vehicle_year: Optional[str] = ""
+    vehicle_make: Optional[str] = ""
+    vehicle_model: Optional[str] = ""
+    description: str
 
 class ContactMessage(BaseModel):
     name: str

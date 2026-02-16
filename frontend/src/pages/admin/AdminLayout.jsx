@@ -3,7 +3,7 @@ import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Settings, Calendar, ClipboardList,
   LogOut, Menu, X, ChevronRight, Users, Mail, Lock, Save, Loader2, AlertCircle, CheckCircle,
-  Bell, Clock, User
+  Bell, Clock, User, FileText
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
@@ -15,6 +15,8 @@ export default function AdminLayout() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [unseenCount, setUnseenCount] = useState(0);
   const [unseenBookings, setUnseenBookings] = useState([]);
+  const [unseenQuoteCount, setUnseenQuoteCount] = useState(0);
+  const [unseenQuotes, setUnseenQuotes] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [shopName, setShopName] = useState('');
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -73,47 +75,57 @@ export default function AdminLayout() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch unseen booking count
+  // Fetch unseen booking + quote counts
   useEffect(() => {
-    const fetchUnseenCount = async () => {
+    const fetchUnseenCounts = async () => {
       const token = localStorage.getItem('adminToken');
       if (!token) return;
       try {
-        const response = await fetch(`${API_URL}/api/bookings/unseen-count`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (response.ok) {
-          const data = await response.json();
+        const [bookingRes, quoteRes] = await Promise.all([
+          fetch(`${API_URL}/api/bookings/unseen-count`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API_URL}/api/quotes/unseen-count`, { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
+        if (bookingRes.ok) {
+          const data = await bookingRes.json();
           setUnseenCount(data.count);
         }
+        if (quoteRes.ok) {
+          const data = await quoteRes.json();
+          setUnseenQuoteCount(data.count);
+        }
       } catch (error) {
-        console.error('Failed to fetch unseen count:', error);
+        console.error('Failed to fetch unseen counts:', error);
       }
     };
-    fetchUnseenCount();
-    const interval = setInterval(fetchUnseenCount, 30000);
+    fetchUnseenCounts();
+    const interval = setInterval(fetchUnseenCounts, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  const fetchUnseenBookings = async () => {
+  const fetchUnseenItems = async () => {
     const token = localStorage.getItem('adminToken');
     if (!token) return;
     try {
-      const response = await fetch(`${API_URL}/api/bookings/unseen`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (response.ok) {
-        const data = await response.json();
+      const [bookingRes, quoteRes] = await Promise.all([
+        fetch(`${API_URL}/api/bookings/unseen`, { headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/api/quotes/unseen`, { headers: { Authorization: `Bearer ${token}` } }),
+      ]);
+      if (bookingRes.ok) {
+        const data = await bookingRes.json();
         setUnseenBookings(data.bookings);
       }
+      if (quoteRes.ok) {
+        const data = await quoteRes.json();
+        setUnseenQuotes(data.quotes);
+      }
     } catch (error) {
-      console.error('Failed to fetch unseen bookings:', error);
+      console.error('Failed to fetch unseen items:', error);
     }
   };
 
   const handleOpenNotifications = () => {
     if (!showNotifications) {
-      fetchUnseenBookings();
+      fetchUnseenItems();
     }
     setShowNotifications(!showNotifications);
   };
@@ -122,15 +134,17 @@ export default function AdminLayout() {
     const token = localStorage.getItem('adminToken');
     if (!token) return;
     try {
-      await fetch(`${API_URL}/api/bookings/mark-seen`, {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await Promise.all([
+        fetch(`${API_URL}/api/bookings/mark-seen`, { method: 'PUT', headers: { Authorization: `Bearer ${token}` } }),
+        fetch(`${API_URL}/api/quotes/mark-seen`, { method: 'PUT', headers: { Authorization: `Bearer ${token}` } }),
+      ]);
       setUnseenCount(0);
+      setUnseenQuoteCount(0);
       setUnseenBookings([]);
+      setUnseenQuotes([]);
       setShowNotifications(false);
     } catch (error) {
-      console.error('Failed to mark bookings as seen:', error);
+      console.error('Failed to mark items as seen:', error);
     }
   };
 
@@ -203,6 +217,7 @@ export default function AdminLayout() {
     { path: '/admin/schedule', icon: Calendar, label: 'Schedule' },
     { path: '/admin/bookings', icon: ClipboardList, label: 'Bookings' },
     { path: '/admin/customers', icon: Users, label: 'Customers' },
+    { path: '/admin/quotes', icon: FileText, label: 'Quote Requests' },
     { path: '/admin/contacts', icon: Mail, label: 'Contact Messages' },
   ];
 
@@ -221,7 +236,7 @@ export default function AdminLayout() {
         <h1 style={styles.mobileTitle}>{shopName ? `${shopName.toUpperCase()} ADMIN` : 'ADMIN'}</h1>
         <button onClick={handleOpenNotifications} style={{ ...styles.notifBellBtn, marginLeft: 'auto' }} data-testid="mobile-notif-bell">
           <Bell size={20} />
-          {unseenCount > 0 && <span style={styles.notifBellBadge}>{unseenCount > 9 ? '9+' : unseenCount}</span>}
+          {(unseenCount + unseenQuoteCount) > 0 && <span style={styles.notifBellBadge}>{(unseenCount + unseenQuoteCount) > 9 ? '9+' : (unseenCount + unseenQuoteCount)}</span>}
         </button>
       </div>
 
@@ -291,7 +306,7 @@ export default function AdminLayout() {
           <div style={{ position: 'relative' }}>
             <button onClick={handleOpenNotifications} style={styles.notifBellBtn} data-testid="notif-bell">
               <Bell size={20} />
-              {unseenCount > 0 && <span style={styles.notifBellBadge}>{unseenCount > 9 ? '9+' : unseenCount}</span>}
+              {(unseenCount + unseenQuoteCount) > 0 && <span style={styles.notifBellBadge}>{(unseenCount + unseenQuoteCount) > 9 ? '9+' : (unseenCount + unseenQuoteCount)}</span>}
             </button>
             {/* Notification Dropdown */}
             {showNotifications && (
@@ -299,27 +314,28 @@ export default function AdminLayout() {
                 <div style={styles.notifHeader}>
                   <h3 style={styles.notifTitle}>
                     <Bell size={16} />
-                    NEW BOOKINGS
+                    NOTIFICATIONS
                   </h3>
-                  {unseenBookings.length > 0 && (
+                  {(unseenBookings.length > 0 || unseenQuotes.length > 0) && (
                     <button onClick={handleMarkAllSeen} style={styles.markSeenBtn}>
                       Mark All Seen
                     </button>
                   )}
                 </div>
-                {unseenBookings.length > 0 ? (
+                {(unseenBookings.length > 0 || unseenQuotes.length > 0) ? (
                   <div style={styles.notifList}>
                     {unseenBookings.map((booking) => (
                       <NavLink
-                        key={booking.id}
+                        key={`booking-${booking.id}`}
                         to="/admin/bookings"
                         onClick={() => { setShowNotifications(false); handleMarkAllSeen(); }}
                         style={styles.notifItem}
                       >
                         <div style={styles.notifIcon}>
-                          <User size={16} color="#e80200" />
+                          <Calendar size={16} color="#e80200" />
                         </div>
                         <div style={styles.notifContent}>
+                          <span style={styles.notifLabel}>New Booking</span>
                           <span style={styles.notifCustomer}>
                             {booking.customer_first_name} {booking.customer_last_name}
                           </span>
@@ -335,11 +351,30 @@ export default function AdminLayout() {
                         </div>
                       </NavLink>
                     ))}
+                    {unseenQuotes.map((quote) => (
+                      <NavLink
+                        key={`quote-${quote.id}`}
+                        to="/admin/quotes"
+                        onClick={() => { setShowNotifications(false); handleMarkAllSeen(); }}
+                        style={styles.notifItem}
+                      >
+                        <div style={{ ...styles.notifIcon, background: 'rgba(59, 130, 246, 0.1)' }}>
+                          <ClipboardList size={16} color="#3b82f6" />
+                        </div>
+                        <div style={styles.notifContent}>
+                          <span style={{ ...styles.notifLabel, color: '#3b82f6' }}>New Quote Request</span>
+                          <span style={styles.notifCustomer}>
+                            {quote.first_name} {quote.last_name}
+                          </span>
+                          <span style={styles.notifService}>{quote.service_type}</span>
+                        </div>
+                      </NavLink>
+                    ))}
                   </div>
                 ) : (
                   <div style={styles.notifEmpty}>
                     <Bell size={24} style={{ color: '#525252' }} />
-                    <span>No new bookings</span>
+                    <span>No new notifications</span>
                   </div>
                 )}
               </div>
@@ -798,6 +833,14 @@ const styles = {
     gap: '3px',
     flex: 1,
     minWidth: 0,
+  },
+  notifLabel: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '10px',
+    fontWeight: 700,
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+    color: '#e80200',
   },
   notifCustomer: {
     fontFamily: "'Montserrat', sans-serif",
