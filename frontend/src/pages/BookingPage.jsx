@@ -363,6 +363,7 @@ const styles = {
     borderRadius: '50%',
     filter: 'blur(60px)',
     pointerEvents: 'none',
+    animation: 'orbFloat1 12s ease-in-out infinite',
   },
   glowOrb2: {
     position: 'absolute',
@@ -374,6 +375,7 @@ const styles = {
     borderRadius: '50%',
     filter: 'blur(60px)',
     pointerEvents: 'none',
+    animation: 'orbFloat2 15s ease-in-out infinite',
   },
   hero: {
     position: 'relative',
@@ -2648,6 +2650,20 @@ export default function BookAppointment() {
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+        @keyframes orbFloat1 {
+          0% { transform: translate(0, 0) scale(1); }
+          25% { transform: translate(80px, 60px) scale(1.1); }
+          50% { transform: translate(-40px, 120px) scale(0.95); }
+          75% { transform: translate(-80px, -30px) scale(1.05); }
+          100% { transform: translate(0, 0) scale(1); }
+        }
+        @keyframes orbFloat2 {
+          0% { transform: translate(0, 0) scale(1); }
+          25% { transform: translate(-60px, -80px) scale(1.08); }
+          50% { transform: translate(50px, -40px) scale(0.92); }
+          75% { transform: translate(70px, 60px) scale(1.12); }
+          100% { transform: translate(0, 0) scale(1); }
         }
       `}</style>
     </div>
