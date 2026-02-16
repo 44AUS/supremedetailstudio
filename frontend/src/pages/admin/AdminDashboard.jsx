@@ -181,8 +181,6 @@ export default function AdminDashboard() {
     { label: 'Completed', value: stats?.completed_bookings || 0, icon: CheckCircle, color: '#10b981' },
     { label: 'Total Bookings', value: stats?.total_bookings || 0, icon: Users, color: '#e80200' },
     { label: 'Active Services', value: stats?.active_services || 0, icon: Package, color: '#06b6d4' },
-    { label: "Today's Revenue", value: formatCurrency(stats?.today_revenue || 0), icon: DollarSign, color: '#10b981', isRevenue: true },
-    { label: 'Total Revenue', value: formatCurrency(stats?.total_revenue || 0), icon: DollarSign, color: '#f59e0b', isRevenue: true },
   ];
 
   const getStatusStyle = (status) => {
@@ -224,7 +222,7 @@ export default function AdminDashboard() {
         })}
       </div>
 
-      {/* Booking Calendar */}
+      {/* Booking Calendar + Revenue */}
       <div style={{ ...styles.section, ...(isMobile && { marginBottom: '24px' }) }}>
         <div style={{ ...styles.sectionHeader, ...(isMobile && { marginBottom: '12px' }) }}>
           <h2 style={{ ...styles.sectionTitle, ...(isMobile && { fontSize: '15px' }) }}>
@@ -233,6 +231,7 @@ export default function AdminDashboard() {
           </h2>
         </div>
 
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', ...(isMobile && { flexDirection: 'column' }) }}>
         <div style={{ ...styles.calendarContainer, ...(isMobile && { padding: '14px', maxWidth: '100%' }) }}>
           {/* Month Navigation */}
           <div style={styles.calendarNav}>
@@ -381,6 +380,30 @@ export default function AdminDashboard() {
               )}
             </div>
           )}
+        </div>
+
+        {/* Revenue Panel */}
+        <div style={{ ...styles.revenuePanel, ...(isMobile && { flexDirection: 'row', gap: '10px' }) }}>
+          <div style={styles.revenueCard}>
+            <div style={{ ...styles.revenueIconWrap, background: 'rgba(16, 185, 129, 0.15)' }}>
+              <DollarSign size={20} color="#10b981" />
+            </div>
+            <span style={styles.revenueValue}>${(stats?.today_revenue || 0).toFixed(2)}</span>
+            <span style={styles.revenueLabel}>Today's Revenue</span>
+          </div>
+          <div style={styles.revenueCard}>
+            <div style={{ ...styles.revenueIconWrap, background: 'rgba(245, 158, 11, 0.15)' }}>
+              <DollarSign size={20} color="#f59e0b" />
+            </div>
+            <span style={styles.revenueValue}>${(stats?.total_revenue || 0).toFixed(2)}</span>
+            <span style={styles.revenueLabel}>Total Revenue</span>
+          </div>
+          <div style={{ ...styles.revenuePaidNote }}>
+            <span style={{ fontSize: '11px', color: '#525252', fontFamily: "'Montserrat', sans-serif" }}>
+              Revenue totals reflect paid bookings only
+            </span>
+          </div>
+        </div>
         </div>
       </div>
 
@@ -1357,6 +1380,46 @@ const styles = {
     fontSize: '14px',
     fontWeight: 500,
     transition: 'all 0.2s',
+  },
+  revenuePanel: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    minWidth: '200px',
+  },
+  revenueCard: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '24px 20px',
+    background: '#111111',
+    border: '1px solid #262626',
+    textAlign: 'center',
+  },
+  revenueIconWrap: {
+    width: '44px',
+    height: '44px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  revenueValue: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '24px',
+    fontWeight: 700,
+    color: '#fff',
+  },
+  revenueLabel: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '12px',
+    color: '#ababab',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+  },
+  revenuePaidNote: {
+    textAlign: 'center',
+    padding: '8px',
   },
   dayRevenueTag: {
     display: 'inline-flex',
