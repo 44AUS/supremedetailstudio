@@ -723,16 +723,20 @@ async def remove_closed_date(date: str):
 # ============== Availability Routes ==============
 
 @app.get("/api/availability/{date}")
-async def get_availability(date: str, service_id: Optional[str] = None):
-    """Get available time slots for a specific date"""
+async def get_availability(date: str, service_id: Optional[str] = None, total_duration: Optional[int] = None):
+    """Get available time slots for a specific date with available minutes for each slot"""
     # Get schedule settings
     schedule = await db.schedule.find_one({"type": "settings"})
+    
+    # Get business settings for buffer time
+    business_settings = await db.settings.find_one({"type": "business"})
+    buffer_minutes = business_settings.get("booking_buffer_minutes", 60) if business_settings else 60
     
     # Check if date is a closed date
     if schedule and "closed_dates" in schedule:
         for closed in schedule.get("closed_dates", []):
             if closed.get("date") == date:
-                return {"available": False, "reason": closed.get("reason", "Closed"), "slots": []}
+                return {"available": False, "reason": closed.get("reason", "Closed"), "slots": [], "buffer_minutes": buffer_minutes}
     
     # Get day of week
     date_obj = datetime.strptime(date, "%Y-%m-%d")
@@ -755,44 +759,36 @@ async def get_availability(date: str, service_id: Optional[str] = None):
             business_hours = {"is_open": True, "open_time": "10:00", "close_time": "16:00"}
     
     if not business_hours.get("is_open"):
-        return {"available": False, "reason": "Closed", "slots": []}
+        return {"available": False, "reason": "Closed", "slots": [], "buffer_minutes": buffer_minutes}
     
-    # Get service duration
+    # Get service duration if provided
     duration = 60  # default
     if service_id:
         try:
-            # Only try to lookup if it looks like a valid ObjectId
             if len(service_id) == 24:
                 service = await db.services.find_one({"_id": ObjectId(service_id)})
                 if service:
                     duration = service.get("duration_minutes", 60)
         except Exception:
-            pass  # Use default duration if lookup fails
+            pass
     
     # Generate time slots
     open_time = datetime.strptime(business_hours.get("open_time", "09:00"), "%H:%M")
     close_time = datetime.strptime(business_hours.get("close_time", "18:00"), "%H:%M")
     
-    slots = []
-    current_time = open_time
-    while current_time < close_time:
-        time_str = current_time.strftime("%H:%M")
-        slots.append({"time": time_str, "available": True})
-        current_time += timedelta(minutes=60)  # 1-hour intervals
-    
-    # Check existing bookings for this date
+    # Get existing bookings for this date
     existing_bookings = await db.bookings.find({
         "booking_date": date,
         "status": {"$ne": "cancelled"}
     }).to_list(100)
-
-    # Mark slots as unavailable based on booking duration
+    
+    # Build list of blocked time ranges (booking start -> booking end + buffer)
+    blocked_ranges = []
     for booking in existing_bookings:
         booked_time_str = booking.get("booking_time")
         booked_service_id = booking.get("service_id")
 
         # Get the service duration for this booking
-        # Use total_duration if available (for multi-service bookings), otherwise lookup service
         booking_duration = booking.get("total_duration")
         if not booking_duration:
             booking_duration = 60  # default
@@ -805,29 +801,62 @@ async def get_availability(date: str, service_id: Optional[str] = None):
                 except Exception:
                     pass
 
-        # Parse the booked time
         try:
             booked_time = datetime.strptime(booked_time_str, "%H:%M")
+            booking_end_time = booked_time + timedelta(minutes=booking_duration + buffer_minutes)
+            blocked_ranges.append({
+                "start": booked_time,
+                "end": booking_end_time,
+                "booking_start": booked_time,
+                "booking_duration": booking_duration
+            })
         except:
             continue
-
-        # Calculate end time of this booking + 1 hour buffer for cleanup/restocking
-        booking_end_time = booked_time + timedelta(minutes=booking_duration + 60)
-
-        # Mark all slots that overlap with this booking as unavailable
-        for slot in slots:
-            try:
-                slot_time = datetime.strptime(slot["time"], "%H:%M")
-                slot_end_time = slot_time + timedelta(minutes=60)  # Each slot is 1 hour
-
-                # Check if this slot overlaps with the booking
-                # Block slot if it starts at or before the booking ends (includes buffer time)
-                if slot_time <= booking_end_time and slot_end_time > booked_time:
-                    slot["available"] = False
-            except:
-                continue
-
-    return {"available": True, "slots": slots, "business_hours": business_hours}
+    
+    # Sort blocked ranges by start time
+    blocked_ranges.sort(key=lambda x: x["start"])
+    
+    # Generate slots with available minutes calculation
+    slots = []
+    current_time = open_time
+    while current_time < close_time:
+        time_str = current_time.strftime("%H:%M")
+        slot_available = True
+        available_minutes = None
+        
+        # Check if this slot overlaps with any blocked range
+        for blocked in blocked_ranges:
+            slot_end_check = current_time + timedelta(minutes=60)
+            # If slot starts during or before a blocked range ends, and slot would extend into blocked time
+            if current_time < blocked["end"] and slot_end_check > blocked["start"]:
+                slot_available = False
+                break
+        
+        if slot_available:
+            # Calculate available minutes until next booking or close time
+            next_constraint = close_time
+            for blocked in blocked_ranges:
+                if blocked["booking_start"] > current_time:
+                    # Next booking starts after this slot
+                    next_constraint = blocked["booking_start"]
+                    break
+            
+            # Available minutes = time until next constraint (no buffer needed here, buffer is already in blocked range)
+            available_minutes = int((next_constraint - current_time).total_seconds() / 60)
+        
+        slots.append({
+            "time": time_str, 
+            "available": slot_available,
+            "available_minutes": available_minutes if slot_available else 0
+        })
+        current_time += timedelta(minutes=60)  # 1-hour intervals
+    
+    return {
+        "available": True, 
+        "slots": slots, 
+        "business_hours": business_hours,
+        "buffer_minutes": buffer_minutes
+    }
 
 # ============== Bookings Routes ==============
 
