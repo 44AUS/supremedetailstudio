@@ -123,7 +123,7 @@ export default function BookingConfirmation() {
                 <Clock size={20} style={styles.detailIcon} />
                 <div style={styles.detailContent}>
                   <span style={styles.detailLabel}>Time</span>
-                  <span style={styles.detailValue}>{booking?.booking_time}</span>
+                  <span style={styles.detailValue}>{formatTime(booking?.booking_time)}</span>
                 </div>
               </div>
               <div style={styles.detailItem}>
@@ -137,6 +137,26 @@ export default function BookingConfirmation() {
               </div>
             </div>
           </div>
+
+          {/* Shop Address - Only show for In Shop bookings */}
+          {booking?.service_location === 'shop' && businessSettings?.shop_address && (
+            <div style={styles.section}>
+              <h3 style={styles.sectionTitle}>SHOP ADDRESS</h3>
+              <div style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '12px',
+                padding: '16px 20px',
+                background: '#111111',
+                border: '1px solid #262626',
+              }}>
+                <MapPin size={20} style={{ color: '#e80200', flexShrink: 0, marginTop: '2px' }} />
+                <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '14px', color: '#fff', lineHeight: 1.5 }}>
+                  {businessSettings.shop_address}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Service(s) */}
           <div style={styles.section}>
