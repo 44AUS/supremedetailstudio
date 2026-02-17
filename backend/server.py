@@ -246,6 +246,7 @@ class BusinessSettings(BaseModel):
     minimum_booking_notice_days: Optional[int] = 1  # Minimum days in advance for booking
     enable_shop_bookings: Optional[bool] = True  # Enable/disable in-shop bookings
     enable_mobile_bookings: Optional[bool] = True  # Enable/disable mobile bookings
+    booking_buffer_minutes: Optional[int] = 60  # Buffer time between bookings in minutes
 
 # ============== Quote Request Model ==============
 
