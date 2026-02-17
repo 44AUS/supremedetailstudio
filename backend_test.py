@@ -794,6 +794,7 @@ def main():
         ("Dashboard Stats", tester.test_dashboard_stats),
         ("Categories CRUD", tester.test_categories_crud),
         ("Services CRUD", tester.test_services_crud),
+        ("Utilities Functionality", tester.test_utilities_functionality),
         ("Schedule Operations", tester.test_schedule_operations),
         ("Availability Check", tester.test_availability),
         ("Bookings Operations", tester.test_bookings_operations),
