@@ -436,14 +436,14 @@ export default function AdminServices() {
           <p style={styles.subtitle}>Manage your service offerings and pricing</p>
         </div>
         <div style={styles.headerButtons}>
-          <button onClick={() => setShowSettingsForm(true)} style={styles.secondaryBtn} data-testid="business-settings-btn">
+          <Link to="/admin/settings" style={{ ...styles.secondaryBtn, textDecoration: 'none' }} data-testid="business-settings-link">
             <Settings size={18} />
             Business Settings
-          </button>
-          <button onClick={handleAddCategory} style={styles.secondaryBtn} data-testid="manage-categories-btn">
+          </Link>
+          <Link to="/admin/categories" style={{ ...styles.secondaryBtn, textDecoration: 'none' }} data-testid="manage-categories-link">
             <Tag size={18} />
-            Add Category
-          </button>
+            Categories
+          </Link>
           <button onClick={handleAddNew} style={styles.addBtn} data-testid="add-service-btn">
             <Plus size={20} />
             Add Service
