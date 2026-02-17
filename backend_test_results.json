@@ -1,0 +1,88 @@
+{
+  "timestamp": "2026-02-17T17:29:00.119774",
+  "total_tests": 16,
+  "passed_tests": 16,
+  "success_rate": 100.0,
+  "test_details": [
+    {
+      "test": "Admin Login",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Business Settings - Get Buffer Time",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Buffer Time Field Present",
+      "success": true,
+      "details": "Value: 60 minutes"
+    },
+    {
+      "test": "Update Buffer Time",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Verify Buffer Time Update",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Buffer Time Update Verified",
+      "success": true,
+      "details": "Successfully updated to 90 minutes"
+    },
+    {
+      "test": "Availability API - Buffer Response",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Availability Response Format",
+      "success": true,
+      "details": "Buffer: 90min, Available: 120min"
+    },
+    {
+      "test": "Availability API - With Duration",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Availability With Duration",
+      "success": true,
+      "details": "Returned 9 slots"
+    },
+    {
+      "test": "Services API - Active Only",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Services API Response",
+      "success": true,
+      "details": "Found 2 services, has duration: True"
+    },
+    {
+      "test": "Create Test Booking",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Booking Creation",
+      "success": true,
+      "details": "Created booking 6994a55b610a61f70383391a"
+    },
+    {
+      "test": "Check Availability After Booking",
+      "success": true,
+      "details": "Status: 200"
+    },
+    {
+      "test": "Time Constraint Working",
+      "success": true,
+      "details": "Slot available: False, minutes: 0"
+    }
+  ]
+}
