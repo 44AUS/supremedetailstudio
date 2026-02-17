@@ -153,6 +153,9 @@ function AdminRoutes() {
       <Route path="/admin" element={<AdminLayout />}>
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="services" element={<AdminServices />} />
+        <Route path="categories" element={<AdminCategories />} />
+        <Route path="vehicles" element={<AdminVehicles />} />
+        <Route path="settings" element={<AdminBusinessSettings />} />
         <Route path="schedule" element={<AdminSchedule />} />
         <Route path="bookings" element={<AdminBookings />} />
         <Route path="customers" element={<AdminCustomers />} />
