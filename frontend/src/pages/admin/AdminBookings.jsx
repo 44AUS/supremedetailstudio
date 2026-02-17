@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Search, Filter, Eye, CheckCircle, Clock, AlertCircle,
   XCircle, Loader2, ChevronDown, Calendar, User, Car,
   MapPin, Phone, Mail, Plus, Edit2, Save, X, Trash2,
-  DollarSign, Navigation, MessageSquare, Send
+  DollarSign, Navigation, MessageSquare, Send, ScanLine
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
@@ -30,6 +30,8 @@ const emptyVehicle = {
   vehicle_model: '',
   vehicle_type: 'sedan',
   vehicle_color: '',
+  vin: '',
+  selectedServices: [],
 };
 
 const emptyBookingForm = {
@@ -42,7 +44,6 @@ const emptyBookingForm = {
   customer_address: '',
   service_location: 'shop',
   vehicles: [{ ...emptyVehicle }],
-  selectedServices: [],
   booking_date: '',
   booking_time: '',
   total_price: 0,
@@ -263,9 +264,20 @@ export default function AdminBookings() {
         const custBookings = await response.json();
         if (custBookings.length > 0) {
           const lastBooking = custBookings[0];
-          // If the last booking had multiple vehicles, use them all; otherwise use single vehicle fields
+          // If the last booking had multiple vehicles, use them; otherwise use single vehicle fields
           if (lastBooking.vehicles && lastBooking.vehicles.length > 0) {
-            setBookingForm(prev => ({ ...prev, vehicles: lastBooking.vehicles }));
+            setBookingForm(prev => ({
+              ...prev,
+              vehicles: lastBooking.vehicles.map(v => ({
+                vehicle_year: v.vehicle_year || '',
+                vehicle_make: v.vehicle_make || '',
+                vehicle_model: v.vehicle_model || '',
+                vehicle_type: v.vehicle_type || 'sedan',
+                vehicle_color: v.vehicle_color || '',
+                vin: v.vin || '',
+                selectedServices: [],
+              })),
+            }));
           } else {
             setBookingForm(prev => ({
               ...prev,
@@ -275,6 +287,8 @@ export default function AdminBookings() {
                 vehicle_model: lastBooking.vehicle_model || '',
                 vehicle_type: lastBooking.vehicle_type || 'sedan',
                 vehicle_color: lastBooking.vehicle_color || '',
+                vin: '',
+                selectedServices: [],
               }],
             }));
           }
@@ -309,27 +323,32 @@ export default function AdminBookings() {
 
   const openEditBooking = (booking) => {
     setEditingBooking(booking);
-    // Build vehicles array from booking data
+    // Build vehicles array from booking data, with per-vehicle services
     let editVehicles;
     if (booking.vehicles && booking.vehicles.length > 0) {
-      editVehicles = booking.vehicles;
+      editVehicles = booking.vehicles.map(v => ({
+        vehicle_year: v.vehicle_year || '',
+        vehicle_make: v.vehicle_make || '',
+        vehicle_model: v.vehicle_model || '',
+        vehicle_type: v.vehicle_type || 'sedan',
+        vehicle_color: v.vehicle_color || '',
+        vin: v.vin || '',
+        selectedServices: (v.services || []).map(s => s.service_id),
+      }));
     } else {
+      // Legacy: single vehicle with flat services
+      const legacyServices = booking.services && booking.services.length > 0
+        ? booking.services.map(s => s.service_id)
+        : booking.service_id ? [booking.service_id] : [];
       editVehicles = [{
         vehicle_year: booking.vehicle_year || '',
         vehicle_make: booking.vehicle_make || '',
         vehicle_model: booking.vehicle_model || '',
         vehicle_type: booking.vehicle_type || 'sedan',
         vehicle_color: booking.vehicle_color || '',
+        vin: '',
+        selectedServices: legacyServices,
       }];
-    }
-    // Build selectedServices array from booking data
-    let editServices;
-    if (booking.services && booking.services.length > 0) {
-      editServices = booking.services.map(s => s.service_id);
-    } else if (booking.service_id) {
-      editServices = [booking.service_id];
-    } else {
-      editServices = [];
     }
     setBookingForm({
       customer_type: booking.customer_type || 'person',
@@ -341,7 +360,6 @@ export default function AdminBookings() {
       customer_address: booking.customer_address || '',
       service_location: booking.service_location || 'shop',
       vehicles: editVehicles,
-      selectedServices: editServices,
       booking_date: booking.booking_date || '',
       booking_time: booking.booking_time || '',
       total_price: booking.total_price || 0,
@@ -353,18 +371,26 @@ export default function AdminBookings() {
     setShowModal(false);
   };
 
-  const toggleService = (serviceId) => {
-    setBookingForm(prev => {
-      const isSelected = prev.selectedServices.includes(serviceId);
-      const newSelected = isSelected
-        ? prev.selectedServices.filter(id => id !== serviceId)
-        : [...prev.selectedServices, serviceId];
-      // Auto-calculate total price from selected services
-      const totalPrice = newSelected.reduce((sum, id) => {
+  // Calculate total price from all vehicles' selected services
+  const calcTotalPrice = useCallback((vehicles) => {
+    return vehicles.reduce((total, v) => {
+      return total + (v.selectedServices || []).reduce((sum, id) => {
         const svc = services.find(s => s.id === id);
         return sum + (svc ? (svc.base_price || 0) : 0);
       }, 0);
-      return { ...prev, selectedServices: newSelected, total_price: totalPrice };
+    }, 0);
+  }, [services]);
+
+  const toggleService = (vehicleIndex, serviceId) => {
+    setBookingForm(prev => {
+      const newVehicles = [...prev.vehicles];
+      const vehicle = { ...newVehicles[vehicleIndex] };
+      const selected = vehicle.selectedServices || [];
+      vehicle.selectedServices = selected.includes(serviceId)
+        ? selected.filter(id => id !== serviceId)
+        : [...selected, serviceId];
+      newVehicles[vehicleIndex] = vehicle;
+      return { ...prev, vehicles: newVehicles, total_price: calcTotalPrice(newVehicles) };
     });
   };
 
@@ -384,11 +410,61 @@ export default function AdminBookings() {
   };
 
   const removeVehicle = (index) => {
-    setBookingForm(prev => ({
-      ...prev,
-      vehicles: prev.vehicles.filter((_, i) => i !== index),
-    }));
+    setBookingForm(prev => {
+      const newVehicles = prev.vehicles.filter((_, i) => i !== index);
+      return { ...prev, vehicles: newVehicles, total_price: calcTotalPrice(newVehicles) };
+    });
   };
+
+  // VIN Scanner
+  const [scanningVehicleIdx, setScanningVehicleIdx] = useState(null);
+  const videoRef = useRef(null);
+  const streamRef = useRef(null);
+  const scanIntervalRef = useRef(null);
+
+  const stopScanner = useCallback(() => {
+    if (scanIntervalRef.current) { clearInterval(scanIntervalRef.current); scanIntervalRef.current = null; }
+    if (streamRef.current) { streamRef.current.getTracks().forEach(t => t.stop()); streamRef.current = null; }
+    setScanningVehicleIdx(null);
+  }, []);
+
+  const startVinScan = async (vehicleIndex) => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      alert('Camera not available on this device.');
+      return;
+    }
+    if (typeof window.BarcodeDetector === 'undefined') {
+      alert('Barcode scanning is not supported in this browser. Please use Chrome or Edge, or type the VIN manually.');
+      return;
+    }
+    setScanningVehicleIdx(vehicleIndex);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.play();
+      }
+      const detector = new window.BarcodeDetector({ formats: ['code_39', 'code_128'] });
+      scanIntervalRef.current = setInterval(async () => {
+        if (!videoRef.current || videoRef.current.readyState !== 4) return;
+        try {
+          const barcodes = await detector.detect(videoRef.current);
+          if (barcodes.length > 0) {
+            const vin = barcodes[0].rawValue.trim().toUpperCase();
+            updateVehicle(vehicleIndex, 'vin', vin);
+            stopScanner();
+          }
+        } catch (e) { /* scanning frame failed, continue */ }
+      }, 500);
+    } catch (err) {
+      alert('Could not access camera. Please allow camera permissions.');
+      stopScanner();
+    }
+  };
+
+  // Cleanup scanner on unmount
+  useEffect(() => { return () => stopScanner(); }, [stopScanner]);
 
   const saveBooking = async () => {
     // Validation
@@ -407,12 +483,14 @@ export default function AdminBookings() {
       setError('Booking date and time are required');
       return;
     }
-    if (bookingForm.selectedServices.length === 0) {
-      setError('Please select at least one service');
-      return;
-    }
     if (bookingForm.vehicles.length === 0 || !bookingForm.vehicles[0].vehicle_year) {
       setError('Please add at least one vehicle');
+      return;
+    }
+    // Check that every vehicle has at least one service
+    const allHaveServices = bookingForm.vehicles.every(v => (v.selectedServices || []).length > 0);
+    if (!allHaveServices) {
+      setError('Please select at least one service for each vehicle');
       return;
     }
 
@@ -420,22 +498,28 @@ export default function AdminBookings() {
     setError('');
 
     try {
-      // Build services array from selected service IDs
-      const svcList = bookingForm.selectedServices.map(id => {
-        const svc = services.find(s => s.id === id);
-        return svc ? {
-          service_id: svc.id,
-          service_name: svc.name,
-          base_price: svc.base_price || 0,
-          duration_minutes: svc.duration_minutes || 60,
-        } : null;
-      }).filter(Boolean);
+      // Build vehicles with per-vehicle services for the payload
+      const payloadVehicles = bookingForm.vehicles.map(v => {
+        const vehicleServices = (v.selectedServices || []).map(id => {
+          const svc = services.find(s => s.id === id);
+          return svc ? { service_id: svc.id, service_name: svc.name, base_price: svc.base_price || 0, duration_minutes: svc.duration_minutes || 60 } : null;
+        }).filter(Boolean);
+        return {
+          vehicle_year: v.vehicle_year,
+          vehicle_make: v.vehicle_make,
+          vehicle_model: v.vehicle_model,
+          vehicle_type: v.vehicle_type,
+          vehicle_color: v.vehicle_color,
+          vin: v.vin || '',
+          services: vehicleServices,
+        };
+      });
 
-      const totalDuration = svcList.reduce((sum, s) => sum + s.duration_minutes, 0);
-
-      // First vehicle provides backward-compat single vehicle fields
-      const firstVehicle = bookingForm.vehicles[0];
-      const firstService = svcList[0];
+      // Flatten all services for backward-compat top-level fields
+      const allServices = payloadVehicles.flatMap(v => v.services);
+      const totalDuration = allServices.reduce((sum, s) => sum + s.duration_minutes, 0);
+      const firstVehicle = payloadVehicles[0];
+      const firstService = allServices[0];
 
       const payload = {
         customer_type: bookingForm.customer_type,
@@ -452,11 +536,11 @@ export default function AdminBookings() {
         vehicle_model: firstVehicle.vehicle_model,
         vehicle_type: firstVehicle.vehicle_type,
         vehicle_color: firstVehicle.vehicle_color,
-        vehicles: bookingForm.vehicles,
+        vehicles: payloadVehicles,
         // Primary service (backward compat)
         service_id: firstService.service_id,
         service_name: firstService.service_name,
-        services: svcList,
+        services: allServices,
         booking_date: bookingForm.booking_date,
         booking_time: bookingForm.booking_time,
         total_price: bookingForm.total_price,
@@ -793,6 +877,18 @@ export default function AdminBookings() {
                       <span style={styles.vehicleType}>Type: {v.vehicle_type}</span>
                       {v.vehicle_color && (
                         <span style={styles.vehicleColor}>Color: {v.vehicle_color}</span>
+                      )}
+                      {v.vin && (
+                        <span style={{ fontSize: '13px', color: '#ababab', fontFamily: "'Courier New', monospace", letterSpacing: '1px' }}>VIN: {v.vin}</span>
+                      )}
+                      {v.services && v.services.length > 0 && (
+                        <div style={{ marginTop: '4px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                          {v.services.map((svc, si) => (
+                            <span key={si} style={{ fontSize: '11px', padding: '2px 8px', background: 'rgba(232, 2, 0, 0.08)', border: '1px solid rgba(232, 2, 0, 0.2)', color: '#e80200', fontFamily: "'Montserrat', sans-serif" }}>
+                              {svc.service_name}
+                            </span>
+                          ))}
+                        </div>
                       )}
                     </div>
                   ))
@@ -1176,16 +1272,16 @@ export default function AdminBookings() {
                 </div>
               </div>
 
-              {/* Vehicles */}
+              {/* Vehicles + Per-Vehicle Services */}
               <div style={styles.formSection}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h3 style={{ ...styles.formSectionTitle, margin: 0 }}>Vehicle Information</h3>
+                  <h3 style={{ ...styles.formSectionTitle, margin: 0 }}>Vehicles & Services</h3>
                   <button type="button" onClick={addVehicle} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', background: 'rgba(232, 2, 0, 0.1)', border: '1px solid rgba(232, 2, 0, 0.3)', color: '#e80200', fontFamily: "'Oswald', sans-serif", fontSize: '12px', fontWeight: 600, letterSpacing: '1px', cursor: 'pointer' }}>
                     <Plus size={14} /> ADD VEHICLE
                   </button>
                 </div>
                 {bookingForm.vehicles.map((vehicle, vIdx) => (
-                  <div key={vIdx} style={{ padding: '16px', background: '#111111', border: '1px solid #262626', marginBottom: '12px', position: 'relative' }}>
+                  <div key={vIdx} style={{ padding: '16px', background: '#111111', border: '1px solid #262626', marginBottom: '12px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                       <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '12px', fontWeight: 600, color: '#ababab', letterSpacing: '1px' }}>
                         VEHICLE {vIdx + 1}
@@ -1196,6 +1292,7 @@ export default function AdminBookings() {
                         </button>
                       )}
                     </div>
+                    {/* Year / Make / Model */}
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
                       <div style={styles.formGroup}>
                         <label style={styles.formLabel}>Year</label>
@@ -1210,7 +1307,8 @@ export default function AdminBookings() {
                         <input type="text" value={vehicle.vehicle_model} onChange={(e) => updateVehicle(vIdx, 'vehicle_model', e.target.value)} style={styles.formInput} placeholder="Camry" />
                       </div>
                     </div>
-                    <div style={{ ...styles.formGrid, marginTop: '12px' }}>
+                    {/* Type / Color / VIN */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginTop: '12px' }}>
                       <div style={styles.formGroup}>
                         <label style={styles.formLabel}>Vehicle Type</label>
                         <select value={vehicle.vehicle_type} onChange={(e) => updateVehicle(vIdx, 'vehicle_type', e.target.value)} style={styles.formSelect}>
@@ -1223,60 +1321,101 @@ export default function AdminBookings() {
                         <label style={styles.formLabel}>Color</label>
                         <input type="text" value={vehicle.vehicle_color} onChange={(e) => updateVehicle(vIdx, 'vehicle_color', e.target.value)} style={styles.formInput} placeholder="Black" />
                       </div>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>VIN</label>
+                        <div style={{ display: 'flex', gap: '6px' }}>
+                          <input
+                            type="text"
+                            value={vehicle.vin || ''}
+                            onChange={(e) => updateVehicle(vIdx, 'vin', e.target.value.toUpperCase())}
+                            style={{ ...styles.formInput, flex: 1, fontFamily: "'Courier New', monospace", letterSpacing: '1px', fontSize: '13px' }}
+                            placeholder="1HGBH41JXMN109186"
+                            maxLength={17}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => startVinScan(vIdx)}
+                            style={{ padding: '8px 10px', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', color: '#3b82f6', cursor: 'pointer', display: 'flex', alignItems: 'center', flexShrink: 0 }}
+                            title="Scan VIN barcode"
+                          >
+                            <ScanLine size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* VIN Scanner Modal */}
+                    {scanningVehicleIdx === vIdx && (
+                      <div style={{ marginTop: '12px', padding: '12px', background: '#0a0a0a', border: '1px solid #262626', textAlign: 'center' }}>
+                        <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: '12px', color: '#ababab', letterSpacing: '1px', marginBottom: '8px' }}>
+                          SCANNING VIN BARCODE...
+                        </div>
+                        <video ref={videoRef} style={{ width: '100%', maxWidth: '400px', borderRadius: '4px', border: '1px solid #262626' }} />
+                        <div style={{ marginTop: '8px' }}>
+                          <button type="button" onClick={stopScanner} style={{ padding: '8px 16px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', fontFamily: "'Oswald', sans-serif", fontSize: '12px', cursor: 'pointer' }}>
+                            CANCEL SCAN
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Per-Vehicle Services */}
+                    <div style={{ marginTop: '14px', paddingTop: '14px', borderTop: '1px solid #1a1a1a' }}>
+                      <label style={{ ...styles.formLabel, marginBottom: '8px', display: 'block' }}>SERVICES FOR THIS VEHICLE *</label>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '200px', overflowY: 'auto' }}>
+                        {services.filter(s => s.is_active !== false).map(s => {
+                          const isSelected = (vehicle.selectedServices || []).includes(s.id);
+                          return (
+                            <button
+                              key={s.id}
+                              type="button"
+                              onClick={() => toggleService(vIdx, s.id)}
+                              style={{
+                                display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px',
+                                background: isSelected ? 'rgba(232, 2, 0, 0.08)' : '#0a0a0a',
+                                border: isSelected ? '1px solid rgba(232, 2, 0, 0.4)' : '1px solid #1a1a1a',
+                                color: '#fff', cursor: 'pointer', textAlign: 'left', transition: 'all 0.15s',
+                              }}
+                            >
+                              <div style={{
+                                width: '18px', height: '18px', border: isSelected ? '2px solid #e80200' : '2px solid #525252',
+                                background: isSelected ? '#e80200' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                              }}>
+                                {isSelected && <CheckCircle size={12} color="#fff" />}
+                              </div>
+                              <div style={{ flex: 1, minWidth: 0 }}>
+                                <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', fontWeight: 600 }}>{s.name}</span>
+                                <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: '#6b7280', marginLeft: '8px' }}>
+                                  {s.duration_minutes || 60} min
+                                </span>
+                              </div>
+                              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '14px', fontWeight: 600, color: isSelected ? '#e80200' : '#525252', flexShrink: 0 }}>
+                                ${fmt(s.base_price || 0)}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {(vehicle.selectedServices || []).length > 0 && (
+                        <div style={{ marginTop: '8px', padding: '8px 12px', background: '#0a0a0a', border: '1px solid #1a1a1a', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '11px', fontWeight: 600, color: '#6b7280', letterSpacing: '1px' }}>
+                            {(vehicle.selectedServices || []).length} SERVICE{(vehicle.selectedServices || []).length !== 1 ? 'S' : ''}
+                          </span>
+                          <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '14px', fontWeight: 700, color: '#e80200' }}>
+                            ${fmt((vehicle.selectedServices || []).reduce((sum, id) => { const svc = services.find(s => s.id === id); return sum + (svc ? (svc.base_price || 0) : 0); }, 0))}
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
-              </div>
-
-              {/* Services Selection */}
-              <div style={styles.formSection}>
-                <h3 style={styles.formSectionTitle}>Services *</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '240px', overflowY: 'auto', padding: '4px 0' }}>
-                  {services.filter(s => s.is_active !== false).map(s => {
-                    const isSelected = bookingForm.selectedServices.includes(s.id);
-                    return (
-                      <button
-                        key={s.id}
-                        type="button"
-                        onClick={() => toggleService(s.id)}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '12px',
-                          padding: '12px 14px',
-                          background: isSelected ? 'rgba(232, 2, 0, 0.08)' : '#111111',
-                          border: isSelected ? '1px solid rgba(232, 2, 0, 0.4)' : '1px solid #262626',
-                          color: '#fff',
-                          cursor: 'pointer',
-                          textAlign: 'left',
-                          transition: 'all 0.15s',
-                        }}
-                      >
-                        <div style={{
-                          width: '20px', height: '20px', border: isSelected ? '2px solid #e80200' : '2px solid #525252',
-                          background: isSelected ? '#e80200' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                        }}>
-                          {isSelected && <CheckCircle size={14} color="#fff" />}
-                        </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '14px', fontWeight: 600 }}>{s.name}</div>
-                          <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
-                            {s.category} &middot; {s.duration_minutes || 60} min
-                          </div>
-                        </div>
-                        <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '15px', fontWeight: 600, color: isSelected ? '#e80200' : '#ababab', flexShrink: 0 }}>
-                          ${fmt(s.base_price || 0)}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-                {bookingForm.selectedServices.length > 0 && (
-                  <div style={{ marginTop: '12px', padding: '12px 14px', background: '#0a0a0a', border: '1px solid #262626', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                {/* Grand total across all vehicles */}
+                {bookingForm.vehicles.some(v => (v.selectedServices || []).length > 0) && (
+                  <div style={{ padding: '12px 14px', background: '#0a0a0a', border: '1px solid #262626', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '13px', fontWeight: 600, color: '#ababab', letterSpacing: '1px' }}>
-                      {bookingForm.selectedServices.length} SERVICE{bookingForm.selectedServices.length !== 1 ? 'S' : ''} SELECTED
+                      TOTAL ({bookingForm.vehicles.reduce((c, v) => c + (v.selectedServices || []).length, 0)} SERVICES ACROSS {bookingForm.vehicles.length} VEHICLE{bookingForm.vehicles.length !== 1 ? 'S' : ''})
                     </span>
-                    <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '16px', fontWeight: 700, color: '#e80200' }}>
+                    <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '18px', fontWeight: 700, color: '#e80200' }}>
                       ${fmt(bookingForm.total_price)}
                     </span>
                   </div>

@@ -125,6 +125,8 @@ class BookingVehicle(BaseModel):
     vehicle_model: str
     vehicle_type: str  # sedan, suv-2row, suv-3row
     vehicle_color: Optional[str] = None
+    vin: Optional[str] = None
+    services: Optional[List[BookingService]] = []  # Services for this specific vehicle
 
 class BookingCreate(BaseModel):
     customer_type: Optional[str] = "person"  # "person" or "business"
