@@ -1461,11 +1461,16 @@ export default function BookAppointment() {
         const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();
+          // Store buffer minutes from API
+          if (data.buffer_minutes !== undefined) {
+            setBufferMinutes(data.buffer_minutes);
+          }
           if (data.available && data.slots && data.slots.length > 0) {
-            // Format time slots from 24h to 12h AM/PM format
+            // Format time slots from 24h to 12h AM/PM format, keeping available_minutes
             const formattedSlots = data.slots.map(slot => ({
               ...slot,
-              time: formatTime24to12(slot.time)
+              time: formatTime24to12(slot.time),
+              available_minutes: slot.available_minutes || 0
             }));
             setAvailableSlots(formattedSlots);
           } else if (!data.available) {
@@ -1473,16 +1478,16 @@ export default function BookAppointment() {
             setAvailableSlots([]);
           } else {
             // Fallback if no slots returned
-            setAvailableSlots(TIME_SLOTS);
+            setAvailableSlots(TIME_SLOTS.map(t => ({ time: t, available: true, available_minutes: 540 })));
           }
         } else {
           // API error - use fallback
-          setAvailableSlots(TIME_SLOTS);
+          setAvailableSlots(TIME_SLOTS.map(t => ({ time: t, available: true, available_minutes: 540 })));
         }
       } catch (err) {
         console.error('Error fetching availability:', err);
         // Fallback to default slots on error
-        setAvailableSlots(TIME_SLOTS);
+        setAvailableSlots(TIME_SLOTS.map(t => ({ time: t, available: true, available_minutes: 540 })));
       } finally {
         setLoadingSlots(false);
       }
