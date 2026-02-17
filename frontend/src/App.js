@@ -59,6 +59,7 @@ import AdminBookings from './pages/admin/AdminBookings';
 import AdminCustomers from './pages/admin/AdminCustomers';
 import AdminContacts from './pages/admin/AdminContacts';
 import AdminQuotes from './pages/admin/AdminQuotes';
+import AdminSMS from './pages/admin/AdminSMS';
 import StarlightHeadlinerPage from './pages/StarlightHeadlinerPage';
 
 function MainApp() {
@@ -153,6 +154,7 @@ function AdminRoutes() {
         <Route path="bookings" element={<AdminBookings />} />
         <Route path="customers" element={<AdminCustomers />} />
         <Route path="quotes" element={<AdminQuotes />} />
+        <Route path="sms" element={<AdminSMS />} />
         <Route path="contacts" element={<AdminContacts />} />
       </Route>
     </Routes>

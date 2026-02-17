@@ -3,7 +3,7 @@ import {
   Search, Filter, Eye, CheckCircle, Clock, AlertCircle,
   XCircle, Loader2, ChevronDown, Calendar, User, Car,
   MapPin, Phone, Mail, Plus, Edit2, Save, X, Trash2,
-  DollarSign
+  DollarSign, Navigation, MessageSquare, Send
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
@@ -65,6 +65,10 @@ export default function AdminBookings() {
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
   const [customerSearchLoading, setCustomerSearchLoading] = useState(false);
   const customerSearchRef = React.useRef(null);
+  const [sendingOnMyWay, setSendingOnMyWay] = useState(false);
+  const [showSmsModal, setShowSmsModal] = useState(false);
+  const [smsMessage, setSmsMessage] = useState('');
+  const [sendingSms, setSendingSms] = useState(false);
 
   useEffect(() => {
     fetchBookings();
@@ -153,6 +157,51 @@ export default function AdminBookings() {
       }
     } catch (err) {
       console.error('Error updating payment status:', err);
+    }
+  };
+
+  // SMS: On My Way
+  const sendOnMyWay = async (bookingId) => {
+    setSendingOnMyWay(true);
+    try {
+      const response = await fetch(`${API_URL}/api/sms/on-my-way`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({ booking_id: bookingId }),
+      });
+      if (!response.ok) throw new Error('Failed to send');
+      const data = await response.json();
+      alert(`On My Way SMS sent! ETA: ${data.eta}`);
+    } catch (err) {
+      alert('Failed to send On My Way SMS. Check SMS settings.');
+    } finally {
+      setSendingOnMyWay(false);
+    }
+  };
+
+  // SMS: Send custom message
+  const sendCustomSms = async () => {
+    if (!smsMessage.trim() || !selectedBooking) return;
+    setSendingSms(true);
+    try {
+      const response = await fetch(`${API_URL}/api/sms/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({
+          to_phone: selectedBooking.customer_phone,
+          message: smsMessage,
+          customer_id: selectedBooking.customer_id,
+          booking_id: selectedBooking.id,
+        }),
+      });
+      if (!response.ok) throw new Error('Failed to send');
+      setSmsMessage('');
+      setShowSmsModal(false);
+      alert('SMS sent successfully!');
+    } catch (err) {
+      alert('Failed to send SMS. Check SMS settings.');
+    } finally {
+      setSendingSms(false);
     }
   };
 
@@ -753,6 +802,15 @@ export default function AdminBookings() {
 
               {/* Action Buttons */}
               <div style={styles.modalActions}>
+                {selectedBooking.service_location === 'mobile' && ['pending', 'in_progress'].includes(selectedBooking.status) && (
+                  <button onClick={() => sendOnMyWay(selectedBooking.id)} disabled={sendingOnMyWay} style={styles.onMyWayBtn}>
+                    {sendingOnMyWay ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Navigation size={16} />}
+                    On My Way
+                  </button>
+                )}
+                <button onClick={() => { setSmsMessage(''); setShowSmsModal(true); }} style={styles.smsBtn}>
+                  <MessageSquare size={16} /> Send SMS
+                </button>
                 <button onClick={() => openEditBooking(selectedBooking)} style={styles.editBtn} data-testid="edit-booking-btn">
                   <Edit2 size={16} /> Edit Booking
                 </button>
@@ -760,6 +818,34 @@ export default function AdminBookings() {
                   <Trash2 size={16} /> Delete
                 </button>
               </div>
+
+              {/* Send SMS Modal */}
+              {showSmsModal && (
+                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}
+                  onClick={() => setShowSmsModal(false)}>
+                  <div style={{ background: '#111111', border: '1px solid #262626', borderRadius: '12px', padding: '24px', maxWidth: '480px', width: '100%' }}
+                    onClick={(e) => e.stopPropagation()}>
+                    <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '18px', fontWeight: 700, color: '#fff', margin: '0 0 4px' }}>Send SMS</h3>
+                    <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: '#525252', margin: '0 0 16px' }}>
+                      To: {selectedBooking.customer_first_name} {selectedBooking.customer_last_name} ({selectedBooking.customer_phone})
+                    </p>
+                    <textarea
+                      value={smsMessage}
+                      onChange={(e) => setSmsMessage(e.target.value)}
+                      placeholder="Type your message..."
+                      rows={4}
+                      style={{ width: '100%', padding: '12px', background: '#0a0a0a', border: '1px solid #262626', borderRadius: '8px', color: '#fff', fontFamily: "'Montserrat', sans-serif", fontSize: '14px', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+                    />
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
+                      <button onClick={() => setShowSmsModal(false)} style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #262626', borderRadius: '6px', color: '#ababab', fontFamily: "'Oswald', sans-serif", fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
+                      <button onClick={sendCustomSms} disabled={sendingSms || !smsMessage.trim()} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 20px', background: '#e80200', border: 'none', borderRadius: '6px', color: '#fff', fontFamily: "'Oswald', sans-serif", fontSize: '13px', cursor: 'pointer', opacity: sendingSms || !smsMessage.trim() ? 0.5 : 1 }}>
+                        {sendingSms ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={14} />}
+                        Send
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1580,6 +1666,34 @@ const styles = {
     background: 'rgba(239, 68, 68, 0.1)',
     border: '1px solid rgba(239, 68, 68, 0.3)',
     color: '#ef4444',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    letterSpacing: '0.5px',
+  },
+  onMyWayBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 20px',
+    background: 'rgba(16, 185, 129, 0.1)',
+    border: '1px solid rgba(16, 185, 129, 0.3)',
+    color: '#10b981',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    letterSpacing: '0.5px',
+  },
+  smsBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 20px',
+    background: 'rgba(59, 130, 246, 0.1)',
+    border: '1px solid rgba(59, 130, 246, 0.3)',
+    color: '#3b82f6',
     fontFamily: "'Oswald', sans-serif",
     fontSize: '14px',
     fontWeight: 600,

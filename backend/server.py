@@ -1,6 +1,7 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, status, BackgroundTasks, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.responses import Response
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field
 from typing import List, Optional
@@ -9,8 +10,11 @@ from bson import ObjectId
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 import os
+import re
+import asyncio
 import httpx
 from dotenv import load_dotenv
+from twilio.rest import Client as TwilioClient
 
 load_dotenv()
 
@@ -43,6 +47,12 @@ security = HTTPBearer()
 # Default admin credentials (used for initial setup only)
 DEFAULT_ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 DEFAULT_ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "supremeadmin123")
+
+# Twilio Config
+TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
+TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
+TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
+GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "")
 
 # ============== Models ==============
 
@@ -227,6 +237,37 @@ class QuoteRequest(BaseModel):
     vehicle_model: Optional[str] = ""
     description: str
 
+# ============== SMS Models ==============
+
+class SMSSettings(BaseModel):
+    sms_enabled: bool = False
+    reminder_enabled: bool = True
+    reminder_hours_before: int = 24
+    review_request_enabled: bool = True
+    review_delay_hours: int = 2
+    review_url: str = ""
+
+class SMSTemplateUpdate(BaseModel):
+    name: Optional[str] = None
+    body: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class SendSMSRequest(BaseModel):
+    to_phone: str
+    message: str
+    customer_id: Optional[str] = None
+    booking_id: Optional[str] = None
+
+class MassTextRequest(BaseModel):
+    message: str
+    filter_tags: Optional[List[str]] = []
+    filter_min_bookings: Optional[int] = None
+    filter_min_spent: Optional[float] = None
+
+class OnMyWayRequest(BaseModel):
+    booking_id: str
+    custom_eta: Optional[str] = None
+
 # ============== Auth Helpers ==============
 
 def create_access_token(data: dict):
@@ -245,6 +286,148 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
         return username
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+
+# ============== SMS Utilities ==============
+
+def format_phone_for_twilio(phone: str) -> str:
+    digits = ''.join(c for c in phone if c.isdigit())
+    if len(digits) == 10:
+        return f"+1{digits}"
+    elif len(digits) == 11 and digits.startswith("1"):
+        return f"+{digits}"
+    return f"+{digits}"
+
+async def build_sms_context(booking: dict) -> dict:
+    settings = await db.settings.find_one({"type": "business"})
+    sms_settings = await db.settings.find_one({"type": "sms"})
+    shop_name = settings.get("shop_name", "Supreme Detail Studio") if settings else "Supreme Detail Studio"
+    shop_phone = settings.get("shop_phone", "(502) 417-0690") if settings else "(502) 417-0690"
+    shop_address = settings.get("shop_address", "") if settings else ""
+    review_url = sms_settings.get("review_url", "") if sms_settings else ""
+    vehicle_info = f"{booking.get('vehicle_year', '')} {booking.get('vehicle_make', '')} {booking.get('vehicle_model', '')}".strip()
+    date_str = booking.get("booking_date", "")
+    time_str = booking.get("booking_time", "")
+    try:
+        dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+        formatted_dt = dt.strftime("%B %d, %Y at %I:%M %p")
+    except Exception:
+        formatted_dt = f"{date_str} {time_str}"
+    return {
+        "SHOP_NAME": shop_name,
+        "SHOP_NUMBER": shop_phone,
+        "SHOP_ADDRESS": shop_address,
+        "BOOKING_DATE_TIME": formatted_dt,
+        "VEHICLE_INFO": vehicle_info,
+        "CUSTOMER_NAME": f"{booking.get('customer_first_name', '')} {booking.get('customer_last_name', '')}".strip(),
+        "REVIEW_URL": review_url,
+        "ETA": "",
+        "SERVICE_NAME": booking.get("service_name", ""),
+    }
+
+async def render_sms_template(template_key: str, context: dict) -> Optional[str]:
+    template = await db.sms_templates.find_one({"template_key": template_key, "is_active": True})
+    if not template:
+        return None
+    body = template["body"]
+    for key, value in context.items():
+        body = body.replace(f"{{{key}}}", str(value))
+    return body
+
+async def send_sms(to_phone: str, body: str, customer_name: str = "",
+                   customer_id: str = None, booking_id: str = None,
+                   template_key: str = None) -> dict:
+    sms_settings = await db.settings.find_one({"type": "sms"})
+    if not sms_settings or not sms_settings.get("sms_enabled", False):
+        return {"success": False, "error": "SMS is disabled"}
+    if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN or not TWILIO_PHONE_NUMBER:
+        return {"success": False, "error": "Twilio credentials not configured"}
+    to_formatted = format_phone_for_twilio(to_phone)
+    try:
+        loop = asyncio.get_event_loop()
+        twilio_client = TwilioClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
+        message = await loop.run_in_executor(None, lambda: twilio_client.messages.create(
+            body=body, from_=TWILIO_PHONE_NUMBER, to=to_formatted
+        ))
+        await db.sms_logs.insert_one({
+            "customer_phone": to_formatted,
+            "customer_name": customer_name,
+            "customer_id": customer_id,
+            "booking_id": booking_id,
+            "direction": "outbound",
+            "message_body": body,
+            "template_key": template_key,
+            "twilio_sid": message.sid,
+            "status": "sent",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        return {"success": True, "sid": message.sid}
+    except Exception as e:
+        await db.sms_logs.insert_one({
+            "customer_phone": to_formatted,
+            "customer_name": customer_name,
+            "customer_id": customer_id,
+            "booking_id": booking_id,
+            "direction": "outbound",
+            "message_body": body,
+            "template_key": template_key,
+            "twilio_sid": None,
+            "status": "failed",
+            "error": str(e),
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        return {"success": False, "error": str(e)}
+
+async def trigger_booking_sms(booking_data: dict, template_key: str, booking_id: str):
+    context = await build_sms_context(booking_data)
+    body = await render_sms_template(template_key, context)
+    if body:
+        customer_name = f"{booking_data.get('customer_first_name', '')} {booking_data.get('customer_last_name', '')}".strip()
+        await send_sms(
+            to_phone=booking_data["customer_phone"],
+            body=body,
+            customer_name=customer_name,
+            customer_id=booking_data.get("customer_id"),
+            booking_id=booking_id,
+            template_key=template_key
+        )
+
+async def schedule_review_request(booking_id: str):
+    await db.sms_scheduled.insert_one({
+        "booking_id": booking_id,
+        "template_key": "review_request",
+        "sent": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+
+async def calculate_eta(destination_address: str) -> Optional[str]:
+    api_key = GOOGLE_MAPS_API_KEY
+    if not api_key or not destination_address:
+        return None
+    settings = await db.settings.find_one({"type": "business"})
+    origin = settings.get("shop_address", "") if settings else ""
+    if not origin:
+        return None
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(
+                "https://maps.googleapis.com/maps/api/directions/json",
+                params={"origin": origin, "destination": destination_address, "key": api_key, "departure_time": "now"},
+                timeout=10.0
+            )
+            data = response.json()
+            if data.get("status") == "OK":
+                leg = data["routes"][0]["legs"][0]
+                duration = leg.get("duration_in_traffic", leg.get("duration", {}))
+                duration_text = duration.get("text", "")
+                mins_match = re.search(r'(\d+)\s*min', duration_text)
+                if mins_match:
+                    mins = int(mins_match.group(1))
+                    eta_time = datetime.now() + timedelta(minutes=mins)
+                    return eta_time.strftime("%I:%M %p")
+                return duration_text
+    except Exception:
+        pass
+    return None
 
 # ============== Auth Routes ==============
 
@@ -675,28 +858,28 @@ async def get_booking(booking_id: str):
     return booking
 
 @app.post("/api/bookings")
-async def create_booking(booking: BookingCreate):
+async def create_booking(booking: BookingCreate, background_tasks: BackgroundTasks):
     # Check availability - pass None for service_id if not a valid ObjectId to avoid errors
     service_id_for_check = booking.service_id if booking.service_id and len(booking.service_id) == 24 else None
     try:
         availability = await get_availability(booking.booking_date, service_id_for_check)
         if not availability.get("available"):
             raise HTTPException(status_code=400, detail=f"Date not available: {availability.get('reason')}")
-        
+
         # Check if time slot is available
         slot_available = False
         for slot in availability.get("slots", []):
             if slot["time"] == booking.booking_time and slot["available"]:
                 slot_available = True
                 break
-        
+
         if not slot_available:
             raise HTTPException(status_code=400, detail="Selected time slot is not available")
     except HTTPException:
         raise
     except Exception:
         pass  # Allow booking if availability check fails
-    
+
     # Find or create customer
     customer_id = await find_or_create_customer(
         email=booking.customer_email,
@@ -705,7 +888,7 @@ async def create_booking(booking: BookingCreate):
         last_name=booking.customer_last_name,
         address=booking.customer_address
     )
-    
+
     booking_dict = booking.model_dump()
     booking_dict["customer_id"] = customer_id
     booking_dict["status"] = "pending"
@@ -717,21 +900,25 @@ async def create_booking(booking: BookingCreate):
     result = await db.bookings.insert_one(booking_dict)
     booking_dict["id"] = str(result.inserted_id)
     booking_dict.pop("_id", None)
+
+    # SMS: Job Scheduled notification
+    background_tasks.add_task(trigger_booking_sms, booking_dict, "job_scheduled", booking_dict["id"])
+
     return booking_dict
 
 @app.put("/api/bookings/{booking_id}/status", dependencies=[Depends(verify_token)])
-async def update_booking_status(booking_id: str, status_update: BookingStatusUpdate):
+async def update_booking_status(booking_id: str, status_update: BookingStatusUpdate, background_tasks: BackgroundTasks):
     valid_statuses = ["pending", "in_progress", "complete", "incomplete", "cancelled"]
     if status_update.status not in valid_statuses:
         raise HTTPException(status_code=400, detail=f"Invalid status. Must be one of: {valid_statuses}")
-    
+
     # Get booking to update customer total_spent if complete
     booking = await db.bookings.find_one({"_id": ObjectId(booking_id)})
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
-    
+
     old_status = booking.get("status")
-    
+
     result = await db.bookings.update_one(
         {"_id": ObjectId(booking_id)},
         {"$set": {
@@ -739,7 +926,7 @@ async def update_booking_status(booking_id: str, status_update: BookingStatusUpd
             "updated_at": datetime.now(timezone.utc).isoformat()
         }}
     )
-    
+
     # Update customer total_spent when marked complete (and wasn't already complete)
     if status_update.status == "complete" and old_status != "complete":
         customer_id = booking.get("customer_id")
@@ -758,7 +945,17 @@ async def update_booking_status(booking_id: str, status_update: BookingStatusUpd
                 {"_id": ObjectId(customer_id)},
                 {"$inc": {"total_spent": -total_price}}
             )
-    
+
+    # SMS triggers on status change
+    if status_update.status != old_status:
+        booking["status"] = status_update.status
+        if status_update.status == "complete":
+            template_key = "job_complete_shop" if booking.get("service_location") == "shop" else "job_complete_mobile"
+            background_tasks.add_task(trigger_booking_sms, booking, template_key, booking_id)
+            background_tasks.add_task(schedule_review_request, booking_id)
+        elif status_update.status == "cancelled":
+            background_tasks.add_task(trigger_booking_sms, booking, "cancelled", booking_id)
+
     return {"message": "Booking status updated successfully"}
 
 @app.put("/api/bookings/{booking_id}/paid", dependencies=[Depends(verify_token)])
@@ -821,7 +1018,7 @@ async def update_booking(booking_id: str, booking_update: BookingUpdate):
     return updated_booking
 
 @app.post("/api/bookings/admin", dependencies=[Depends(verify_token)])
-async def create_booking_admin(booking: BookingCreate):
+async def create_booking_admin(booking: BookingCreate, background_tasks: BackgroundTasks):
     """Create a booking from admin dashboard (for phone orders)"""
     # Find or create customer
     customer_id = await find_or_create_customer(
@@ -831,7 +1028,7 @@ async def create_booking_admin(booking: BookingCreate):
         last_name=booking.customer_last_name,
         address=booking.customer_address
     )
-    
+
     booking_dict = booking.model_dump()
     booking_dict["customer_id"] = customer_id
     booking_dict["status"] = "pending"
@@ -840,10 +1037,14 @@ async def create_booking_admin(booking: BookingCreate):
     booking_dict["created_at"] = datetime.now(timezone.utc).isoformat()
     booking_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
     booking_dict["created_by"] = "admin"
-    
+
     result = await db.bookings.insert_one(booking_dict)
     booking_dict["id"] = str(result.inserted_id)
     booking_dict.pop("_id", None)
+
+    # SMS: Job Scheduled notification
+    background_tasks.add_task(trigger_booking_sms, booking_dict, "job_scheduled", booking_dict["id"])
+
     return booking_dict
 
 @app.delete("/api/bookings/{booking_id}", dependencies=[Depends(verify_token)])
@@ -1414,6 +1615,340 @@ async def get_google_reviews():
         raise HTTPException(status_code=504, detail="Google Places API timeout")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch reviews: {str(e)}")
+
+# ============== SMS Routes ==============
+
+DEFAULT_SMS_TEMPLATES = [
+    {"template_key": "job_scheduled", "name": "Job Scheduled",
+     "body": "Your appt. with {SHOP_NAME} for {BOOKING_DATE_TIME} has been scheduled. If you need to reschedule, please call {SHOP_NUMBER}.",
+     "is_active": True},
+    {"template_key": "job_reminder", "name": "Job Reminder",
+     "body": "This is a courtesy reminder that your appointment with {SHOP_NAME} on {BOOKING_DATE_TIME} is approaching. If you have to reschedule, please call {SHOP_NUMBER}. Otherwise, we look forward to working on your {VEHICLE_INFO}.",
+     "is_active": True},
+    {"template_key": "job_complete_shop", "name": "Job Completed (In-Shop)",
+     "body": "We've finished working on your {VEHICLE_INFO}. Please give us a call at {SHOP_NUMBER} to schedule a convenient pick up time.",
+     "is_active": True},
+    {"template_key": "job_complete_mobile", "name": "Job Completed (Mobile)",
+     "body": "We've finished working on your {VEHICLE_INFO}. Thanks for choosing {SHOP_NAME}.",
+     "is_active": True},
+    {"template_key": "review_request", "name": "Rate/Review Request",
+     "body": "Thanks for choosing {SHOP_NAME}. We enjoyed working on your {VEHICLE_INFO}. If you aren't 100% satisfied, please let us know and we'll make it right. Otherwise, we'd appreciate a minute of your time and a review at {REVIEW_URL}. Thank you.",
+     "is_active": True},
+    {"template_key": "on_my_way", "name": "On My Way",
+     "body": "Hi {CUSTOMER_NAME}, this is {SHOP_NAME}. We're on our way to work on your {VEHICLE_INFO}. I should be there around {ETA}. If you have any questions, please call {SHOP_NUMBER}.",
+     "is_active": True},
+    {"template_key": "cancelled", "name": "Cancelled",
+     "body": "Your appointment with {SHOP_NAME} on {BOOKING_DATE_TIME} has been canceled. If you would like to reschedule, please call {SHOP_NUMBER}.",
+     "is_active": True},
+]
+
+@app.get("/api/settings/sms", dependencies=[Depends(verify_token)])
+async def get_sms_settings():
+    defaults = {
+        "sms_enabled": False,
+        "reminder_enabled": True,
+        "reminder_hours_before": 24,
+        "review_request_enabled": True,
+        "review_delay_hours": 2,
+        "review_url": "",
+        "twilio_phone_number": TWILIO_PHONE_NUMBER,
+    }
+    settings = await db.settings.find_one({"type": "sms"})
+    if not settings:
+        return defaults
+    settings.pop("_id", None)
+    settings.pop("type", None)
+    settings["twilio_phone_number"] = TWILIO_PHONE_NUMBER
+    return {**defaults, **settings}
+
+@app.put("/api/settings/sms", dependencies=[Depends(verify_token)])
+async def update_sms_settings(settings: SMSSettings):
+    settings_dict = settings.model_dump()
+    settings_dict["type"] = "sms"
+    settings_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.settings.update_one({"type": "sms"}, {"$set": settings_dict}, upsert=True)
+    return {"message": "SMS settings updated successfully"}
+
+@app.get("/api/sms/templates", dependencies=[Depends(verify_token)])
+async def get_sms_templates():
+    templates = []
+    async for t in db.sms_templates.find():
+        t["id"] = str(t.pop("_id"))
+        templates.append(t)
+    if not templates:
+        for d in DEFAULT_SMS_TEMPLATES:
+            d_copy = {**d, "created_at": datetime.now(timezone.utc).isoformat()}
+            result = await db.sms_templates.insert_one(d_copy)
+            d_copy["id"] = str(result.inserted_id)
+            d_copy.pop("_id", None)
+            templates.append(d_copy)
+    return templates
+
+@app.put("/api/sms/templates/{template_id}", dependencies=[Depends(verify_token)])
+async def update_sms_template(template_id: str, update: SMSTemplateUpdate):
+    update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.sms_templates.update_one({"_id": ObjectId(template_id)}, {"$set": update_data})
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Template not found")
+    return {"message": "Template updated successfully"}
+
+@app.post("/api/sms/send", dependencies=[Depends(verify_token)])
+async def send_sms_endpoint(req: SendSMSRequest):
+    # Look up customer name if customer_id provided
+    customer_name = ""
+    if req.customer_id:
+        customer = await db.customers.find_one({"_id": ObjectId(req.customer_id)})
+        if customer:
+            customer_name = f"{customer.get('first_name', '')} {customer.get('last_name', '')}".strip()
+    result = await send_sms(
+        to_phone=req.to_phone, body=req.message,
+        customer_name=customer_name, customer_id=req.customer_id, booking_id=req.booking_id
+    )
+    if not result["success"]:
+        raise HTTPException(status_code=500, detail=result.get("error", "SMS failed"))
+    return {"message": "SMS sent successfully", "sid": result.get("sid")}
+
+@app.post("/api/sms/mass-send", dependencies=[Depends(verify_token)])
+async def mass_send_sms(req: MassTextRequest, background_tasks: BackgroundTasks):
+    query = {}
+    if req.filter_tags:
+        query["tags"] = {"$in": req.filter_tags}
+    if req.filter_min_bookings is not None:
+        query["total_bookings"] = {"$gte": req.filter_min_bookings}
+    if req.filter_min_spent is not None:
+        query["total_spent"] = {"$gte": req.filter_min_spent}
+    customers = await db.customers.find(query).to_list(10000)
+    customer_count = len(customers)
+
+    async def send_mass():
+        sent = 0
+        failed = 0
+        for customer in customers:
+            phone = customer.get("phone", "")
+            if not phone:
+                failed += 1
+                continue
+            name = f"{customer.get('first_name', '')} {customer.get('last_name', '')}".strip()
+            r = await send_sms(
+                to_phone=phone, body=req.message,
+                customer_name=name, customer_id=str(customer["_id"]),
+                template_key="mass_text"
+            )
+            if r["success"]:
+                sent += 1
+            else:
+                failed += 1
+            await asyncio.sleep(1)  # Twilio rate limit: 1 msg/sec
+        await db.sms_mass_logs.insert_one({
+            "message": req.message, "total_recipients": customer_count,
+            "sent": sent, "failed": failed,
+            "filters": req.model_dump(),
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+
+    background_tasks.add_task(send_mass)
+    return {"message": f"Mass text queued for {customer_count} recipients", "count": customer_count}
+
+@app.post("/api/sms/on-my-way", dependencies=[Depends(verify_token)])
+async def send_on_my_way(req: OnMyWayRequest):
+    booking = await db.bookings.find_one({"_id": ObjectId(req.booking_id)})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    context = await build_sms_context(booking)
+    if req.custom_eta:
+        context["ETA"] = req.custom_eta
+    else:
+        eta = await calculate_eta(booking.get("customer_address", ""))
+        context["ETA"] = eta or "soon"
+    body = await render_sms_template("on_my_way", context)
+    if not body:
+        raise HTTPException(status_code=404, detail="On My Way template not found or disabled")
+    customer_name = f"{booking.get('customer_first_name', '')} {booking.get('customer_last_name', '')}".strip()
+    result = await send_sms(
+        to_phone=booking["customer_phone"], body=body,
+        customer_name=customer_name, customer_id=booking.get("customer_id"),
+        booking_id=req.booking_id, template_key="on_my_way"
+    )
+    if not result["success"]:
+        raise HTTPException(status_code=500, detail=result.get("error", "SMS failed"))
+    return {"message": "On My Way SMS sent", "eta": context["ETA"]}
+
+@app.get("/api/sms/conversations", dependencies=[Depends(verify_token)])
+async def get_sms_conversations():
+    pipeline = [
+        {"$sort": {"created_at": -1}},
+        {"$group": {
+            "_id": "$customer_phone",
+            "customer_name": {"$first": "$customer_name"},
+            "customer_id": {"$first": "$customer_id"},
+            "last_message": {"$first": "$message_body"},
+            "last_direction": {"$first": "$direction"},
+            "last_timestamp": {"$first": "$created_at"},
+            "unread_count": {"$sum": {"$cond": [
+                {"$and": [{"$eq": ["$direction", "inbound"]}, {"$ne": ["$read", True]}]},
+                1, 0
+            ]}}
+        }},
+        {"$sort": {"last_timestamp": -1}}
+    ]
+    conversations = []
+    async for conv in db.sms_logs.aggregate(pipeline):
+        conversations.append({
+            "phone": conv["_id"],
+            "customer_name": conv.get("customer_name", "Unknown"),
+            "customer_id": conv.get("customer_id"),
+            "last_message": conv.get("last_message", ""),
+            "last_direction": conv.get("last_direction", ""),
+            "last_timestamp": conv.get("last_timestamp", ""),
+            "unread_count": conv.get("unread_count", 0),
+        })
+    return conversations
+
+@app.get("/api/sms/logs", dependencies=[Depends(verify_token)])
+async def get_sms_logs(phone: Optional[str] = None, limit: int = 100):
+    query = {}
+    if phone:
+        normalized = format_phone_for_twilio(phone)
+        query["customer_phone"] = normalized
+    logs = []
+    async for log in db.sms_logs.find(query).sort("created_at", -1).limit(limit):
+        log["id"] = str(log.pop("_id"))
+        logs.append(log)
+    return logs
+
+@app.put("/api/sms/logs/mark-read", dependencies=[Depends(verify_token)])
+async def mark_conversation_read(phone: str):
+    normalized = format_phone_for_twilio(phone)
+    await db.sms_logs.update_many(
+        {"customer_phone": normalized, "direction": "inbound", "read": {"$ne": True}},
+        {"$set": {"read": True}}
+    )
+    return {"message": "Conversation marked as read"}
+
+@app.get("/api/sms/customer-count", dependencies=[Depends(verify_token)])
+async def get_sms_customer_count(tags: Optional[str] = None, min_bookings: Optional[int] = None, min_spent: Optional[float] = None):
+    query = {}
+    if tags:
+        query["tags"] = {"$in": tags.split(",")}
+    if min_bookings is not None:
+        query["total_bookings"] = {"$gte": min_bookings}
+    if min_spent is not None:
+        query["total_spent"] = {"$gte": min_spent}
+    count = await db.customers.count_documents(query)
+    return {"count": count}
+
+# Twilio incoming webhook
+@app.post("/api/sms/webhook")
+async def twilio_incoming_webhook(request: Request):
+    form_data = await request.form()
+    from_number = form_data.get("From", "")
+    body = form_data.get("Body", "")
+    twilio_sid = form_data.get("MessageSid", "")
+    # Match to customer
+    digits = ''.join(c for c in from_number if c.isdigit())
+    if digits.startswith("1") and len(digits) == 11:
+        digits = digits[1:]
+    customer = await db.customers.find_one({"phone_normalized": digits})
+    customer_name = ""
+    customer_id = None
+    if customer:
+        customer_name = f"{customer.get('first_name', '')} {customer.get('last_name', '')}".strip()
+        customer_id = str(customer["_id"])
+    await db.sms_logs.insert_one({
+        "customer_phone": from_number,
+        "customer_name": customer_name,
+        "customer_id": customer_id,
+        "booking_id": None,
+        "direction": "inbound",
+        "message_body": body,
+        "template_key": None,
+        "twilio_sid": twilio_sid,
+        "status": "received",
+        "read": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+    return Response(
+        content='<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
+        media_type="application/xml"
+    )
+
+# ============== Background Tasks ==============
+
+async def reminder_checker_loop():
+    while True:
+        try:
+            sms_settings = await db.settings.find_one({"type": "sms"})
+            if sms_settings and sms_settings.get("sms_enabled") and sms_settings.get("reminder_enabled"):
+                hours_before = sms_settings.get("reminder_hours_before", 24)
+                now = datetime.now(timezone.utc)
+                async for booking in db.bookings.find({
+                    "status": {"$in": ["pending", "in_progress"]},
+                    "reminder_sent": {"$ne": True}
+                }):
+                    try:
+                        booking_dt = datetime.strptime(
+                            f"{booking['booking_date']} {booking['booking_time']}", "%Y-%m-%d %H:%M"
+                        ).replace(tzinfo=timezone.utc)
+                        time_until = (booking_dt - now).total_seconds() / 3600
+                        if 0 < time_until <= hours_before:
+                            context = await build_sms_context(booking)
+                            body = await render_sms_template("job_reminder", context)
+                            if body:
+                                customer_name = f"{booking.get('customer_first_name', '')} {booking.get('customer_last_name', '')}".strip()
+                                await send_sms(
+                                    to_phone=booking["customer_phone"], body=body,
+                                    customer_name=customer_name, customer_id=booking.get("customer_id"),
+                                    booking_id=str(booking["_id"]), template_key="job_reminder"
+                                )
+                                await db.bookings.update_one(
+                                    {"_id": booking["_id"]}, {"$set": {"reminder_sent": True}}
+                                )
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+        await asyncio.sleep(900)
+
+async def review_request_checker_loop():
+    while True:
+        try:
+            sms_settings = await db.settings.find_one({"type": "sms"})
+            if sms_settings and sms_settings.get("sms_enabled") and sms_settings.get("review_request_enabled"):
+                delay_hours = sms_settings.get("review_delay_hours", 2)
+                now = datetime.now(timezone.utc)
+                async for scheduled in db.sms_scheduled.find({"template_key": "review_request", "sent": False}):
+                    try:
+                        created = datetime.fromisoformat(scheduled["created_at"])
+                        if created.tzinfo is None:
+                            created = created.replace(tzinfo=timezone.utc)
+                        send_after = created + timedelta(hours=delay_hours)
+                        if now >= send_after:
+                            booking = await db.bookings.find_one({"_id": ObjectId(scheduled["booking_id"])})
+                            if booking and booking.get("status") == "complete":
+                                context = await build_sms_context(booking)
+                                body = await render_sms_template("review_request", context)
+                                if body:
+                                    customer_name = f"{booking.get('customer_first_name', '')} {booking.get('customer_last_name', '')}".strip()
+                                    await send_sms(
+                                        to_phone=booking["customer_phone"], body=body,
+                                        customer_name=customer_name, customer_id=booking.get("customer_id"),
+                                        booking_id=scheduled["booking_id"], template_key="review_request"
+                                    )
+                            await db.sms_scheduled.update_one(
+                                {"_id": scheduled["_id"]},
+                                {"$set": {"sent": True, "sent_at": now.isoformat()}}
+                            )
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+        await asyncio.sleep(900)
+
+@app.on_event("startup")
+async def start_background_tasks():
+    asyncio.create_task(reminder_checker_loop())
+    asyncio.create_task(review_request_checker_loop())
 
 # ============== Health Check ==============
 

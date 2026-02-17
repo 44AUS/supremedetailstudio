@@ -3,7 +3,7 @@ import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Settings, Calendar, ClipboardList,
   LogOut, Menu, X, ChevronRight, Users, Mail, Lock, Save, Loader2, AlertCircle, CheckCircle,
-  Bell, Clock, User, FileText
+  Bell, Clock, User, FileText, MessageSquare
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
@@ -17,6 +17,7 @@ export default function AdminLayout() {
   const [unseenBookings, setUnseenBookings] = useState([]);
   const [unseenQuoteCount, setUnseenQuoteCount] = useState(0);
   const [unseenQuotes, setUnseenQuotes] = useState([]);
+  const [unreadSmsCount, setUnreadSmsCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [shopName, setShopName] = useState('');
   const [showPasswordModal, setShowPasswordModal] = useState(false);
@@ -75,15 +76,16 @@ export default function AdminLayout() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch unseen booking + quote counts
+  // Fetch unseen booking + quote + SMS counts
   useEffect(() => {
     const fetchUnseenCounts = async () => {
       const token = localStorage.getItem('adminToken');
       if (!token) return;
       try {
-        const [bookingRes, quoteRes] = await Promise.all([
+        const [bookingRes, quoteRes, smsRes] = await Promise.all([
           fetch(`${API_URL}/api/bookings/unseen-count`, { headers: { Authorization: `Bearer ${token}` } }),
           fetch(`${API_URL}/api/quotes/unseen-count`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API_URL}/api/sms/conversations`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
         if (bookingRes.ok) {
           const data = await bookingRes.json();
@@ -92,6 +94,11 @@ export default function AdminLayout() {
         if (quoteRes.ok) {
           const data = await quoteRes.json();
           setUnseenQuoteCount(data.count);
+        }
+        if (smsRes.ok) {
+          const convos = await smsRes.json();
+          const totalUnread = convos.reduce((sum, c) => sum + (c.unread_count || 0), 0);
+          setUnreadSmsCount(totalUnread);
         }
       } catch (error) {
         console.error('Failed to fetch unseen counts:', error);
@@ -217,6 +224,7 @@ export default function AdminLayout() {
     { path: '/admin/schedule', icon: Calendar, label: 'Schedule' },
     { path: '/admin/bookings', icon: ClipboardList, label: 'Bookings' },
     { path: '/admin/customers', icon: Users, label: 'Customers' },
+    { path: '/admin/sms', icon: MessageSquare, label: 'SMS / Texting', badge: unreadSmsCount },
     { path: '/admin/quotes', icon: FileText, label: 'Quote Requests' },
     { path: '/admin/contacts', icon: Mail, label: 'Contact Messages' },
   ];
@@ -251,7 +259,8 @@ export default function AdminLayout() {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
-            const showBadge = item.path === '/admin/contacts' && unreadCount > 0;
+            const showContactBadge = item.path === '/admin/contacts' && unreadCount > 0;
+            const navBadgeCount = item.badge || 0;
             return (
               <NavLink
                 key={item.path}
@@ -265,8 +274,11 @@ export default function AdminLayout() {
               >
                 <Icon size={20} />
                 <span>{item.label}</span>
-                {showBadge && (
+                {showContactBadge && (
                   <span style={styles.unreadBadge}>{unreadCount}</span>
+                )}
+                {navBadgeCount > 0 && (
+                  <span style={styles.unreadBadge}>{navBadgeCount > 9 ? '9+' : navBadgeCount}</span>
                 )}
                 {isActive && <ChevronRight size={16} style={styles.navArrow} />}
               </NavLink>
