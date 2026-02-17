@@ -149,7 +149,8 @@ export default function AdminServices() {
     mobile_service_description: 'We come to you',
     minimum_booking_notice_days: 1,
     enable_shop_bookings: true,
-    enable_mobile_bookings: true
+    enable_mobile_bookings: true,
+    booking_buffer_minutes: 60
   });
 
   const sensors = useSensors(
