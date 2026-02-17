@@ -1989,296 +1989,16 @@ export default function BookAppointment() {
       {/* Main Content */}
       <div style={styles.content}>
         
-        {/* STEP 1 – CUSTOMER INFO */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          style={styles.card}
-          data-testid="step-1-card"
-        >
-          <div style={styles.stepHeader}>
-            <div style={styles.stepNumber}>1</div>
-            <h3 style={styles.stepTitle}>YOUR INFORMATION</h3>
-            <User size={20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
-          </div>
-          
-          <div style={{ ...styles.formGrid(2), ...(isMobile && { gridTemplateColumns: '1fr' }) }}>
-            <InputField 
-              label="First Name" 
-              icon={User}
-              value={formData.firstName}
-              onChange={(v) => setFormData({...formData, firstName: v})}
-              placeholder="John"
-              required
-            />
-            <InputField 
-              label="Last Name" 
-              icon={User}
-              value={formData.lastName}
-              onChange={(v) => setFormData({...formData, lastName: v})}
-              placeholder="Doe"
-              required
-            />
-            <InputField 
-              label="Phone" 
-              icon={Phone}
-              value={formData.phone}
-              onChange={(v) => setFormData({...formData, phone: v})}
-              placeholder="(555) 123-4567"
-              type="tel"
-              required
-            />
-            <InputField 
-              label="Email" 
-              icon={Mail}
-              value={formData.email}
-              onChange={(v) => setFormData({...formData, email: v})}
-              placeholder="john@example.com"
-              type="email"
-              required
-            />
-          </div>
-          <div style={{ marginTop: '20px' }}>
-            <InputField
-              label="Address"
-              icon={MapPin}
-              value={formData.address}
-              onChange={(v) => setFormData({...formData, address: v})}
-              placeholder="123 Main St, Marietta, GA 30060"
-              required
-              inputRef={addressInputRef}
-            />
-          </div>
-        </motion.div>
-
-        {/* STEP 2 – SERVICE LOCATION */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.15 }}
-          style={styles.card}
-          data-testid="step-2-location-card"
-        >
-          <div style={styles.stepHeader}>
-            <div style={styles.stepNumber}>2</div>
-            <h3 style={styles.stepTitle}>SERVICE LOCATION</h3>
-            <MapPin size={20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
-          </div>
-
-          <div style={{ ...styles.locationGrid, ...(isMobile && { gridTemplateColumns: '1fr' }) }}>
-            {serviceLocations.length === 0 ? (
-              <div style={styles.noOptionsMessage}>
-                <p style={{ color: '#ef4444', margin: 0 }}>No booking options are currently available. Please contact us directly.</p>
-              </div>
-            ) : serviceLocations.map((location) => {
-              const Icon = location.icon;
-              return (
-                <motion.button
-                  key={location.id}
-                  whileHover={{ scale: 1.02, y: -4 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    setServiceLocation(location);
-                    // Reset pickup/delivery when changing location
-                    if (location.id !== 'shop') {
-                      setPickupDelivery(null);
-                      setPickupDistance('under15');
-                    }
-                    // Reset mobile utilities when changing location
-                    if (location.id !== 'mobile') {
-                      setMobileUtilitiesConfirmed(false);
-                    }
-                  }}
-                  style={styles.locationCard(serviceLocation?.id === location.id)}
-                  data-testid={`location-${location.id}`}
-                >
-                  {serviceLocation?.id === location.id && (
-                    <CheckCircle2 size={20} style={styles.checkIcon} />
-                  )}
-                  <div style={styles.locationIcon}>
-                    <Icon size={28} style={{ color: '#ef4444' }} />
-                  </div>
-                  <div style={styles.locationLabel}>{location.label}</div>
-                  <div style={styles.locationDesc}>{location.description}</div>
-                  {location.upcharge > 0 && (
-                    <div style={styles.locationUpcharge}>+${location.upcharge}</div>
-                  )}
-                </motion.button>
-              );
-            })
-          }
-          </div>
-
-          {/* Mobile Service Utilities Requirement - Only shows when Mobile is selected */}
-          <AnimatePresence>
-            {serviceLocation?.id === 'mobile' && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                style={{ marginTop: '24px' }}
-              >
-                <div style={styles.utilitiesContainer}>
-                  <div style={styles.utilitiesHeader}>
-                    <Droplets size={20} style={{ color: '#3b82f6' }} />
-                    <span style={styles.utilitiesTitle}>Utility Access Required</span>
-                  </div>
-                  <p style={styles.utilitiesDesc}>
-                    For mobile detailing, we require access to <strong>water</strong> and <strong>electrical hookups</strong> at your location to complete the job properly.
-                  </p>
-                  
-                  <motion.button
-                    whileHover={{ scale: 1.01 }}
-                    whileTap={{ scale: 0.99 }}
-                    onClick={() => setMobileUtilitiesConfirmed(!mobileUtilitiesConfirmed)}
-                    style={styles.utilitiesCheckbox(mobileUtilitiesConfirmed)}
-                    data-testid="utilities-confirm"
-                  >
-                    <div style={styles.checkboxBox(mobileUtilitiesConfirmed)}>
-                      {mobileUtilitiesConfirmed && <CheckCircle2 size={18} style={{ color: '#fff' }} />}
-                    </div>
-                    <div style={styles.checkboxText}>
-                      <span style={styles.checkboxLabel}>Yes, I confirm I have easy access to:</span>
-                      <div style={styles.checkboxItems}>
-                        <span style={styles.checkboxItem}>
-                          <Droplets size={14} style={{ color: '#3b82f6' }} /> Water hookup / hose connection
-                        </span>
-                        <span style={styles.checkboxItem}>
-                          <Zap size={14} style={{ color: '#eab308' }} /> Electrical outlet (standard 120V)
-                        </span>
-                      </div>
-                    </div>
-                  </motion.button>
-
-                  {!mobileUtilitiesConfirmed && (
-                    <div style={styles.utilitiesWarning}>
-                      <Info size={16} style={{ color: '#f59e0b', flexShrink: 0 }} />
-                      <span>Please confirm utility access to proceed with mobile service booking.</span>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Pickup & Delivery Option - Only shows when In Shop is selected */}
-          <AnimatePresence>
-            {serviceLocation?.id === 'shop' && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                style={{ marginTop: '24px' }}
-              >
-                <div style={styles.pickupDeliveryContainer}>
-                  <div style={styles.pickupDeliveryHeader}>
-                    <CarFront size={20} style={{ color: '#ef4444' }} />
-                    <span style={styles.pickupDeliveryTitle}>Pickup & Delivery Service</span>
-                  </div>
-                  <p style={styles.pickupDeliveryDesc}>
-                    Don't have time to drop off? We'll pick up your vehicle and deliver it back to you!
-                  </p>
-
-                  <div style={styles.pickupOptions}>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setPickupDelivery('no')}
-                      style={styles.pickupOptionCard(pickupDelivery === 'no')}
-                      data-testid="pickup-no"
-                    >
-                      {pickupDelivery === 'no' && (
-                        <CheckCircle2 size={18} style={styles.checkIcon} />
-                      )}
-                      <div style={styles.pickupOptionTitle}>No Thanks</div>
-                      <div style={styles.pickupOptionSubtitle}>I'll drop off myself</div>
-                    </motion.button>
-
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => setPickupDelivery('yes')}
-                      style={styles.pickupOptionCard(pickupDelivery === 'yes')}
-                      data-testid="pickup-yes"
-                    >
-                      {pickupDelivery === 'yes' && (
-                        <CheckCircle2 size={18} style={styles.checkIcon} />
-                      )}
-                      <div style={styles.pickupOptionTitle}>Yes, Please!</div>
-                      <div style={styles.pickupOptionSubtitle}>Pick up & deliver my car</div>
-                      <div style={styles.pickupOptionPrice}>Starting at +$50</div>
-                    </motion.button>
-                  </div>
-
-                  {/* Distance Selection - Only shows when pickup is selected */}
-                  <AnimatePresence>
-                    {pickupDelivery === 'yes' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
-                        style={{ marginTop: '16px' }}
-                      >
-                        <div style={styles.distanceNote}>
-                          <Info size={16} style={{ color: '#ef4444', flexShrink: 0 }} />
-                          <span>
-                            {calculatedDistance !== null
-                              ? `Distance from our Marietta location: ${calculatedDistance} miles`
-                              : 'Select the distance from our Marietta location to your address:'}
-                          </span>
-                        </div>
-                        <div style={styles.distanceOptions}>
-                          <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => setPickupDistance('under15')}
-                            style={styles.distanceCard(pickupDistance === 'under15')}
-                            data-testid="distance-under15"
-                          >
-                            {pickupDistance === 'under15' && (
-                              <CheckCircle2 size={16} style={{ ...styles.checkIcon, top: '8px', right: '8px' }} />
-                            )}
-                            <div style={styles.distanceLabel}>Under 15 miles</div>
-                            <div style={styles.distancePrice}>+$50</div>
-                          </motion.button>
-
-                          <motion.button
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => setPickupDistance('over15')}
-                            style={styles.distanceCard(pickupDistance === 'over15')}
-                            data-testid="distance-over15"
-                          >
-                            {pickupDistance === 'over15' && (
-                              <CheckCircle2 size={16} style={{ ...styles.checkIcon, top: '8px', right: '8px' }} />
-                            )}
-                            <div style={styles.distanceLabel}>Over 15 miles</div>
-                            <div style={styles.distancePrice}>+$75</div>
-                          </motion.button>
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-
-        {/* STEP 3 – VEHICLE */}
+        {/* STEP 1 – VEHICLE */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
           style={styles.card}
-          data-testid="step-3-card"
+          data-testid="step-1-card"
         >
           <div style={styles.stepHeader}>
-            <div style={styles.stepNumber}>3</div>
+            <div style={styles.stepNumber}>1</div>
             <h3 style={styles.stepTitle}>YOUR VEHICLE</h3>
             <Car size={20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
           </div>
@@ -2365,16 +2085,16 @@ export default function BookAppointment() {
           )}
         </motion.div>
 
-        {/* STEP 4 – SERVICES */}
+        {/* STEP 2 – SERVICES */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
           style={{ ...styles.card, ...(isMobile && { padding: '20px 16px', borderRadius: '18px' }) }}
-          data-testid="step-4-card"
+          data-testid="step-2-card"
         >
           <div style={{ ...styles.stepHeader, ...(isMobile && { gap: '12px', marginBottom: '20px' }) }}>
-            <div style={{ ...styles.stepNumber, ...(isMobile && { width: '36px', height: '36px', fontSize: '14px', borderRadius: '10px' }) }}>4</div>
+            <div style={{ ...styles.stepNumber, ...(isMobile && { width: '36px', height: '36px', fontSize: '14px', borderRadius: '10px' }) }}>2</div>
             <h3 style={{ ...styles.stepTitle, ...(isMobile && { fontSize: '16px' }) }}>SELECT SERVICE(S)</h3>
             <Sparkles size={isMobile ? 18 : 20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
           </div>
@@ -2698,6 +2418,285 @@ export default function BookAppointment() {
           )}
         </motion.div>
 
+        {/* STEP 3 – CUSTOMER INFO */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          style={styles.card}
+          data-testid="step-3-card"
+        >
+          <div style={styles.stepHeader}>
+            <div style={styles.stepNumber}>3</div>
+            <h3 style={styles.stepTitle}>YOUR INFORMATION</h3>
+            <User size={20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
+          </div>
+          
+          <div style={{ ...styles.formGrid(2), ...(isMobile && { gridTemplateColumns: '1fr' }) }}>
+            <InputField 
+              label="First Name" 
+              icon={User}
+              value={formData.firstName}
+              onChange={(v) => setFormData({...formData, firstName: v})}
+              placeholder="John"
+              required
+            />
+            <InputField 
+              label="Last Name" 
+              icon={User}
+              value={formData.lastName}
+              onChange={(v) => setFormData({...formData, lastName: v})}
+              placeholder="Doe"
+              required
+            />
+            <InputField 
+              label="Phone" 
+              icon={Phone}
+              value={formData.phone}
+              onChange={(v) => setFormData({...formData, phone: v})}
+              placeholder="(555) 123-4567"
+              type="tel"
+              required
+            />
+            <InputField 
+              label="Email" 
+              icon={Mail}
+              value={formData.email}
+              onChange={(v) => setFormData({...formData, email: v})}
+              placeholder="john@example.com"
+              type="email"
+              required
+            />
+          </div>
+          <div style={{ marginTop: '20px' }}>
+            <InputField
+              label="Address"
+              icon={MapPin}
+              value={formData.address}
+              onChange={(v) => setFormData({...formData, address: v})}
+              placeholder="123 Main St, Marietta, GA 30060"
+              required
+              inputRef={addressInputRef}
+            />
+          </div>
+        </motion.div>
+
+        {/* STEP 4 – SERVICE LOCATION */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          style={styles.card}
+          data-testid="step-2-location-card"
+        >
+          <div style={styles.stepHeader}>
+            <div style={styles.stepNumber}>4</div>
+            <h3 style={styles.stepTitle}>SERVICE LOCATION</h3>
+            <MapPin size={20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
+          </div>
+
+          <div style={{ ...styles.locationGrid, ...(isMobile && { gridTemplateColumns: '1fr' }) }}>
+            {serviceLocations.length === 0 ? (
+              <div style={styles.noOptionsMessage}>
+                <p style={{ color: '#ef4444', margin: 0 }}>No booking options are currently available. Please contact us directly.</p>
+              </div>
+            ) : serviceLocations.map((location) => {
+              const Icon = location.icon;
+              return (
+                <motion.button
+                  key={location.id}
+                  whileHover={{ scale: 1.02, y: -4 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    setServiceLocation(location);
+                    // Reset pickup/delivery when changing location
+                    if (location.id !== 'shop') {
+                      setPickupDelivery(null);
+                      setPickupDistance('under15');
+                    }
+                    // Reset mobile utilities when changing location
+                    if (location.id !== 'mobile') {
+                      setMobileUtilitiesConfirmed(false);
+                    }
+                  }}
+                  style={styles.locationCard(serviceLocation?.id === location.id)}
+                  data-testid={`location-${location.id}`}
+                >
+                  {serviceLocation?.id === location.id && (
+                    <CheckCircle2 size={20} style={styles.checkIcon} />
+                  )}
+                  <div style={styles.locationIcon}>
+                    <Icon size={28} style={{ color: '#ef4444' }} />
+                  </div>
+                  <div style={styles.locationLabel}>{location.label}</div>
+                  <div style={styles.locationDesc}>{location.description}</div>
+                  {location.upcharge > 0 && (
+                    <div style={styles.locationUpcharge}>+${location.upcharge}</div>
+                  )}
+                </motion.button>
+              );
+            })
+          }
+          </div>
+
+          {/* Mobile Service Utilities Requirement - Only shows when Mobile is selected */}
+          <AnimatePresence>
+            {serviceLocation?.id === 'mobile' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ marginTop: '24px' }}
+              >
+                <div style={styles.utilitiesContainer}>
+                  <div style={styles.utilitiesHeader}>
+                    <Droplets size={20} style={{ color: '#3b82f6' }} />
+                    <span style={styles.utilitiesTitle}>Utility Access Required</span>
+                  </div>
+                  <p style={styles.utilitiesDesc}>
+                    For mobile detailing, we require access to <strong>water</strong> and <strong>electrical hookups</strong> at your location to complete the job properly.
+                  </p>
+                  
+                  <motion.button
+                    whileHover={{ scale: 1.01 }}
+                    whileTap={{ scale: 0.99 }}
+                    onClick={() => setMobileUtilitiesConfirmed(!mobileUtilitiesConfirmed)}
+                    style={styles.utilitiesCheckbox(mobileUtilitiesConfirmed)}
+                    data-testid="utilities-confirm"
+                  >
+                    <div style={styles.checkboxBox(mobileUtilitiesConfirmed)}>
+                      {mobileUtilitiesConfirmed && <CheckCircle2 size={18} style={{ color: '#fff' }} />}
+                    </div>
+                    <div style={styles.checkboxText}>
+                      <span style={styles.checkboxLabel}>Yes, I confirm I have easy access to:</span>
+                      <div style={styles.checkboxItems}>
+                        <span style={styles.checkboxItem}>
+                          <Droplets size={14} style={{ color: '#3b82f6' }} /> Water hookup / hose connection
+                        </span>
+                        <span style={styles.checkboxItem}>
+                          <Zap size={14} style={{ color: '#eab308' }} /> Electrical outlet (standard 120V)
+                        </span>
+                      </div>
+                    </div>
+                  </motion.button>
+
+                  {!mobileUtilitiesConfirmed && (
+                    <div style={styles.utilitiesWarning}>
+                      <Info size={16} style={{ color: '#f59e0b', flexShrink: 0 }} />
+                      <span>Please confirm utility access to proceed with mobile service booking.</span>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Pickup & Delivery Option - Only shows when In Shop is selected */}
+          <AnimatePresence>
+            {serviceLocation?.id === 'shop' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{ marginTop: '24px' }}
+              >
+                <div style={styles.pickupDeliveryContainer}>
+                  <div style={styles.pickupDeliveryHeader}>
+                    <CarFront size={20} style={{ color: '#ef4444' }} />
+                    <span style={styles.pickupDeliveryTitle}>Pickup & Delivery Service</span>
+                  </div>
+                  <p style={styles.pickupDeliveryDesc}>
+                    Don't have time to drop off? We'll pick up your vehicle and deliver it back to you!
+                  </p>
+
+                  <div style={styles.pickupOptions}>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setPickupDelivery('no')}
+                      style={styles.pickupOptionCard(pickupDelivery === 'no')}
+                      data-testid="pickup-no"
+                    >
+                      {pickupDelivery === 'no' && (
+                        <CheckCircle2 size={18} style={styles.checkIcon} />
+                      )}
+                      <div style={styles.pickupOptionTitle}>No Thanks</div>
+                      <div style={styles.pickupOptionSubtitle}>I'll drop off myself</div>
+                    </motion.button>
+
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => setPickupDelivery('yes')}
+                      style={styles.pickupOptionCard(pickupDelivery === 'yes')}
+                      data-testid="pickup-yes"
+                    >
+                      {pickupDelivery === 'yes' && (
+                        <CheckCircle2 size={18} style={styles.checkIcon} />
+                      )}
+                      <div style={styles.pickupOptionTitle}>Yes, Please!</div>
+                      <div style={styles.pickupOptionSubtitle}>Pick up & deliver my car</div>
+                      <div style={styles.pickupOptionPrice}>Starting at +$50</div>
+                    </motion.button>
+                  </div>
+
+                  {/* Distance Selection - Only shows when pickup is selected */}
+                  <AnimatePresence>
+                    {pickupDelivery === 'yes' && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3 }}
+                        style={{ marginTop: '16px' }}
+                      >
+                        <div style={styles.distanceNote}>
+                          <Info size={16} style={{ color: '#ef4444', flexShrink: 0 }} />
+                          <span>
+                            {calculatedDistance !== null
+                              ? `Distance from our Marietta location: ${calculatedDistance} miles`
+                              : 'Select the distance from our Marietta location to your address:'}
+                          </span>
+                        </div>
+                        <div style={styles.distanceOptions}>
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setPickupDistance('under15')}
+                            style={styles.distanceCard(pickupDistance === 'under15')}
+                            data-testid="distance-under15"
+                          >
+                            {pickupDistance === 'under15' && (
+                              <CheckCircle2 size={16} style={{ ...styles.checkIcon, top: '8px', right: '8px' }} />
+                            )}
+                            <div style={styles.distanceLabel}>Under 15 miles</div>
+                            <div style={styles.distancePrice}>+$50</div>
+                          </motion.button>
+
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => setPickupDistance('over15')}
+                            style={styles.distanceCard(pickupDistance === 'over15')}
+                            data-testid="distance-over15"
+                          >
+                            {pickupDistance === 'over15' && (
+                              <CheckCircle2 size={16} style={{ ...styles.checkIcon, top: '8px', right: '8px' }} />
+                            )}
+                            <div style={styles.distanceLabel}>Over 15 miles</div>
+                            <div style={styles.distancePrice}>+$75</div>
+                          </motion.button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
         {/* STEP 5 & 6 – DATE & TIME */}
         <div style={{ ...styles.twoColGrid, ...(isMobile && { gridTemplateColumns: '1fr' }) }}>
           <motion.div
