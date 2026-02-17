@@ -1726,6 +1726,16 @@ export default function BookAppointment() {
     return null;
   };
 
+  // Check if service doesn't require utilities (for mobile service)
+  const checkUtilitiesRequirement = (service) => {
+    // If service explicitly doesn't require utilities, return false
+    if (service.requires_utilities === false) {
+      return false;
+    }
+    // By default, services require utilities
+    return true;
+  };
+
   // State for showing location restriction warning
   const [locationRestrictionWarning, setLocationRestrictionWarning] = useState(null);
 
@@ -1759,6 +1769,7 @@ export default function BookAppointment() {
         setLocationRestrictionWarning({
           serviceName: service.name,
           requiredLocation: 'In Shop',
+          type: 'location',
           message: `"${service.name}" is only available for In Shop service. Please change your service location to "In Shop" to select this service.`
         });
         return; // Don't add the service
@@ -1769,15 +1780,34 @@ export default function BookAppointment() {
         setLocationRestrictionWarning({
           serviceName: service.name,
           requiredLocation: 'Mobile Service',
+          type: 'location',
           message: `"${service.name}" is only available for Mobile Service. Please change your service location to "Mobile Service" to select this service.`
         });
         return; // Don't add the service
       }
 
+      // Check utilities requirement for mobile service
+      if (serviceLocation?.id === 'mobile' && mobileUtilitiesConfirmed) {
+        const requiresUtilities = checkUtilitiesRequirement(service);
+        if (!requiresUtilities) {
+          // Service doesn't require utilities but user confirmed they have utilities
+          // This is just informational - let them know this service doesn't need utilities
+          setLocationRestrictionWarning({
+            serviceName: service.name,
+            type: 'utilities_not_required',
+            message: `Good news! "${service.name}" doesn't require water or electricity access, so you're all set for mobile service.`
+          });
+          // Still add the service - this is just informational
+        }
+      }
+
       // Add service if compatible
       if (canCombineService(service)) {
         setSelectedServices([...selectedServices, service]);
-        setLocationRestrictionWarning(null); // Clear any previous warning
+        // Only clear warning if it was a blocking warning (location type)
+        if (locationRestrictionWarning?.type === 'location') {
+          setLocationRestrictionWarning(null);
+        }
       }
     }
   };
