@@ -1890,11 +1890,11 @@ export default function BookAppointment() {
   };
 
   const progressSteps = [
-    { num: 1, label: 'Info', completed: formData.firstName && formData.email && formData.address },
-    { num: 2, label: 'Location', completed: serviceLocation !== null && (serviceLocation?.id !== 'mobile' || mobileUtilitiesConfirmed) },
-    { num: 3, label: 'Vehicle', completed: vehicleType !== null && vehicle.make && selectedColor },
-    { num: 4, label: 'Schedule', completed: selectedDate && selectedTime },
-    { num: 5, label: 'Service', completed: selectedServices.length > 0 },
+    { num: 1, label: 'Vehicle', completed: vehicleType !== null && vehicle.make && selectedColor },
+    { num: 2, label: 'Service', completed: selectedServices.length > 0 },
+    { num: 3, label: 'Info', completed: formData.firstName && formData.email && formData.address },
+    { num: 4, label: 'Location', completed: serviceLocation !== null && (serviceLocation?.id !== 'mobile' || mobileUtilitiesConfirmed) },
+    { num: 5, label: 'Schedule', completed: selectedDate && selectedTime },
   ];
 
   const completedSteps = progressSteps.filter(s => s.completed).length;
