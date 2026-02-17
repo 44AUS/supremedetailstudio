@@ -207,6 +207,93 @@ class SupremeDetailAPITester:
 
         return success
 
+    def test_utilities_functionality(self):
+        """Test utilities-specific functionality"""
+        print("\n🔧 Testing Utilities Functionality...")
+        
+        if not self.token:
+            print("❌ No token available for utilities testing")
+            return False
+        
+        # Test creating service with requires_utilities=False
+        no_utilities_service = {
+            "name": "No Utilities Test Service",
+            "category": "interior",
+            "description": "Service that doesn't require utilities",
+            "base_price": 100,
+            "vehicle_pricing": {"sedan": 100, "suv_2row": 150, "suv_3row": 200},
+            "duration_minutes": 60,
+            "is_active": True,
+            "shop_available": True,
+            "mobile_available": True,
+            "requires_utilities": False,  # Key test: service doesn't require utilities
+            "image_url": "",
+            "applies_to_categories": []
+        }
+        
+        success, response = self.run_test(
+            "Create Service (No Utilities Required)",
+            "POST",
+            "api/services",
+            200,
+            data=no_utilities_service
+        )
+        
+        if not success:
+            return False
+            
+        service_id = response.get('id')
+        print(f"   Created no-utilities service ID: {service_id}")
+        
+        # Verify the service was created correctly
+        success, service_data = self.run_test(
+            "Get No-Utilities Service",
+            "GET",
+            f"api/services/{service_id}",
+            200
+        )
+        
+        if success:
+            requires_utilities = service_data.get('requires_utilities')
+            if requires_utilities == False:
+                print("   ✅ Service correctly created with requires_utilities=False")
+            else:
+                print(f"   ❌ Service has wrong requires_utilities value: {requires_utilities}")
+                
+        # Test creating shop-only service
+        shop_only_service = {
+            "name": "Shop Only Test Service",
+            "category": "protection",
+            "description": "Service only available in shop",
+            "base_price": 500,
+            "vehicle_pricing": {"sedan": 500, "suv_2row": 600, "suv_3row": 700},
+            "duration_minutes": 180,
+            "is_active": True,
+            "shop_available": True,
+            "mobile_available": False,  # Shop only
+            "requires_utilities": True,
+            "image_url": "",
+            "applies_to_categories": []
+        }
+        
+        success2, response2 = self.run_test(
+            "Create Service (Shop Only)",
+            "POST",
+            "api/services",
+            200,
+            data=shop_only_service
+        )
+        
+        if success2:
+            shop_service_id = response2.get('id')
+            print(f"   Created shop-only service ID: {shop_service_id}")
+            
+            # Clean up both test services
+            self.run_test("Delete No-Utilities Service", "DELETE", f"api/services/{service_id}", 200)
+            self.run_test("Delete Shop-Only Service", "DELETE", f"api/services/{shop_service_id}", 200)
+            
+        return success and success2
+
     def test_schedule_operations(self):
         """Test schedule management"""
         if not self.token:
