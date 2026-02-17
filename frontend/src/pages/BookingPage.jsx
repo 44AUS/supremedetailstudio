@@ -1713,6 +1713,22 @@ export default function BookAppointment() {
     return true;
   };
 
+  // Check if a service has location restrictions
+  const hasLocationRestriction = (service) => {
+    // Check if service is shop-only (shop_available but NOT mobile_available)
+    if (service.shop_available === true && service.mobile_available === false) {
+      return 'shop';
+    }
+    // Check if service is mobile-only (mobile_available but NOT shop_available)
+    if (service.mobile_available === true && service.shop_available === false) {
+      return 'mobile';
+    }
+    return null;
+  };
+
+  // State for showing location restriction warning
+  const [locationRestrictionWarning, setLocationRestrictionWarning] = useState(null);
+
   const toggleServiceSelection = (service) => {
     const isSelected = selectedServices.some(s => s.id === service.id);
 
@@ -1730,10 +1746,38 @@ export default function BookAppointment() {
         return appliesTo.some(c => remainingMainCategories.includes(c));
       });
       setSelectedServices(cleaned);
+      // Clear warning if no services selected
+      if (cleaned.length === 0) {
+        setLocationRestrictionWarning(null);
+      }
     } else {
+      // Check for location restrictions before adding
+      const restriction = hasLocationRestriction(service);
+      
+      if (restriction === 'shop' && serviceLocation?.id === 'mobile') {
+        // Service is shop-only but user selected mobile service
+        setLocationRestrictionWarning({
+          serviceName: service.name,
+          requiredLocation: 'In Shop',
+          message: `"${service.name}" is only available for In Shop service. Please change your service location to "In Shop" to select this service.`
+        });
+        return; // Don't add the service
+      }
+      
+      if (restriction === 'mobile' && serviceLocation?.id === 'shop') {
+        // Service is mobile-only but user selected shop service
+        setLocationRestrictionWarning({
+          serviceName: service.name,
+          requiredLocation: 'Mobile Service',
+          message: `"${service.name}" is only available for Mobile Service. Please change your service location to "Mobile Service" to select this service.`
+        });
+        return; // Don't add the service
+      }
+
       // Add service if compatible
       if (canCombineService(service)) {
         setSelectedServices([...selectedServices, service]);
+        setLocationRestrictionWarning(null); // Clear any previous warning
       }
     }
   };
