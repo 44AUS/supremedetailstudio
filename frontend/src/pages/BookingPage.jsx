@@ -1889,6 +1889,19 @@ export default function BookAppointment() {
     });
   };
 
+  // Get services hidden due to time constraints (for current category)
+  const getHiddenServicesForCategory = (categoryName) => {
+    if (!selectedTime || !categoryName) return [];
+    const availableMinutes = getSelectedSlotAvailableMinutes();
+    if (availableMinutes === null) return [];
+    
+    return availableServices.filter(service => {
+      if (service.category !== categoryName) return false;
+      if (selectedServices.some(s => s.id === service.id)) return false; // Don't count selected services
+      return !canServiceFitInTime(service);
+    });
+  };
+
   const progressSteps = [
     { num: 1, label: 'Vehicle', completed: vehicleType !== null && vehicle.make && selectedColor },
     { num: 2, label: 'Service', completed: selectedServices.length > 0 },
