@@ -2510,6 +2510,39 @@ export default function BookAppointment() {
             </div>
           )}
 
+          {/* Time constraint warning */}
+          {selectedTime && getSelectedSlotAvailableMinutes() !== null && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: isMobile ? '8px' : '10px',
+              padding: isMobile ? '10px 12px' : '12px 16px',
+              background: 'rgba(59, 130, 246, 0.1)',
+              border: '1px solid rgba(59, 130, 246, 0.3)',
+              borderRadius: '12px',
+              marginBottom: isMobile ? '16px' : '20px',
+            }}
+            data-testid="time-constraint-info"
+            >
+              <Clock size={isMobile ? 16 : 18} style={{ color: '#3b82f6', flexShrink: 0 }} />
+              <p style={{
+                margin: 0,
+                color: 'rgba(255,255,255,0.8)',
+                fontSize: isMobile ? '12px' : '13px',
+                lineHeight: 1.5,
+                fontFamily: "'Montserrat', sans-serif",
+              }}>
+                <strong style={{ color: '#3b82f6' }}>Time Available:</strong> {getSelectedSlotAvailableMinutes()} minutes available at {selectedTime}. 
+                Services that exceed this time will not be shown.
+                {selectedServices.length > 0 && (
+                  <span style={{ color: '#3b82f6', fontWeight: 600 }}>
+                    {' '}(Current selection: {selectedServices.reduce((sum, s) => sum + (s.duration_minutes || 60), 0)} min)
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
+
           {/* Services filtered by category */}
           {selectedCategory && (
             <>
