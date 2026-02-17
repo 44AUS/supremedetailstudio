@@ -1,104 +1,65 @@
-# Supreme Detail Studio - Admin Dashboard & Booking System PRD
+# Supreme Detail Studio - PRD
 
 ## Original Problem Statement
-Build an admin dashboard with booking appointment page logic that allows:
-- Add services and subcategories for interior/exterior details
-- Toggle in-shop/mobile service location
-- Select available times and closed days/holidays
-- Complete booking page showing booking details on completion
-- Admin to see bookings and mark as in_progress/complete/incomplete
-- UI consistent with existing site styling
-
-### Feature Requests:
-**Feb 12, 2026 - Customer Management:**
-- Customer matching by both email AND phone
-- Auto-create customer when any new booking is created
-- Full customer view with booking stats, notes/tags
-- Add/edit customer details, search, import/export CSV
-
-**Feb 12, 2026 - Custom Categories:**
-- Allow admin to create custom service categories
-- Categories are manageable (add, edit, delete)
-- Services use dynamic categories from database
-
-**Feb 12, 2026 - Drag & Drop + Business Settings:**
-- Category reordering with drag-and-drop
-- Business settings: shop name, address, phone, email
-- Mobile service upcharge and description configurable
-- Settings reflected dynamically on booking page
+When a customer is booking on the booking page if a service is only available for in shop it should notify them and make them change their selection before proceeding. Also next to all times put AM or PM, and on the customer confirmation page it should show the shop address only if they chose in shop and also let them know to save the information for their records.
 
 ## Architecture
+- **Frontend**: React.js with Framer Motion animations
+- **Backend**: FastAPI (Python)
+- **Database**: MongoDB
 
-### Backend (FastAPI + MongoDB)
-- **Authentication**: JWT-based admin login
-- **Categories API**: CRUD + reorder for custom categories
-- **Services API**: CRUD with categories, vehicle pricing, duration
-- **Schedule API**: Business hours, closed dates
-- **Bookings API**: CRUD, status management, auto-customer creation
-- **Customers API**: CRUD, search, import/export CSV
-- **Business Settings API**: Shop info, mobile service config
-- **Availability API**: Real-time slot availability
+## User Personas
+1. **Customers**: Book detailing services, view confirmations
+2. **Admin**: Manage bookings, services, customers, schedule
 
-### Frontend (React)
-- **Admin Dashboard**: Stats, recent bookings
-- **Services Management**: Drag-and-drop categories, business settings modal
-- **Schedule Management**: Business hours, closed dates
-- **Bookings Management**: Table view, status updates
-- **Customers Management**: Table, search, import/export
-- **Public Booking Page**: Dynamic shop address, mobile upcharge from settings
-- **Booking Confirmation**: Details display
+## Core Requirements (Static)
+- Multi-service booking system
+- Shop and mobile service options
+- Customer management with booking history
+- SMS notifications via Twilio
+- Google Reviews integration
 
-## What's Been Implemented
+## What's Been Implemented (Feb 17, 2026)
 
-### Backend
-- [x] Admin authentication
-- [x] Custom Categories CRUD with reorder API
-- [x] Services CRUD with dynamic categories
-- [x] Business Settings API (GET/PUT)
-- [x] Schedule management
-- [x] Bookings with status and auto-customer
-- [x] Customer Management APIs
-- [x] Dashboard stats
+### Location Restriction Notification
+- Added `hasLocationRestriction()` function to detect shop-only or mobile-only services
+- When user selects "Mobile Service" and tries to add a shop-only service, warning message appears
+- User must change service location to "In Shop" before adding the service
+- Warning can be dismissed with "Got it" button
 
-### Frontend
-- [x] Admin login
-- [x] Dashboard with stats
-- [x] Services page with:
-  - Drag-and-drop category reordering (@dnd-kit)
-  - Business Settings modal (shop name, address, phone, email, mobile upcharge)
-  - Dynamic category dropdown
-- [x] Schedule management
-- [x] Bookings management
-- [x] Customers management (list, search, CRUD, import/export)
-- [x] Booking page with dynamic business settings
-- [x] Booking confirmation
+### AM/PM Time Formatting
+- TIME_SLOTS array already includes AM/PM format (9:00 AM, 10:00 AM, etc.)
+- `formatTime24to12()` function converts 24h API times to 12h AM/PM
+- `formatTime()` function in BookingConfirmation ensures AM/PM display
 
-### Admin Credentials
-- Username: admin
-- Password: supremeadmin123
+### Shop Address on Confirmation (Conditional)
+- Shop address section only displays when `service_location === 'shop'`
+- Fetches address from `/api/settings/business` endpoint
+- Shows with MapPin icon in styled box
 
-## Testing Status
-- Backend: 93.8% functional
-- Frontend: 85% functional
+### Save Information Note
+- Added blue info box at bottom of confirmation page
+- Text: "Save This Information: We recommend saving or printing this page for your records. You can also take a screenshot for easy reference."
 
-## Recent Bug Fixes (Feb 12, 2026)
-- **Calendar Date Selection**: Fixed calendar to use proper Date objects instead of day numbers, enabling correct date formatting for API calls
-- **Month Navigation**: Added prev/next month buttons to calendar
-- **Time Slot Availability**: Time slots now correctly show booked times as unavailable
-- **Time Format**: Added 24h to 12h AM/PM conversion for user-friendly display
+## Prioritized Backlog
 
-## Next Action Items
+### P0 (Critical) - DONE
+- ✅ Location restriction warning for shop-only services
+- ✅ AM/PM time format display
+- ✅ Conditional shop address on confirmation
+- ✅ Save for records note
 
-### P0 (High Priority)
-- [ ] Add sample detailing services
-- [ ] Full end-to-end booking test
+### P1 (Important)
+- Email confirmation to customers
+- Multi-vehicle booking support
+- Service image gallery
 
-### P1 (Medium Priority)
-- [ ] Email notifications (SendGrid)
-- [ ] Booking calendar view
-- [ ] Export bookings to CSV
+### P2 (Nice to Have)
+- Calendar sync (Google/Apple)
+- Customer account portal
+- Online payment integration
 
-### P2 (Lower Priority)
-- [ ] SMS notifications (Twilio)
-- [ ] Revenue reporting
-- [ ] Multi-admin support
+## Next Tasks
+- Test the location restriction with actual shop-only services in the database
+- Add email confirmation functionality
+- Consider adding print/PDF download option for confirmation page
