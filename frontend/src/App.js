@@ -60,6 +60,9 @@ import AdminCustomers from './pages/admin/AdminCustomers';
 import AdminContacts from './pages/admin/AdminContacts';
 import AdminQuotes from './pages/admin/AdminQuotes';
 import AdminSMS from './pages/admin/AdminSMS';
+import AdminBusinessSettings from './pages/admin/AdminBusinessSettings';
+import AdminCategories from './pages/admin/AdminCategories';
+import AdminVehicles from './pages/admin/AdminVehicles';
 import StarlightHeadlinerPage from './pages/StarlightHeadlinerPage';
 
 function MainApp() {
