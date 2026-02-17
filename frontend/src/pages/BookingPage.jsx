@@ -1857,12 +1857,44 @@ export default function BookAppointment() {
     });
   };
 
+  // Get available minutes for the selected time slot
+  const getSelectedSlotAvailableMinutes = () => {
+    if (!selectedTime) return null;
+    const slot = availableSlots.find(s => s.time === selectedTime);
+    return slot ? slot.available_minutes : null;
+  };
+
+  // Check if a service can fit within the available time (considering buffer)
+  const canServiceFitInTime = (service) => {
+    const availableMinutes = getSelectedSlotAvailableMinutes();
+    if (availableMinutes === null) return true; // No time selected yet, show all services
+    
+    // Service duration + buffer must fit within available time
+    const serviceDuration = service.duration_minutes || 60;
+    const currentTotalDuration = selectedServices.reduce((sum, s) => sum + (s.duration_minutes || 60), 0);
+    const newTotalDuration = currentTotalDuration + serviceDuration;
+    
+    return newTotalDuration <= availableMinutes;
+  };
+
+  // Filter services that can fit in the selected time slot
+  const getServicesForTimeSlot = () => {
+    if (!selectedTime) return availableServices;
+    
+    return availableServices.filter(service => {
+      // Check if already selected (always show selected services)
+      if (selectedServices.some(s => s.id === service.id)) return true;
+      // Check if service can fit in available time
+      return canServiceFitInTime(service);
+    });
+  };
+
   const progressSteps = [
     { num: 1, label: 'Info', completed: formData.firstName && formData.email && formData.address },
     { num: 2, label: 'Location', completed: serviceLocation !== null && (serviceLocation?.id !== 'mobile' || mobileUtilitiesConfirmed) },
     { num: 3, label: 'Vehicle', completed: vehicleType !== null && vehicle.make && selectedColor },
-    { num: 4, label: 'Service', completed: selectedServices.length > 0 },
-    { num: 5, label: 'Schedule', completed: selectedDate && selectedTime },
+    { num: 4, label: 'Schedule', completed: selectedDate && selectedTime },
+    { num: 5, label: 'Service', completed: selectedServices.length > 0 },
   ];
 
   const completedSteps = progressSteps.filter(s => s.completed).length;
