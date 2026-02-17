@@ -2387,20 +2387,30 @@ export default function BookAppointment() {
                   alignItems: 'flex-start',
                   gap: isMobile ? '10px' : '12px',
                   padding: isMobile ? '14px 12px' : '16px',
-                  background: 'rgba(245, 158, 11, 0.15)',
-                  border: '2px solid rgba(245, 158, 11, 0.5)',
+                  background: locationRestrictionWarning.type === 'utilities_not_required' 
+                    ? 'rgba(34, 197, 94, 0.15)' 
+                    : 'rgba(245, 158, 11, 0.15)',
+                  border: locationRestrictionWarning.type === 'utilities_not_required'
+                    ? '2px solid rgba(34, 197, 94, 0.5)'
+                    : '2px solid rgba(245, 158, 11, 0.5)',
                   borderRadius: '12px',
                 }}>
-                  <Info size={isMobile ? 20 : 24} style={{ color: '#f59e0b', flexShrink: 0, marginTop: '2px' }} />
+                  <Info size={isMobile ? 20 : 24} style={{ 
+                    color: locationRestrictionWarning.type === 'utilities_not_required' ? '#22c55e' : '#f59e0b', 
+                    flexShrink: 0, 
+                    marginTop: '2px' 
+                  }} />
                   <div style={{ flex: 1 }}>
                     <p style={{
                       margin: '0 0 10px 0',
-                      color: '#f59e0b',
+                      color: locationRestrictionWarning.type === 'utilities_not_required' ? '#22c55e' : '#f59e0b',
                       fontSize: isMobile ? '13px' : '14px',
                       fontWeight: 600,
                       fontFamily: "'Montserrat', sans-serif",
                     }}>
-                      Service Location Required
+                      {locationRestrictionWarning.type === 'utilities_not_required' 
+                        ? 'No Utilities Required' 
+                        : 'Service Location Required'}
                     </p>
                     <p style={{
                       margin: '0 0 12px 0',
@@ -2415,10 +2425,14 @@ export default function BookAppointment() {
                       onClick={() => setLocationRestrictionWarning(null)}
                       style={{
                         padding: '8px 16px',
-                        background: 'rgba(245, 158, 11, 0.2)',
-                        border: '1px solid rgba(245, 158, 11, 0.5)',
+                        background: locationRestrictionWarning.type === 'utilities_not_required'
+                          ? 'rgba(34, 197, 94, 0.2)'
+                          : 'rgba(245, 158, 11, 0.2)',
+                        border: locationRestrictionWarning.type === 'utilities_not_required'
+                          ? '1px solid rgba(34, 197, 94, 0.5)'
+                          : '1px solid rgba(245, 158, 11, 0.5)',
                         borderRadius: '8px',
-                        color: '#f59e0b',
+                        color: locationRestrictionWarning.type === 'utilities_not_required' ? '#22c55e' : '#f59e0b',
                         fontSize: isMobile ? '12px' : '13px',
                         fontWeight: 600,
                         fontFamily: "'Montserrat', sans-serif",
