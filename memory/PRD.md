@@ -1,50 +1,67 @@
 # Supreme Detail Studio - PRD
 
 ## Original Problem Statement
-When a customer is booking on the booking page if a service is only available for in shop it should notify them and make them change their selection before proceeding. Also next to all times put AM or PM, and on the customer confirmation page it should show the shop address only if they chose in shop and also let them know to save the information for their records.
+1. When a customer is booking on the booking page if a service is only available for in shop it should notify them and make them change their selection before proceeding.
+2. Add AM/PM to all times on booking and confirmation pages.
+3. Show shop address only for "in shop" on confirmation page.
+4. Let customers know to save the information for their records.
+5. Add same warning for services that don't require water/utility.
+6. Implement requires_utilities functionality in admin.
 
 ## Architecture
 - **Frontend**: React.js with Framer Motion animations
 - **Backend**: FastAPI (Python)
 - **Database**: MongoDB
 
-## User Personas
-1. **Customers**: Book detailing services, view confirmations
-2. **Admin**: Manage bookings, services, customers, schedule
-
 ## Core Requirements (Static)
-- Multi-service booking system
+- Multi-service booking system with location restrictions
 - Shop and mobile service options
+- Service-level utility requirements
 - Customer management with booking history
 - SMS notifications via Twilio
-- Google Reviews integration
 
 ## What's Been Implemented (Feb 17, 2026)
 
-### Location Restriction Notification
-- Added `hasLocationRestriction()` function to detect shop-only or mobile-only services
-- When user selects "Mobile Service" and tries to add a shop-only service, warning message appears
+### Location Restriction Notification (Shop-Only Services)
+- `hasLocationRestriction()` function detects shop-only or mobile-only services
+- When user selects "Mobile Service" and tries to add a shop-only service, amber warning appears
 - User must change service location to "In Shop" before adding the service
-- Warning can be dismissed with "Got it" button
+- Blocking warning prevents service from being added
+
+### Utilities Requirement System
+- **Backend**: Added `requires_utilities` field to ServiceCreate and ServiceUpdate models
+- **Admin Panel**: Added "Requires Water/Electric" toggle in service form
+- **Service Cards**: Shows green "No Utilities" badge when requires_utilities=false
+- **Booking Page**: Shows green info message when selecting a service that doesn't require utilities while in mobile mode
 
 ### AM/PM Time Formatting
-- TIME_SLOTS array already includes AM/PM format (9:00 AM, 10:00 AM, etc.)
-- `formatTime24to12()` function converts 24h API times to 12h AM/PM
-- `formatTime()` function in BookingConfirmation ensures AM/PM display
+- TIME_SLOTS array includes AM/PM format
+- `formatTime24to12()` converts 24h API times to 12h AM/PM
+- `formatTime()` in BookingConfirmation ensures AM/PM display
 
-### Shop Address on Confirmation (Conditional)
-- Shop address section only displays when `service_location === 'shop'`
+### Conditional Shop Address on Confirmation
+- Shop address only displays when `service_location === 'shop'`
 - Fetches address from `/api/settings/business` endpoint
-- Shows with MapPin icon in styled box
 
 ### Save Information Note
-- Added blue info box at bottom of confirmation page
-- Text: "Save This Information: We recommend saving or printing this page for your records. You can also take a screenshot for easy reference."
+- Blue info box at bottom of confirmation page
+- Encourages customers to save/print for records
+
+## Test Services Created
+1. **Paint Protection Film (Full Front)**: shop_available=true, mobile_available=false, requires_utilities=true
+2. **Waterless Exterior Wash**: shop_available=true, mobile_available=true, requires_utilities=false
+
+## API Endpoints
+- `GET /api/services` - Returns services with shop_available, mobile_available, requires_utilities fields
+- `POST /api/services` - Create service with all availability fields
+- `PUT /api/services/{id}` - Update service including requires_utilities
 
 ## Prioritized Backlog
 
 ### P0 (Critical) - DONE
 - ✅ Location restriction warning for shop-only services
+- ✅ Utilities requirement warning system
+- ✅ Admin toggle for requires_utilities
 - ✅ AM/PM time format display
 - ✅ Conditional shop address on confirmation
 - ✅ Save for records note
@@ -52,14 +69,7 @@ When a customer is booking on the booking page if a service is only available fo
 ### P1 (Important)
 - Email confirmation to customers
 - Multi-vehicle booking support
-- Service image gallery
 
 ### P2 (Nice to Have)
 - Calendar sync (Google/Apple)
-- Customer account portal
-- Online payment integration
-
-## Next Tasks
-- Test the location restriction with actual shop-only services in the database
-- Add email confirmation functionality
-- Consider adding print/PDF download option for confirmation page
+- Print/PDF download for confirmation
