@@ -204,6 +204,166 @@ class BookingSystemTester:
             self.log_test("Services API Response", False, "Invalid response format")
             return False
 
+    def test_categories_api(self):
+        """Test categories API endpoints"""
+        # Test GET categories
+        success, response = self.run_test(
+            "Categories API - Get All",
+            "GET",
+            "api/categories",
+            200
+        )
+        
+        if success and isinstance(response, list):
+            category_count = len(response)
+            self.log_test("Categories Response", True, f"Found {category_count} categories")
+            
+            # Test creating a new category (admin only)
+            if self.token:
+                test_category = {
+                    "name": "test_category",
+                    "label": "Test Category",
+                    "description": "Test category for API testing",
+                    "sort_order": 99,
+                    "is_addon": False
+                }
+                
+                create_success, create_response = self.run_test(
+                    "Categories API - Create",
+                    "POST",
+                    "api/categories",
+                    200,
+                    data=test_category
+                )
+                
+                if create_success and 'id' in create_response:
+                    category_id = create_response['id']
+                    self.log_test("Category Creation", True, f"Created category {category_id}")
+                    return True
+                else:
+                    self.log_test("Category Creation", False, "Failed to create category")
+            return True
+        else:
+            self.log_test("Categories Response", False, "Invalid response format")
+            return False
+
+    def test_vehicles_api(self):
+        """Test vehicles API endpoints"""
+        # Test GET vehicles
+        success, response = self.run_test(
+            "Vehicles API - Get All",
+            "GET",
+            "api/vehicles",
+            200
+        )
+        
+        if success and isinstance(response, list):
+            vehicle_count = len(response)
+            self.log_test("Vehicles Response", True, f"Found {vehicle_count} vehicles")
+            
+            # Test creating a new vehicle (admin only)
+            if self.token:
+                test_vehicle = {
+                    "year": "2024",
+                    "make": "Test",
+                    "model": "Vehicle",
+                    "is_active": True
+                }
+                
+                create_success, create_response = self.run_test(
+                    "Vehicles API - Create",
+                    "POST",
+                    "api/vehicles",
+                    200,
+                    data=test_vehicle
+                )
+                
+                if create_success and 'id' in create_response:
+                    vehicle_id = create_response['id']
+                    self.log_test("Vehicle Creation", True, f"Created vehicle {vehicle_id}")
+                    
+                    # Test bulk create
+                    bulk_vehicles = [
+                        {"year": "2023", "make": "Bulk", "model": "Test1", "is_active": True},
+                        {"year": "2023", "make": "Bulk", "model": "Test2", "is_active": True}
+                    ]
+                    
+                    bulk_success, bulk_response = self.run_test(
+                        "Vehicles API - Bulk Create",
+                        "POST",
+                        "api/vehicles/bulk",
+                        200,
+                        data=bulk_vehicles
+                    )
+                    
+                    if bulk_success:
+                        self.log_test("Vehicle Bulk Creation", True, "Bulk create successful")
+                    else:
+                        self.log_test("Vehicle Bulk Creation", False, "Bulk create failed")
+                    
+                    return True
+                else:
+                    self.log_test("Vehicle Creation", False, "Failed to create vehicle")
+            return True
+        else:
+            self.log_test("Vehicles Response", False, "Invalid response format")
+            return False
+
+    def test_business_settings_custom_vehicles(self):
+        """Test business settings enable_custom_vehicles toggle"""
+        if not self.token:
+            self.log_test("Custom Vehicles Toggle Test", False, "No admin token")
+            return False
+
+        # Get current settings
+        success, response = self.run_test(
+            "Business Settings - Get Current",
+            "GET",
+            "api/settings/business",
+            200
+        )
+        
+        if success:
+            has_custom_vehicles_field = 'enable_custom_vehicles' in response
+            current_value = response.get('enable_custom_vehicles', False)
+            
+            if has_custom_vehicles_field:
+                self.log_test("Custom Vehicles Field Present", True, f"Current value: {current_value}")
+                
+                # Test updating the toggle
+                new_value = not current_value
+                update_data = response.copy()
+                update_data['enable_custom_vehicles'] = new_value
+                
+                update_success, update_response = self.run_test(
+                    "Update Custom Vehicles Toggle",
+                    "PUT",
+                    "api/settings/business",
+                    200,
+                    data=update_data
+                )
+                
+                if update_success:
+                    # Verify the update
+                    verify_success, verify_response = self.run_test(
+                        "Verify Custom Vehicles Update",
+                        "GET",
+                        "api/settings/business",
+                        200
+                    )
+                    
+                    if verify_success and verify_response.get('enable_custom_vehicles') == new_value:
+                        self.log_test("Custom Vehicles Toggle Update", True, f"Updated to: {new_value}")
+                        return True
+                    else:
+                        self.log_test("Custom Vehicles Toggle Update", False, "Update not reflected")
+                else:
+                    self.log_test("Custom Vehicles Toggle Update", False, "Update request failed")
+            else:
+                self.log_test("Custom Vehicles Field Present", False, "Field missing from response")
+        
+        return False
+
     def test_booking_creation_with_time_constraint(self):
         """Test creating a booking and verify time constraints work"""
         if not self.token:
