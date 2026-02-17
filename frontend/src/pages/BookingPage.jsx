@@ -3308,7 +3308,7 @@ function TimeSlotPicker({ slots, selected, onSelect }) {
           }}
           data-testid={`time-slot-${slot.time.replace(/\s+/g, '-').toLowerCase()}`}
         >
-          <Clock size={timeMobile ? 12 : 14} />
+          <Clock size={timeMobile ? 12 : 14} style={{ color: 'inherit' }} />
           {slot.time}
         </motion.button>
       ))}
