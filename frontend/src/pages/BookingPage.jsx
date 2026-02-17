@@ -6,7 +6,7 @@ import {
   ChevronRight, CheckCircle2, Sparkles, Shield, 
   Droplets, Sun, ArrowRight, ChevronLeft, MapPin,
   Building2, Truck, ChevronDown, Palette, Loader2,
-  CarFront, Info, Zap
+  CarFront, Info, Zap, AlertCircle
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
