@@ -83,6 +83,7 @@ class ServiceCreate(BaseModel):
     is_active: bool = True
     shop_available: bool = True
     mobile_available: bool = True
+    requires_utilities: bool = True  # Whether this service requires water/electric for mobile service
     image_url: Optional[str] = ""
     applies_to_categories: Optional[List[str]] = []  # For add-on services: which categories this add-on appears for
 
@@ -96,6 +97,7 @@ class ServiceUpdate(BaseModel):
     is_active: Optional[bool] = None
     shop_available: Optional[bool] = None
     mobile_available: Optional[bool] = None
+    requires_utilities: Optional[bool] = None
     image_url: Optional[str] = None
     applies_to_categories: Optional[List[str]] = None
 
