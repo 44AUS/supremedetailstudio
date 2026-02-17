@@ -119,7 +119,16 @@ class BookingService(BaseModel):
     base_price: float
     duration_minutes: int
 
+class BookingVehicle(BaseModel):
+    vehicle_year: str
+    vehicle_make: str
+    vehicle_model: str
+    vehicle_type: str  # sedan, suv-2row, suv-3row
+    vehicle_color: Optional[str] = None
+
 class BookingCreate(BaseModel):
+    customer_type: Optional[str] = "person"  # "person" or "business"
+    business_name: Optional[str] = ""
     customer_first_name: str
     customer_last_name: str
     customer_phone: str
@@ -133,6 +142,7 @@ class BookingCreate(BaseModel):
     vehicle_model: str
     vehicle_type: str  # sedan, suv-2row, suv-3row
     vehicle_color: Optional[str] = None
+    vehicles: Optional[List[BookingVehicle]] = []  # All vehicles (for multi-vehicle bookings)
     service_id: str  # Primary service (for backward compatibility)
     service_name: str  # Primary service name
     services: Optional[List[BookingService]] = []  # All selected services (for multi-service bookings)
@@ -149,6 +159,8 @@ class BookingPaidUpdate(BaseModel):
     is_paid: bool
 
 class BookingUpdate(BaseModel):
+    customer_type: Optional[str] = None
+    business_name: Optional[str] = None
     customer_first_name: Optional[str] = None
     customer_last_name: Optional[str] = None
     customer_phone: Optional[str] = None
@@ -162,17 +174,22 @@ class BookingUpdate(BaseModel):
     vehicle_model: Optional[str] = None
     vehicle_type: Optional[str] = None
     vehicle_color: Optional[str] = None
+    vehicles: Optional[List[BookingVehicle]] = None
     service_id: Optional[str] = None
     service_name: Optional[str] = None
+    services: Optional[List[BookingService]] = None
     booking_date: Optional[str] = None
     booking_time: Optional[str] = None
     total_price: Optional[float] = None
+    total_duration: Optional[int] = None
     notes: Optional[str] = None
     status: Optional[str] = None
 
 # ============== Customer Models ==============
 
 class CustomerCreate(BaseModel):
+    customer_type: Optional[str] = "person"  # "person" or "business"
+    business_name: Optional[str] = ""
     first_name: str
     last_name: str
     phone: str
@@ -182,6 +199,8 @@ class CustomerCreate(BaseModel):
     tags: Optional[List[str]] = []
 
 class CustomerUpdate(BaseModel):
+    customer_type: Optional[str] = None
+    business_name: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     phone: Optional[str] = None
@@ -1825,6 +1844,12 @@ async def mark_conversation_read(phone: str):
         {"$set": {"read": True}}
     )
     return {"message": "Conversation marked as read"}
+
+@app.delete("/api/sms/conversations", dependencies=[Depends(verify_token)])
+async def delete_sms_conversation(phone: str):
+    normalized = format_phone_for_twilio(phone)
+    result = await db.sms_logs.delete_many({"customer_phone": normalized})
+    return {"message": f"Deleted {result.deleted_count} messages"}
 
 @app.get("/api/sms/customer-count", dependencies=[Depends(verify_token)])
 async def get_sms_customer_count(tags: Optional[str] = None, min_bookings: Optional[int] = None, min_spent: Optional[float] = None):

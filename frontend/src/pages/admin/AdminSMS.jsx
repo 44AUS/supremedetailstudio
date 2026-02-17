@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  MessageSquare, Send, Users, Filter, Search, Edit2, Save, X, Loader2,
+  MessageSquare, Send, Users, Filter, Search, Edit2, Save, X, Loader2, Trash2,
   Settings, FileText, Phone, Clock, CheckCircle, AlertCircle, ToggleLeft, ToggleRight
 } from 'lucide-react';
 
@@ -119,6 +119,26 @@ export default function AdminSMS() {
       console.error('Failed to send message:', err);
     } finally {
       setSending(false);
+    }
+  };
+
+  // Delete conversation
+  const deleteConversation = async (phone) => {
+    if (!window.confirm('Are you sure you want to delete this conversation? All messages will be permanently removed.')) return;
+    try {
+      const res = await fetch(`${API_URL}/api/sms/conversations?phone=${encodeURIComponent(phone)}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (res.ok) {
+        if (selectedConvo?.phone === phone) {
+          setSelectedConvo(null);
+          setMessages([]);
+        }
+        fetchConversations();
+      }
+    } catch (err) {
+      console.error('Failed to delete conversation:', err);
     }
   };
 
@@ -381,10 +401,17 @@ export default function AdminSMS() {
                   <div style={styles.convoAvatar}>
                     {(selectedConvo.customer_name || '?')[0].toUpperCase()}
                   </div>
-                  <div>
+                  <div style={{ flex: 1 }}>
                     <div style={styles.headerName}>{selectedConvo.customer_name || 'Unknown'}</div>
                     <div style={styles.headerPhone}>{selectedConvo.phone}</div>
                   </div>
+                  <button
+                    onClick={() => deleteConversation(selectedConvo.phone)}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', fontFamily: "'Oswald', sans-serif", fontSize: '12px', fontWeight: 600, letterSpacing: '0.5px', cursor: 'pointer' }}
+                    title="Delete conversation"
+                  >
+                    <Trash2 size={14} /> DELETE
+                  </button>
                 </div>
                 <div style={styles.messageThread}>
                   {messages.map((msg) => (

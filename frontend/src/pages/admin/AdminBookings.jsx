@@ -24,20 +24,25 @@ const VEHICLE_TYPES = [
   { id: 'suv-3row', label: '3-Row SUV / Large Truck' },
 ];
 
+const emptyVehicle = {
+  vehicle_year: '',
+  vehicle_make: '',
+  vehicle_model: '',
+  vehicle_type: 'sedan',
+  vehicle_color: '',
+};
+
 const emptyBookingForm = {
+  customer_type: 'person',
+  business_name: '',
   customer_first_name: '',
   customer_last_name: '',
   customer_phone: '',
   customer_email: '',
   customer_address: '',
   service_location: 'shop',
-  vehicle_year: '',
-  vehicle_make: '',
-  vehicle_model: '',
-  vehicle_type: 'sedan',
-  vehicle_color: '',
-  service_id: '',
-  service_name: '',
+  vehicles: [{ ...emptyVehicle }],
+  selectedServices: [],
   booking_date: '',
   booking_time: '',
   total_price: 0,
@@ -235,15 +240,18 @@ export default function AdminBookings() {
   };
 
   const selectCustomer = async (customer) => {
+    const isBusiness = customer.customer_type === 'business';
     setBookingForm(prev => ({
       ...prev,
+      customer_type: customer.customer_type || 'person',
+      business_name: customer.business_name || '',
       customer_first_name: customer.first_name || '',
       customer_last_name: customer.last_name || '',
       customer_phone: customer.phone || '',
       customer_email: customer.email || '',
       customer_address: customer.address || '',
     }));
-    setCustomerSearch(`${customer.first_name} ${customer.last_name}`);
+    setCustomerSearch(isBusiness ? (customer.business_name || '') : `${customer.first_name} ${customer.last_name}`);
     setShowCustomerDropdown(false);
 
     // Try to fetch last booking to auto-fill vehicle info
@@ -252,17 +260,24 @@ export default function AdminBookings() {
         headers: { Authorization: `Bearer ${getToken()}` },
       });
       if (response.ok) {
-        const bookings = await response.json();
-        if (bookings.length > 0) {
-          const lastBooking = bookings[0];
-          setBookingForm(prev => ({
-            ...prev,
-            vehicle_year: lastBooking.vehicle_year || prev.vehicle_year,
-            vehicle_make: lastBooking.vehicle_make || prev.vehicle_make,
-            vehicle_model: lastBooking.vehicle_model || prev.vehicle_model,
-            vehicle_type: lastBooking.vehicle_type || prev.vehicle_type,
-            vehicle_color: lastBooking.vehicle_color || prev.vehicle_color,
-          }));
+        const custBookings = await response.json();
+        if (custBookings.length > 0) {
+          const lastBooking = custBookings[0];
+          // If the last booking had multiple vehicles, use them all; otherwise use single vehicle fields
+          if (lastBooking.vehicles && lastBooking.vehicles.length > 0) {
+            setBookingForm(prev => ({ ...prev, vehicles: lastBooking.vehicles }));
+          } else {
+            setBookingForm(prev => ({
+              ...prev,
+              vehicles: [{
+                vehicle_year: lastBooking.vehicle_year || '',
+                vehicle_make: lastBooking.vehicle_make || '',
+                vehicle_model: lastBooking.vehicle_model || '',
+                vehicle_type: lastBooking.vehicle_type || 'sedan',
+                vehicle_color: lastBooking.vehicle_color || '',
+              }],
+            }));
+          }
         }
       }
     } catch (err) {
@@ -294,20 +309,39 @@ export default function AdminBookings() {
 
   const openEditBooking = (booking) => {
     setEditingBooking(booking);
+    // Build vehicles array from booking data
+    let editVehicles;
+    if (booking.vehicles && booking.vehicles.length > 0) {
+      editVehicles = booking.vehicles;
+    } else {
+      editVehicles = [{
+        vehicle_year: booking.vehicle_year || '',
+        vehicle_make: booking.vehicle_make || '',
+        vehicle_model: booking.vehicle_model || '',
+        vehicle_type: booking.vehicle_type || 'sedan',
+        vehicle_color: booking.vehicle_color || '',
+      }];
+    }
+    // Build selectedServices array from booking data
+    let editServices;
+    if (booking.services && booking.services.length > 0) {
+      editServices = booking.services.map(s => s.service_id);
+    } else if (booking.service_id) {
+      editServices = [booking.service_id];
+    } else {
+      editServices = [];
+    }
     setBookingForm({
+      customer_type: booking.customer_type || 'person',
+      business_name: booking.business_name || '',
       customer_first_name: booking.customer_first_name || '',
       customer_last_name: booking.customer_last_name || '',
       customer_phone: booking.customer_phone || '',
       customer_email: booking.customer_email || '',
       customer_address: booking.customer_address || '',
       service_location: booking.service_location || 'shop',
-      vehicle_year: booking.vehicle_year || '',
-      vehicle_make: booking.vehicle_make || '',
-      vehicle_model: booking.vehicle_model || '',
-      vehicle_type: booking.vehicle_type || 'sedan',
-      vehicle_color: booking.vehicle_color || '',
-      service_id: booking.service_id || '',
-      service_name: booking.service_name || '',
+      vehicles: editVehicles,
+      selectedServices: editServices,
       booking_date: booking.booking_date || '',
       booking_time: booking.booking_time || '',
       total_price: booking.total_price || 0,
@@ -319,49 +353,133 @@ export default function AdminBookings() {
     setShowModal(false);
   };
 
-  const handleServiceChange = (serviceId) => {
-    const service = services.find(s => s.id === serviceId);
-    if (service) {
-      setBookingForm({
-        ...bookingForm,
-        service_id: service.id,
-        service_name: service.name,
-        total_price: service.base_price || 0,
-      });
-    }
+  const toggleService = (serviceId) => {
+    setBookingForm(prev => {
+      const isSelected = prev.selectedServices.includes(serviceId);
+      const newSelected = isSelected
+        ? prev.selectedServices.filter(id => id !== serviceId)
+        : [...prev.selectedServices, serviceId];
+      // Auto-calculate total price from selected services
+      const totalPrice = newSelected.reduce((sum, id) => {
+        const svc = services.find(s => s.id === id);
+        return sum + (svc ? (svc.base_price || 0) : 0);
+      }, 0);
+      return { ...prev, selectedServices: newSelected, total_price: totalPrice };
+    });
+  };
+
+  const updateVehicle = (index, field, value) => {
+    setBookingForm(prev => {
+      const newVehicles = [...prev.vehicles];
+      newVehicles[index] = { ...newVehicles[index], [field]: value };
+      return { ...prev, vehicles: newVehicles };
+    });
+  };
+
+  const addVehicle = () => {
+    setBookingForm(prev => ({
+      ...prev,
+      vehicles: [...prev.vehicles, { ...emptyVehicle }],
+    }));
+  };
+
+  const removeVehicle = (index) => {
+    setBookingForm(prev => ({
+      ...prev,
+      vehicles: prev.vehicles.filter((_, i) => i !== index),
+    }));
   };
 
   const saveBooking = async () => {
     // Validation
-    if (!bookingForm.customer_first_name || !bookingForm.customer_email || !bookingForm.customer_phone) {
-      setError('Customer name, email, and phone are required');
-      return;
+    if (bookingForm.customer_type === 'business') {
+      if (!bookingForm.business_name || !bookingForm.customer_email || !bookingForm.customer_phone) {
+        setError('Business name, email, and phone are required');
+        return;
+      }
+    } else {
+      if (!bookingForm.customer_first_name || !bookingForm.customer_email || !bookingForm.customer_phone) {
+        setError('Customer name, email, and phone are required');
+        return;
+      }
     }
     if (!bookingForm.booking_date || !bookingForm.booking_time) {
       setError('Booking date and time are required');
       return;
     }
-    if (!bookingForm.service_name) {
-      setError('Please select a service');
+    if (bookingForm.selectedServices.length === 0) {
+      setError('Please select at least one service');
+      return;
+    }
+    if (bookingForm.vehicles.length === 0 || !bookingForm.vehicles[0].vehicle_year) {
+      setError('Please add at least one vehicle');
       return;
     }
 
     setSaving(true);
     setError('');
-    
+
     try {
+      // Build services array from selected service IDs
+      const svcList = bookingForm.selectedServices.map(id => {
+        const svc = services.find(s => s.id === id);
+        return svc ? {
+          service_id: svc.id,
+          service_name: svc.name,
+          base_price: svc.base_price || 0,
+          duration_minutes: svc.duration_minutes || 60,
+        } : null;
+      }).filter(Boolean);
+
+      const totalDuration = svcList.reduce((sum, s) => sum + s.duration_minutes, 0);
+
+      // First vehicle provides backward-compat single vehicle fields
+      const firstVehicle = bookingForm.vehicles[0];
+      const firstService = svcList[0];
+
+      const payload = {
+        customer_type: bookingForm.customer_type,
+        business_name: bookingForm.business_name,
+        customer_first_name: bookingForm.customer_type === 'business' ? (bookingForm.business_name || 'Business') : bookingForm.customer_first_name,
+        customer_last_name: bookingForm.customer_type === 'business' ? '' : bookingForm.customer_last_name,
+        customer_phone: bookingForm.customer_phone,
+        customer_email: bookingForm.customer_email,
+        customer_address: bookingForm.customer_address,
+        service_location: bookingForm.service_location,
+        // Primary vehicle (backward compat)
+        vehicle_year: firstVehicle.vehicle_year,
+        vehicle_make: firstVehicle.vehicle_make,
+        vehicle_model: firstVehicle.vehicle_model,
+        vehicle_type: firstVehicle.vehicle_type,
+        vehicle_color: firstVehicle.vehicle_color,
+        vehicles: bookingForm.vehicles,
+        // Primary service (backward compat)
+        service_id: firstService.service_id,
+        service_name: firstService.service_name,
+        services: svcList,
+        booking_date: bookingForm.booking_date,
+        booking_time: bookingForm.booking_time,
+        total_price: bookingForm.total_price,
+        total_duration: totalDuration,
+        notes: bookingForm.notes,
+      };
+
+      if (editingBooking) {
+        payload.status = bookingForm.status;
+      }
+
       const isEdit = !!editingBooking;
-      const url = isEdit 
+      const url = isEdit
         ? `${API_URL}/api/bookings/${editingBooking.id}`
         : `${API_URL}/api/bookings/admin`;
-      
+
       const response = await fetch(url, {
         method: isEdit ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${getToken()}`,
         },
-        body: JSON.stringify(bookingForm),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -400,6 +518,7 @@ export default function AdminBookings() {
     return (
       booking.customer_first_name?.toLowerCase().includes(searchLower) ||
       booking.customer_last_name?.toLowerCase().includes(searchLower) ||
+      booking.business_name?.toLowerCase().includes(searchLower) ||
       booking.customer_email?.toLowerCase().includes(searchLower) ||
       booking.service_name?.toLowerCase().includes(searchLower) ||
       booking.vehicle_make?.toLowerCase().includes(searchLower) ||
@@ -501,14 +620,22 @@ export default function AdminBookings() {
                     <td style={styles.td}>
                       <div style={styles.customerCell}>
                         <span style={styles.customerName}>
-                          {booking.customer_first_name} {booking.customer_last_name}
+                          {booking.customer_type === 'business'
+                            ? (booking.business_name || booking.customer_first_name)
+                            : `${booking.customer_first_name} ${booking.customer_last_name}`}
                         </span>
                         <span style={styles.customerEmail}>{booking.customer_email}</span>
                       </div>
                     </td>
-                    <td style={styles.td}>{booking.service_name}</td>
                     <td style={styles.td}>
-                      {booking.vehicle_year} {booking.vehicle_make} {booking.vehicle_model}
+                      {booking.services && booking.services.length > 1
+                        ? <span>{booking.services[0].service_name} <span style={{ fontSize: '11px', color: '#6b7280' }}>+{booking.services.length - 1} more</span></span>
+                        : booking.service_name}
+                    </td>
+                    <td style={styles.td}>
+                      {booking.vehicles && booking.vehicles.length > 0
+                        ? <span>{booking.vehicles[0].vehicle_year} {booking.vehicles[0].vehicle_make} {booking.vehicles[0].vehicle_model}{booking.vehicles.length > 1 ? <span style={{ fontSize: '11px', color: '#6b7280' }}> +{booking.vehicles.length - 1} more</span> : ''}</span>
+                        : `${booking.vehicle_year} ${booking.vehicle_make} ${booking.vehicle_model}`}
                     </td>
                     <td style={styles.td}>
                       <span style={{
@@ -625,12 +752,16 @@ export default function AdminBookings() {
               <div style={styles.infoSection}>
                 <h3 style={styles.infoTitle}>
                   <User size={18} />
-                  Customer
+                  {selectedBooking.customer_type === 'business' ? 'Business' : 'Customer'}
                 </h3>
                 <div style={styles.infoGrid}>
                   <div style={styles.infoItem}>
                     <User size={14} style={{ color: '#ababab' }} />
-                    <span>{selectedBooking.customer_first_name} {selectedBooking.customer_last_name}</span>
+                    <span>
+                      {selectedBooking.customer_type === 'business'
+                        ? (selectedBooking.business_name || selectedBooking.customer_first_name)
+                        : `${selectedBooking.customer_first_name} ${selectedBooking.customer_last_name}`}
+                    </span>
                   </div>
                   <div style={styles.infoItem}>
                     <Phone size={14} style={{ color: '#ababab' }} />
@@ -651,17 +782,31 @@ export default function AdminBookings() {
               <div style={styles.infoSection}>
                 <h3 style={styles.infoTitle}>
                   <Car size={18} />
-                  Vehicle
+                  Vehicle{(selectedBooking.vehicles && selectedBooking.vehicles.length > 1) ? 's' : ''}
                 </h3>
-                <div style={styles.vehicleInfo}>
-                  <span style={styles.vehicleMake}>
-                    {selectedBooking.vehicle_year} {selectedBooking.vehicle_make} {selectedBooking.vehicle_model}
-                  </span>
-                  <span style={styles.vehicleType}>Type: {selectedBooking.vehicle_type}</span>
-                  {selectedBooking.vehicle_color && (
-                    <span style={styles.vehicleColor}>Color: {selectedBooking.vehicle_color}</span>
-                  )}
-                </div>
+                {selectedBooking.vehicles && selectedBooking.vehicles.length > 0 ? (
+                  selectedBooking.vehicles.map((v, vIdx) => (
+                    <div key={vIdx} style={{ ...styles.vehicleInfo, ...(vIdx > 0 ? { marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #1a1a1a' } : {}) }}>
+                      <span style={styles.vehicleMake}>
+                        {v.vehicle_year} {v.vehicle_make} {v.vehicle_model}
+                      </span>
+                      <span style={styles.vehicleType}>Type: {v.vehicle_type}</span>
+                      {v.vehicle_color && (
+                        <span style={styles.vehicleColor}>Color: {v.vehicle_color}</span>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div style={styles.vehicleInfo}>
+                    <span style={styles.vehicleMake}>
+                      {selectedBooking.vehicle_year} {selectedBooking.vehicle_make} {selectedBooking.vehicle_model}
+                    </span>
+                    <span style={styles.vehicleType}>Type: {selectedBooking.vehicle_type}</span>
+                    {selectedBooking.vehicle_color && (
+                      <span style={styles.vehicleColor}>Color: {selectedBooking.vehicle_color}</span>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Appointment Info */}
@@ -827,7 +972,9 @@ export default function AdminBookings() {
                     onClick={(e) => e.stopPropagation()}>
                     <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '18px', fontWeight: 700, color: '#fff', margin: '0 0 4px' }}>Send SMS</h3>
                     <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: '#525252', margin: '0 0 16px' }}>
-                      To: {selectedBooking.customer_first_name} {selectedBooking.customer_last_name} ({selectedBooking.customer_phone})
+                      To: {selectedBooking.customer_type === 'business'
+                        ? (selectedBooking.business_name || selectedBooking.customer_first_name)
+                        : `${selectedBooking.customer_first_name} ${selectedBooking.customer_last_name}`} ({selectedBooking.customer_phone})
                     </p>
                     <textarea
                       value={smsMessage}
@@ -876,6 +1023,38 @@ export default function AdminBookings() {
               <div style={styles.formSection}>
                 <h3 style={styles.formSectionTitle}>Customer Information</h3>
 
+                {/* Person / Business Toggle */}
+                <div style={{ display: 'flex', gap: '0', marginBottom: '16px' }}>
+                  <button
+                    type="button"
+                    onClick={() => setBookingForm({ ...bookingForm, customer_type: 'person' })}
+                    style={{
+                      flex: 1, padding: '10px', border: '1px solid', cursor: 'pointer',
+                      fontFamily: "'Oswald', sans-serif", fontSize: '13px', fontWeight: 600, letterSpacing: '1px',
+                      background: bookingForm.customer_type === 'person' ? 'rgba(232, 2, 0, 0.1)' : 'transparent',
+                      borderColor: bookingForm.customer_type === 'person' ? '#e80200' : '#262626',
+                      color: bookingForm.customer_type === 'person' ? '#e80200' : '#6b7280',
+                    }}
+                  >
+                    <User size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
+                    PERSON
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBookingForm({ ...bookingForm, customer_type: 'business' })}
+                    style={{
+                      flex: 1, padding: '10px', border: '1px solid', cursor: 'pointer',
+                      fontFamily: "'Oswald', sans-serif", fontSize: '13px', fontWeight: 600, letterSpacing: '1px',
+                      background: bookingForm.customer_type === 'business' ? 'rgba(232, 2, 0, 0.1)' : 'transparent',
+                      borderColor: bookingForm.customer_type === 'business' ? '#e80200' : '#262626',
+                      color: bookingForm.customer_type === 'business' ? '#e80200' : '#6b7280',
+                    }}
+                  >
+                    <MapPin size={14} style={{ display: 'inline', verticalAlign: 'middle', marginRight: '6px' }} />
+                    BUSINESS
+                  </button>
+                </div>
+
                 {/* Customer Search */}
                 <div ref={customerSearchRef} style={{ position: 'relative', marginBottom: '16px' }}>
                   <label style={styles.formLabel}>Search Existing Customer</label>
@@ -909,7 +1088,7 @@ export default function AdminBookings() {
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div style={styles.customerOptionName}>
-                                {customer.first_name} {customer.last_name}
+                                {customer.business_name || `${customer.first_name} ${customer.last_name}`}
                               </div>
                               <div style={styles.customerOptionDetails}>
                                 {customer.email} {customer.phone ? `· ${customer.phone}` : ''}
@@ -925,28 +1104,44 @@ export default function AdminBookings() {
                   )}
                 </div>
 
-                <div style={styles.formGrid}>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>First Name *</label>
+                {/* Business Name (shown for business type) */}
+                {bookingForm.customer_type === 'business' ? (
+                  <div style={{ ...styles.formGroup, marginBottom: '16px' }}>
+                    <label style={styles.formLabel}>Business Name *</label>
                     <input
                       type="text"
-                      value={bookingForm.customer_first_name}
-                      onChange={(e) => setBookingForm({...bookingForm, customer_first_name: e.target.value})}
+                      value={bookingForm.business_name}
+                      onChange={(e) => setBookingForm({...bookingForm, business_name: e.target.value})}
                       style={styles.formInput}
-                      data-testid="booking-first-name"
+                      placeholder="Enter business name..."
+                      data-testid="booking-business-name"
                     />
                   </div>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Last Name *</label>
-                    <input
-                      type="text"
-                      value={bookingForm.customer_last_name}
-                      onChange={(e) => setBookingForm({...bookingForm, customer_last_name: e.target.value})}
-                      style={styles.formInput}
-                      data-testid="booking-last-name"
-                    />
+                ) : (
+                  <div style={styles.formGrid}>
+                    <div style={styles.formGroup}>
+                      <label style={styles.formLabel}>First Name *</label>
+                      <input
+                        type="text"
+                        value={bookingForm.customer_first_name}
+                        onChange={(e) => setBookingForm({...bookingForm, customer_first_name: e.target.value})}
+                        style={styles.formInput}
+                        data-testid="booking-first-name"
+                      />
+                    </div>
+                    <div style={styles.formGroup}>
+                      <label style={styles.formLabel}>Last Name *</label>
+                      <input
+                        type="text"
+                        value={bookingForm.customer_last_name}
+                        onChange={(e) => setBookingForm({...bookingForm, customer_last_name: e.target.value})}
+                        style={styles.formInput}
+                        data-testid="booking-last-name"
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
+
                 <div style={styles.formGrid}>
                   <div style={styles.formGroup}>
                     <label style={styles.formLabel}>Phone *</label>
@@ -981,90 +1176,117 @@ export default function AdminBookings() {
                 </div>
               </div>
 
-              {/* Vehicle Info */}
+              {/* Vehicles */}
               <div style={styles.formSection}>
-                <h3 style={styles.formSectionTitle}>Vehicle Information</h3>
-                <div style={styles.formGrid}>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Year</label>
-                    <input
-                      type="text"
-                      value={bookingForm.vehicle_year}
-                      onChange={(e) => setBookingForm({...bookingForm, vehicle_year: e.target.value})}
-                      style={styles.formInput}
-                      placeholder="2024"
-                      data-testid="booking-vehicle-year"
-                    />
-                  </div>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Make</label>
-                    <input
-                      type="text"
-                      value={bookingForm.vehicle_make}
-                      onChange={(e) => setBookingForm({...bookingForm, vehicle_make: e.target.value})}
-                      style={styles.formInput}
-                      placeholder="Toyota"
-                      data-testid="booking-vehicle-make"
-                    />
-                  </div>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Model</label>
-                    <input
-                      type="text"
-                      value={bookingForm.vehicle_model}
-                      onChange={(e) => setBookingForm({...bookingForm, vehicle_model: e.target.value})}
-                      style={styles.formInput}
-                      placeholder="Camry"
-                      data-testid="booking-vehicle-model"
-                    />
-                  </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+                  <h3 style={{ ...styles.formSectionTitle, margin: 0 }}>Vehicle Information</h3>
+                  <button type="button" onClick={addVehicle} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', background: 'rgba(232, 2, 0, 0.1)', border: '1px solid rgba(232, 2, 0, 0.3)', color: '#e80200', fontFamily: "'Oswald', sans-serif", fontSize: '12px', fontWeight: 600, letterSpacing: '1px', cursor: 'pointer' }}>
+                    <Plus size={14} /> ADD VEHICLE
+                  </button>
                 </div>
-                <div style={styles.formGrid}>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Vehicle Type</label>
-                    <select
-                      value={bookingForm.vehicle_type}
-                      onChange={(e) => setBookingForm({...bookingForm, vehicle_type: e.target.value})}
-                      style={styles.formSelect}
-                      data-testid="booking-vehicle-type"
-                    >
-                      {VEHICLE_TYPES.map(vt => (
-                        <option key={vt.id} value={vt.id}>{vt.label}</option>
-                      ))}
-                    </select>
+                {bookingForm.vehicles.map((vehicle, vIdx) => (
+                  <div key={vIdx} style={{ padding: '16px', background: '#111111', border: '1px solid #262626', marginBottom: '12px', position: 'relative' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '12px', fontWeight: 600, color: '#ababab', letterSpacing: '1px' }}>
+                        VEHICLE {vIdx + 1}
+                      </span>
+                      {bookingForm.vehicles.length > 1 && (
+                        <button type="button" onClick={() => removeVehicle(vIdx)} style={{ display: 'flex', alignItems: 'center', gap: '4px', padding: '4px 10px', background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', fontFamily: "'Oswald', sans-serif", fontSize: '11px', cursor: 'pointer' }}>
+                          <Trash2 size={12} /> Remove
+                        </button>
+                      )}
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' }}>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Year</label>
+                        <input type="text" value={vehicle.vehicle_year} onChange={(e) => updateVehicle(vIdx, 'vehicle_year', e.target.value)} style={styles.formInput} placeholder="2024" />
+                      </div>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Make</label>
+                        <input type="text" value={vehicle.vehicle_make} onChange={(e) => updateVehicle(vIdx, 'vehicle_make', e.target.value)} style={styles.formInput} placeholder="Toyota" />
+                      </div>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Model</label>
+                        <input type="text" value={vehicle.vehicle_model} onChange={(e) => updateVehicle(vIdx, 'vehicle_model', e.target.value)} style={styles.formInput} placeholder="Camry" />
+                      </div>
+                    </div>
+                    <div style={{ ...styles.formGrid, marginTop: '12px' }}>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Vehicle Type</label>
+                        <select value={vehicle.vehicle_type} onChange={(e) => updateVehicle(vIdx, 'vehicle_type', e.target.value)} style={styles.formSelect}>
+                          {VEHICLE_TYPES.map(vt => (
+                            <option key={vt.id} value={vt.id}>{vt.label}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div style={styles.formGroup}>
+                        <label style={styles.formLabel}>Color</label>
+                        <input type="text" value={vehicle.vehicle_color} onChange={(e) => updateVehicle(vIdx, 'vehicle_color', e.target.value)} style={styles.formInput} placeholder="Black" />
+                      </div>
+                    </div>
                   </div>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Color</label>
-                    <input
-                      type="text"
-                      value={bookingForm.vehicle_color}
-                      onChange={(e) => setBookingForm({...bookingForm, vehicle_color: e.target.value})}
-                      style={styles.formInput}
-                      placeholder="Black"
-                      data-testid="booking-vehicle-color"
-                    />
-                  </div>
-                </div>
+                ))}
               </div>
 
-              {/* Service & Appointment */}
+              {/* Services Selection */}
               <div style={styles.formSection}>
-                <h3 style={styles.formSectionTitle}>Service & Appointment</h3>
-                <div style={styles.formGrid}>
-                  <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Service *</label>
-                    <select
-                      value={bookingForm.service_id}
-                      onChange={(e) => handleServiceChange(e.target.value)}
-                      style={styles.formSelect}
-                      data-testid="booking-service"
-                    >
-                      <option value="">Select a service...</option>
-                      {services.map(s => (
-                        <option key={s.id} value={s.id}>{s.name} - ${fmt(s.base_price || 0)}</option>
-                      ))}
-                    </select>
+                <h3 style={styles.formSectionTitle}>Services *</h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '240px', overflowY: 'auto', padding: '4px 0' }}>
+                  {services.filter(s => s.is_active !== false).map(s => {
+                    const isSelected = bookingForm.selectedServices.includes(s.id);
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => toggleService(s.id)}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '12px',
+                          padding: '12px 14px',
+                          background: isSelected ? 'rgba(232, 2, 0, 0.08)' : '#111111',
+                          border: isSelected ? '1px solid rgba(232, 2, 0, 0.4)' : '1px solid #262626',
+                          color: '#fff',
+                          cursor: 'pointer',
+                          textAlign: 'left',
+                          transition: 'all 0.15s',
+                        }}
+                      >
+                        <div style={{
+                          width: '20px', height: '20px', border: isSelected ? '2px solid #e80200' : '2px solid #525252',
+                          background: isSelected ? '#e80200' : 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                        }}>
+                          {isSelected && <CheckCircle size={14} color="#fff" />}
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '14px', fontWeight: 600 }}>{s.name}</div>
+                          <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: '#6b7280', marginTop: '2px' }}>
+                            {s.category} &middot; {s.duration_minutes || 60} min
+                          </div>
+                        </div>
+                        <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '15px', fontWeight: 600, color: isSelected ? '#e80200' : '#ababab', flexShrink: 0 }}>
+                          ${fmt(s.base_price || 0)}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+                {bookingForm.selectedServices.length > 0 && (
+                  <div style={{ marginTop: '12px', padding: '12px 14px', background: '#0a0a0a', border: '1px solid #262626', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '13px', fontWeight: 600, color: '#ababab', letterSpacing: '1px' }}>
+                      {bookingForm.selectedServices.length} SERVICE{bookingForm.selectedServices.length !== 1 ? 'S' : ''} SELECTED
+                    </span>
+                    <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '16px', fontWeight: 700, color: '#e80200' }}>
+                      ${fmt(bookingForm.total_price)}
+                    </span>
                   </div>
+                )}
+              </div>
+
+              {/* Appointment Details */}
+              <div style={styles.formSection}>
+                <h3 style={styles.formSectionTitle}>Appointment Details</h3>
+                <div style={styles.formGrid}>
                   <div style={styles.formGroup}>
                     <label style={styles.formLabel}>Location</label>
                     <select
@@ -1077,8 +1299,6 @@ export default function AdminBookings() {
                       <option value="mobile">Mobile Service</option>
                     </select>
                   </div>
-                </div>
-                <div style={styles.formGrid}>
                   <div style={styles.formGroup}>
                     <label style={styles.formLabel}>Date *</label>
                     <input
@@ -1100,7 +1320,7 @@ export default function AdminBookings() {
                     />
                   </div>
                   <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>Price ($)</label>
+                    <label style={styles.formLabel}>Total Price ($)</label>
                     <input
                       type="number"
                       value={bookingForm.total_price}
@@ -1113,7 +1333,7 @@ export default function AdminBookings() {
                   </div>
                 </div>
                 {editingBooking && (
-                  <div style={styles.formGroup}>
+                  <div style={{ ...styles.formGroup, marginTop: '16px' }}>
                     <label style={styles.formLabel}>Status</label>
                     <select
                       value={bookingForm.status}
