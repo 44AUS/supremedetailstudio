@@ -443,7 +443,7 @@ class BookingSystemTester:
 
     def run_all_tests(self):
         """Run all booking system tests"""
-        print("🔍 Testing Booking System Features...")
+        print("🔍 Testing Admin Dashboard Features...")
         print("=" * 50)
         
         # Test 1: Admin Login
@@ -457,16 +457,25 @@ class BookingSystemTester:
         # Test 3: Update Buffer Time
         self.test_update_buffer_time()
         
-        # Test 4: Availability API Response Format
+        # Test 4: Business Settings Custom Vehicles Toggle
+        self.test_business_settings_custom_vehicles()
+        
+        # Test 5: Categories API
+        self.test_categories_api()
+        
+        # Test 6: Vehicles API
+        self.test_vehicles_api()
+        
+        # Test 7: Availability API Response Format
         self.test_availability_api_buffer_response()
         
-        # Test 5: Availability with Duration
+        # Test 8: Availability with Duration
         self.test_availability_with_duration()
         
-        # Test 6: Services API
+        # Test 9: Services API
         self.test_services_api()
         
-        # Test 7: Booking Creation and Time Constraints
+        # Test 10: Booking Creation and Time Constraints
         self.test_booking_creation_with_time_constraint()
         
         # Print summary
