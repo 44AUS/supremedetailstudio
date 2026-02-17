@@ -5,7 +5,7 @@ import sys
 import json
 
 class BusinessSettingsAPITester:
-    def __init__(self, base_url="https://category-booking-fix.preview.emergentagent.com"):
+    def __init__(self, base_url="https://friendly-ellis-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.token = None
         self.admin_username = "admin"
