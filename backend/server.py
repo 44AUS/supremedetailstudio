@@ -633,6 +633,82 @@ async def update_business_settings(settings: BusinessSettings):
     )
     return {"message": "Business settings updated successfully"}
 
+# ============== Vehicle Management Routes ==============
+
+@app.get("/api/vehicles")
+async def get_vehicles(active_only: bool = False):
+    """Get all vehicles or only active ones for booking page"""
+    query = {"is_active": True} if active_only else {}
+    vehicles = await db.vehicles.find(query).sort([("make", 1), ("model", 1), ("year", -1)]).to_list(500)
+    for v in vehicles:
+        v["id"] = str(v.pop("_id"))
+    return vehicles
+
+@app.get("/api/vehicles/makes")
+async def get_vehicle_makes():
+    """Get unique makes from vehicles collection"""
+    makes = await db.vehicles.distinct("make", {"is_active": True})
+    return sorted(makes)
+
+@app.get("/api/vehicles/models/{make}")
+async def get_vehicle_models(make: str):
+    """Get models for a specific make"""
+    models = await db.vehicles.distinct("model", {"make": make, "is_active": True})
+    return sorted(models)
+
+@app.get("/api/vehicles/years/{make}/{model}")
+async def get_vehicle_years(make: str, model: str):
+    """Get years for a specific make/model"""
+    years = await db.vehicles.distinct("year", {"make": make, "model": model, "is_active": True})
+    return sorted(years, reverse=True)
+
+@app.post("/api/vehicles")
+async def create_vehicle(vehicle: VehicleCreate, current_user: dict = Depends(get_current_user)):
+    """Create a new vehicle entry"""
+    vehicle_dict = vehicle.model_dump()
+    vehicle_dict["created_at"] = datetime.now(timezone.utc).isoformat()
+    result = await db.vehicles.insert_one(vehicle_dict)
+    vehicle_dict["id"] = str(result.inserted_id)
+    del vehicle_dict["_id"] if "_id" in vehicle_dict else None
+    return vehicle_dict
+
+@app.put("/api/vehicles/{vehicle_id}")
+async def update_vehicle(vehicle_id: str, vehicle: VehicleUpdate, current_user: dict = Depends(get_current_user)):
+    """Update a vehicle entry"""
+    update_data = {k: v for k, v in vehicle.model_dump().items() if v is not None}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No update data provided")
+    
+    result = await db.vehicles.update_one(
+        {"_id": ObjectId(vehicle_id)},
+        {"$set": update_data}
+    )
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+    return {"message": "Vehicle updated successfully"}
+
+@app.delete("/api/vehicles/{vehicle_id}")
+async def delete_vehicle(vehicle_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete a vehicle entry"""
+    result = await db.vehicles.delete_one({"_id": ObjectId(vehicle_id)})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Vehicle not found")
+    return {"message": "Vehicle deleted successfully"}
+
+@app.post("/api/vehicles/bulk")
+async def bulk_create_vehicles(vehicles: List[VehicleCreate], current_user: dict = Depends(get_current_user)):
+    """Bulk create vehicles"""
+    vehicle_dicts = []
+    for v in vehicles:
+        vd = v.model_dump()
+        vd["created_at"] = datetime.now(timezone.utc).isoformat()
+        vehicle_dicts.append(vd)
+    
+    if vehicle_dicts:
+        result = await db.vehicles.insert_many(vehicle_dicts)
+        return {"message": f"Created {len(result.inserted_ids)} vehicles"}
+    return {"message": "No vehicles to create"}
+
 # ============== Services Routes ==============
 
 @app.get("/api/services")
