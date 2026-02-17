@@ -12,9 +12,11 @@ export default function BookingConfirmation() {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [businessSettings, setBusinessSettings] = useState(null);
 
   useEffect(() => {
     fetchBooking();
+    fetchBusinessSettings();
   }, [bookingId]);
 
   const fetchBooking = async () => {
@@ -28,6 +30,30 @@ export default function BookingConfirmation() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchBusinessSettings = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/settings/business`);
+      if (response.ok) {
+        const data = await response.json();
+        setBusinessSettings(data);
+      }
+    } catch (err) {
+      console.error('Error fetching business settings:', err);
+    }
+  };
+
+  // Format time to include AM/PM if not already present
+  const formatTime = (time) => {
+    if (!time) return '';
+    // If time already has AM/PM, return as is
+    if (time.includes('AM') || time.includes('PM')) return time;
+    // Convert 24h format to 12h with AM/PM
+    const [hours, minutes] = time.split(':').map(Number);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hours12 = hours % 12 || 12;
+    return `${hours12}:${String(minutes).padStart(2, '0')} ${ampm}`;
   };
 
   if (loading) {
