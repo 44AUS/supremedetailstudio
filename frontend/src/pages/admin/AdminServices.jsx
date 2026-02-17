@@ -1033,6 +1033,11 @@ export default function AdminServices() {
                     <Truck size={12} /> Mobile
                   </span>
                 )}
+                {service.requires_utilities === false && (
+                  <span style={{...styles.availBadge, background: 'rgba(34, 197, 94, 0.15)', color: '#22c55e', border: '1px solid rgba(34, 197, 94, 0.3)'}}>
+                    <Droplets size={12} /> No Utilities
+                  </span>
+                )}
                 {!service.is_active && (
                   <span style={styles.inactiveBadge}>Inactive</span>
                 )}
