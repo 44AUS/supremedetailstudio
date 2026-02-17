@@ -2553,6 +2553,7 @@ export default function BookAppointment() {
               <div style={{ ...styles.serviceGrid, ...(isMobile && { gridTemplateColumns: '1fr', gap: '12px', marginBottom: '24px' }) }}>
                 {availableServices
                   .filter(service => service.category === selectedCategory)
+                  .filter(service => canServiceFitInTime(service) || selectedServices.some(s => s.id === service.id))
                   .map((service) => {
                     const serviceVehicleUp = getServiceVehicleUpcharge(service, vehicleType);
                     const price = vehicleType
@@ -2575,9 +2576,9 @@ export default function BookAppointment() {
                     );
                   })}
               </div>
-              {availableServices.filter(service => service.category === selectedCategory).length === 0 && (
+              {availableServices.filter(service => service.category === selectedCategory).filter(service => canServiceFitInTime(service) || selectedServices.some(s => s.id === service.id)).length === 0 && (
                 <div style={styles.emptyServices}>
-                  <p>No services available in this category.</p>
+                  <p>{selectedTime ? 'No services available that fit in the selected time slot.' : 'No services available in this category.'}</p>
                 </div>
               )}
             </>
