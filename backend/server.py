@@ -670,7 +670,7 @@ async def create_vehicle(vehicle: VehicleCreate, current_user: dict = Depends(ge
     vehicle_dict["created_at"] = datetime.now(timezone.utc).isoformat()
     result = await db.vehicles.insert_one(vehicle_dict)
     vehicle_dict["id"] = str(result.inserted_id)
-    del vehicle_dict["_id"] if "_id" in vehicle_dict else None
+    vehicle_dict.pop("_id", None)
     return vehicle_dict
 
 @app.put("/api/vehicles/{vehicle_id}")
