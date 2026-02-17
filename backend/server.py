@@ -663,8 +663,8 @@ async def get_vehicle_years(make: str, model: str):
     years = await db.vehicles.distinct("year", {"make": make, "model": model, "is_active": True})
     return sorted(years, reverse=True)
 
-@app.post("/api/vehicles")
-async def create_vehicle(vehicle: VehicleCreate, current_user: dict = Depends(get_current_user)):
+@app.post("/api/vehicles", dependencies=[Depends(verify_token)])
+async def create_vehicle(vehicle: VehicleCreate):
     """Create a new vehicle entry"""
     vehicle_dict = vehicle.model_dump()
     vehicle_dict["created_at"] = datetime.now(timezone.utc).isoformat()
@@ -673,8 +673,8 @@ async def create_vehicle(vehicle: VehicleCreate, current_user: dict = Depends(ge
     vehicle_dict.pop("_id", None)
     return vehicle_dict
 
-@app.put("/api/vehicles/{vehicle_id}")
-async def update_vehicle(vehicle_id: str, vehicle: VehicleUpdate, current_user: dict = Depends(get_current_user)):
+@app.put("/api/vehicles/{vehicle_id}", dependencies=[Depends(verify_token)])
+async def update_vehicle(vehicle_id: str, vehicle: VehicleUpdate):
     """Update a vehicle entry"""
     update_data = {k: v for k, v in vehicle.model_dump().items() if v is not None}
     if not update_data:
@@ -688,16 +688,16 @@ async def update_vehicle(vehicle_id: str, vehicle: VehicleUpdate, current_user: 
         raise HTTPException(status_code=404, detail="Vehicle not found")
     return {"message": "Vehicle updated successfully"}
 
-@app.delete("/api/vehicles/{vehicle_id}")
-async def delete_vehicle(vehicle_id: str, current_user: dict = Depends(get_current_user)):
+@app.delete("/api/vehicles/{vehicle_id}", dependencies=[Depends(verify_token)])
+async def delete_vehicle(vehicle_id: str):
     """Delete a vehicle entry"""
     result = await db.vehicles.delete_one({"_id": ObjectId(vehicle_id)})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Vehicle not found")
     return {"message": "Vehicle deleted successfully"}
 
-@app.post("/api/vehicles/bulk")
-async def bulk_create_vehicles(vehicles: List[VehicleCreate], current_user: dict = Depends(get_current_user)):
+@app.post("/api/vehicles/bulk", dependencies=[Depends(verify_token)])
+async def bulk_create_vehicles(vehicles: List[VehicleCreate]):
     """Bulk create vehicles"""
     vehicle_dicts = []
     for v in vehicles:
