@@ -2339,6 +2339,71 @@ export default function BookAppointment() {
             </p>
           </div>
 
+          {/* Location Restriction Warning */}
+          <AnimatePresence>
+            {locationRestrictionWarning && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  marginBottom: isMobile ? '16px' : '20px',
+                }}
+                data-testid="location-restriction-warning"
+              >
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  gap: isMobile ? '10px' : '12px',
+                  padding: isMobile ? '14px 12px' : '16px',
+                  background: 'rgba(245, 158, 11, 0.15)',
+                  border: '2px solid rgba(245, 158, 11, 0.5)',
+                  borderRadius: '12px',
+                }}>
+                  <Info size={isMobile ? 20 : 24} style={{ color: '#f59e0b', flexShrink: 0, marginTop: '2px' }} />
+                  <div style={{ flex: 1 }}>
+                    <p style={{
+                      margin: '0 0 10px 0',
+                      color: '#f59e0b',
+                      fontSize: isMobile ? '13px' : '14px',
+                      fontWeight: 600,
+                      fontFamily: "'Montserrat', sans-serif",
+                    }}>
+                      Service Location Required
+                    </p>
+                    <p style={{
+                      margin: '0 0 12px 0',
+                      color: 'rgba(255,255,255,0.8)',
+                      fontSize: isMobile ? '12px' : '13px',
+                      lineHeight: 1.5,
+                      fontFamily: "'Montserrat', sans-serif",
+                    }}>
+                      {locationRestrictionWarning.message}
+                    </p>
+                    <button
+                      onClick={() => setLocationRestrictionWarning(null)}
+                      style={{
+                        padding: '8px 16px',
+                        background: 'rgba(245, 158, 11, 0.2)',
+                        border: '1px solid rgba(245, 158, 11, 0.5)',
+                        borderRadius: '8px',
+                        color: '#f59e0b',
+                        fontSize: isMobile ? '12px' : '13px',
+                        fontWeight: 600,
+                        fontFamily: "'Montserrat', sans-serif",
+                        cursor: 'pointer',
+                      }}
+                      data-testid="dismiss-location-warning"
+                    >
+                      Got it
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           {/* Category Tabs */}
           {categories.length > 0 && (
             <div style={{
