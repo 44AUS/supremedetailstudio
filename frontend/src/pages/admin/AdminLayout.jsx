@@ -221,12 +221,15 @@ export default function AdminLayout() {
   const navItems = [
     { path: '/admin/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/admin/services', icon: Settings, label: 'Services' },
+    { path: '/admin/categories', icon: Tag, label: 'Categories' },
+    { path: '/admin/vehicles', icon: Car, label: 'Vehicles' },
     { path: '/admin/schedule', icon: Calendar, label: 'Schedule' },
     { path: '/admin/bookings', icon: ClipboardList, label: 'Bookings' },
     { path: '/admin/customers', icon: Users, label: 'Customers' },
     { path: '/admin/sms', icon: MessageSquare, label: 'SMS / Texting', badge: unreadSmsCount },
     { path: '/admin/quotes', icon: FileText, label: 'Quote Requests' },
     { path: '/admin/contacts', icon: Mail, label: 'Contact Messages' },
+    { path: '/admin/settings', icon: Settings, label: 'Business Settings' },
   ];
 
   return (
