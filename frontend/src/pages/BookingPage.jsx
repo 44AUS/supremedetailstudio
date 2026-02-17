@@ -2309,6 +2309,71 @@ export default function BookAppointment() {
                     );
                   })}
               </div>
+              
+              {/* Hidden services due to time constraints */}
+              {selectedTime && getHiddenServicesForCategory(selectedCategory).length > 0 && (
+                <div style={{
+                  marginTop: isMobile ? '12px' : '16px',
+                  padding: isMobile ? '12px' : '16px',
+                  background: 'rgba(239, 68, 68, 0.1)',
+                  border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '12px',
+                }}
+                data-testid="hidden-services-warning"
+                >
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                  }}>
+                    <AlertCircle size={isMobile ? 18 : 20} style={{ color: '#ef4444', flexShrink: 0, marginTop: '2px' }} />
+                    <div>
+                      <p style={{
+                        margin: '0 0 8px 0',
+                        color: '#ef4444',
+                        fontSize: isMobile ? '13px' : '14px',
+                        fontWeight: 600,
+                        fontFamily: "'Montserrat', sans-serif",
+                      }}>
+                        {getHiddenServicesForCategory(selectedCategory).length} service{getHiddenServicesForCategory(selectedCategory).length > 1 ? 's' : ''} hidden due to time constraints
+                      </p>
+                      <p style={{
+                        margin: '0 0 10px 0',
+                        color: 'rgba(255,255,255,0.7)',
+                        fontSize: isMobile ? '12px' : '13px',
+                        lineHeight: 1.5,
+                        fontFamily: "'Montserrat', sans-serif",
+                      }}>
+                        The following services require more time than available at {selectedTime} ({getSelectedSlotAvailableMinutes()} min available):
+                      </p>
+                      <ul style={{
+                        margin: 0,
+                        paddingLeft: '20px',
+                        color: 'rgba(255,255,255,0.6)',
+                        fontSize: isMobile ? '11px' : '12px',
+                        fontFamily: "'Montserrat', sans-serif",
+                      }}>
+                        {getHiddenServicesForCategory(selectedCategory).map(service => (
+                          <li key={service.id} style={{ marginBottom: '4px' }}>
+                            <strong style={{ color: 'rgba(255,255,255,0.8)' }}>{service.name}</strong>
+                            <span style={{ color: '#ef4444' }}> ({service.duration_minutes || 60} min needed)</span>
+                          </li>
+                        ))}
+                      </ul>
+                      <p style={{
+                        margin: '10px 0 0 0',
+                        color: 'rgba(255,255,255,0.5)',
+                        fontSize: isMobile ? '11px' : '12px',
+                        fontStyle: 'italic',
+                        fontFamily: "'Montserrat', sans-serif",
+                      }}>
+                        💡 Tip: Select an earlier time slot or a different date for more availability.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {availableServices.filter(service => service.category === selectedCategory).filter(service => canServiceFitInTime(service) || selectedServices.some(s => s.id === service.id)).length === 0 && (
                 <div style={styles.emptyServices}>
                   <p>{selectedTime ? 'No services available that fit in the selected time slot.' : 'No services available in this category.'}</p>
