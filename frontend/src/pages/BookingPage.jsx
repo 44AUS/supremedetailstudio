@@ -1260,6 +1260,7 @@ export default function BookAppointment() {
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [serviceLocations, setServiceLocations] = useState(DEFAULT_SERVICE_LOCATIONS);
   const [businessSettings, setBusinessSettings] = useState(null);
+  const [bufferMinutes, setBufferMinutes] = useState(60); // Buffer time between bookings
 
   // API data states
   const [years, setYears] = useState([]);
