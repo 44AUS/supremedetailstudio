@@ -75,6 +75,54 @@ export default function AdminBookings() {
   const [showSmsModal, setShowSmsModal] = useState(false);
   const [smsMessage, setSmsMessage] = useState('');
   const [sendingSms, setSendingSms] = useState(false);
+  const addressInputRef = useRef(null);
+  const autocompleteRef = useRef(null);
+
+  // Google Places Autocomplete
+  useEffect(() => {
+    if (!showEditModal) return;
+
+    const initAutocomplete = () => {
+      if (!addressInputRef.current || !window.google?.maps?.places) return;
+      // Avoid re-initializing if already attached
+      if (autocompleteRef.current) return;
+      const ac = new window.google.maps.places.Autocomplete(addressInputRef.current, {
+        types: ['address'],
+        componentRestrictions: { country: 'us' },
+      });
+      ac.addListener('place_changed', () => {
+        const place = ac.getPlace();
+        if (place.formatted_address) {
+          setBookingForm(prev => ({ ...prev, customer_address: place.formatted_address }));
+        }
+      });
+      autocompleteRef.current = ac;
+    };
+
+    // Load script if needed, otherwise just init
+    if (window.google?.maps?.places) {
+      // Small delay to let the input render
+      setTimeout(initAutocomplete, 100);
+    } else if (!document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]')) {
+      const script = document.createElement('script');
+      script.src = 'https://maps.googleapis.com/maps/api/js?key=AIzaSyCl9Jn6oebsNxjbZHjQe_YqCZ7lho36UZE&libraries=places';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => setTimeout(initAutocomplete, 100);
+      document.head.appendChild(script);
+    } else {
+      // Script is loading, wait for it
+      const checkInterval = setInterval(() => {
+        if (window.google?.maps?.places) {
+          clearInterval(checkInterval);
+          initAutocomplete();
+        }
+      }, 200);
+      return () => clearInterval(checkInterval);
+    }
+
+    return () => { autocompleteRef.current = null; };
+  }, [showEditModal]);
 
   useEffect(() => {
     fetchBookings();
@@ -1263,10 +1311,12 @@ export default function AdminBookings() {
                 <div style={styles.formGroup}>
                   <label style={styles.formLabel}>Address</label>
                   <input
+                    ref={addressInputRef}
                     type="text"
                     value={bookingForm.customer_address}
                     onChange={(e) => setBookingForm({...bookingForm, customer_address: e.target.value})}
                     style={styles.formInput}
+                    placeholder="Start typing an address..."
                     data-testid="booking-address"
                   />
                 </div>
