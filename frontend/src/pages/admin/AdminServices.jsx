@@ -882,6 +882,18 @@ export default function AdminServices() {
                         <Truck size={14} /> Mobile
                       </span>
                     </label>
+                    <label style={styles.toggle}>
+                      <input
+                        type="checkbox"
+                        checked={formData.requires_utilities}
+                        onChange={(e) => setFormData({ ...formData, requires_utilities: e.target.checked })}
+                        data-testid="service-utilities-toggle"
+                      />
+                      <span style={styles.toggleSlider}></span>
+                      <span style={styles.toggleLabel}>
+                        <Droplets size={14} /> Requires Water/Electric
+                      </span>
+                    </label>
                   </div>
                 </div>
 
