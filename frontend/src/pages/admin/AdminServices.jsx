@@ -274,6 +274,7 @@ export default function AdminServices() {
       is_active: service.is_active !== false,
       shop_available: service.shop_available !== false,
       mobile_available: service.mobile_available !== false,
+      requires_utilities: service.requires_utilities !== false,
       image_url: service.image_url || '',
       applies_to_categories: service.applies_to_categories || [],
     });
