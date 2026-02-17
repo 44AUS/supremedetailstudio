@@ -247,6 +247,21 @@ class BusinessSettings(BaseModel):
     enable_shop_bookings: Optional[bool] = True  # Enable/disable in-shop bookings
     enable_mobile_bookings: Optional[bool] = True  # Enable/disable mobile bookings
     booking_buffer_minutes: Optional[int] = 60  # Buffer time between bookings in minutes
+    enable_custom_vehicles: Optional[bool] = False  # Enable custom vehicle selection (vs manual entry)
+
+# ============== Vehicle Management Models ==============
+
+class VehicleCreate(BaseModel):
+    year: str
+    make: str
+    model: str
+    is_active: bool = True
+
+class VehicleUpdate(BaseModel):
+    year: Optional[str] = None
+    make: Optional[str] = None
+    model: Optional[str] = None
+    is_active: Optional[bool] = None
 
 # ============== Quote Request Model ==============
 
