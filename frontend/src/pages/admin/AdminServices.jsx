@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Plus, Edit2, Trash2, Save, X, Loader2, 
   AlertCircle, Package, Building2, Truck, Clock, DollarSign, Tag, GripVertical, Settings, Droplets
