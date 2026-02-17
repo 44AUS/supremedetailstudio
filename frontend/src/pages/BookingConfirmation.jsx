@@ -268,6 +268,26 @@ export default function BookingConfirmation() {
           </p>
         </div>
 
+        {/* Save for Records Note */}
+        <div style={{
+          textAlign: 'center',
+          padding: '20px 24px',
+          marginBottom: '24px',
+          background: 'rgba(59, 130, 246, 0.1)',
+          border: '1px solid rgba(59, 130, 246, 0.3)',
+        }}>
+          <p style={{
+            color: '#60a5fa',
+            fontFamily: "'Montserrat', sans-serif",
+            fontSize: '14px',
+            margin: 0,
+            lineHeight: 1.6,
+          }}>
+            <strong>📌 Save This Information:</strong> We recommend saving or printing this page for your records. 
+            You can also take a screenshot for easy reference.
+          </p>
+        </div>
+
         {/* Back Home Button */}
         <Link to="/" style={styles.backBtn} data-testid="back-home-btn">
           <Home size={18} />
