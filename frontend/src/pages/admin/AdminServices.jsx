@@ -572,6 +572,20 @@ export default function AdminServices() {
                 <span style={styles.helpText}>Customers must book at least this many days in advance (0 = same-day booking allowed)</span>
               </div>
               <div style={styles.inputGroup}>
+                <label style={styles.label}>Buffer Time Between Bookings (minutes)</label>
+                <input
+                  type="number"
+                  value={businessSettings.booking_buffer_minutes}
+                  onChange={(e) => setBusinessSettings({ ...businessSettings, booking_buffer_minutes: parseInt(e.target.value) || 60 })}
+                  style={styles.input}
+                  min="0"
+                  max="180"
+                  step="15"
+                  data-testid="buffer-time-input"
+                />
+                <span style={styles.helpText}>Time reserved after each appointment for cleanup/prep before the next booking (default: 60 minutes)</span>
+              </div>
+              <div style={styles.inputGroup}>
                 <label style={styles.label}>Booking Options</label>
                 <div style={styles.toggleGroup}>
                   <label style={styles.toggleLabel}>
