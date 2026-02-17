@@ -593,7 +593,8 @@ async def get_business_settings():
         "mobile_service_description": "We come to you",
         "minimum_booking_notice_days": 1,
         "enable_shop_bookings": True,
-        "enable_mobile_bookings": True
+        "enable_mobile_bookings": True,
+        "booking_buffer_minutes": 60
     }
     settings = await db.settings.find_one({"type": "business"})
     if not settings:
