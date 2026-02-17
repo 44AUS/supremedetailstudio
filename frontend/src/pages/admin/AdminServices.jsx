@@ -169,6 +169,7 @@ export default function AdminServices() {
     is_active: true,
     shop_available: true,
     mobile_available: true,
+    requires_utilities: true,
     image_url: '',
     applies_to_categories: [],
   };
