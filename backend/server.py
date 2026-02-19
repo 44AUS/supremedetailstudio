@@ -925,16 +925,23 @@ async def get_availability(date: str, service_id: Optional[str] = None, total_du
                 break
         
         if slot_available:
-            # Calculate available minutes until next booking or close time
-            next_constraint = close_time
+            # Calculate available minutes until next booking
+            # Only constrain by actual bookings, NOT by close time
+            # (a service can exceed business hours if no other booking conflicts)
+            has_next_booking = False
+            next_constraint = None
             for blocked in blocked_ranges:
                 if blocked["booking_start"] > current_time:
-                    # Next booking starts after this slot
                     next_constraint = blocked["booking_start"]
+                    has_next_booking = True
                     break
-            
-            # Available minutes = time until next constraint (no buffer needed here, buffer is already in blocked range)
-            available_minutes = int((next_constraint - current_time).total_seconds() / 60)
+
+            if has_next_booking:
+                # There's an actual booking later — limit available minutes to avoid overlap
+                available_minutes = int((next_constraint - current_time).total_seconds() / 60)
+            else:
+                # No other bookings after this slot — allow any service length
+                available_minutes = 99999
         
         slots.append({
             "time": time_str, 

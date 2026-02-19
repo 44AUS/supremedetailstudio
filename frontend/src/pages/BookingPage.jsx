@@ -2243,8 +2243,8 @@ export default function BookAppointment() {
             </div>
           )}
 
-          {/* Time constraint warning */}
-          {selectedTime && getSelectedSlotAvailableMinutes() !== null && (
+          {/* Time constraint warning - only show when there's an actual booking constraint */}
+          {selectedTime && getSelectedSlotAvailableMinutes() !== null && getSelectedSlotAvailableMinutes() < 99999 && (
             <div style={{
               display: 'flex',
               alignItems: 'center',
