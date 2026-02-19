@@ -25,6 +25,12 @@ export default function AdminLayout() {
   const [passwordSaving, setPasswordSaving] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
+  const [showUsernameModal, setShowUsernameModal] = useState(false);
+  const [usernameForm, setUsernameForm] = useState({ current_password: '', new_username: '' });
+  const [usernameSaving, setUsernameSaving] = useState(false);
+  const [usernameError, setUsernameError] = useState('');
+  const [usernameSuccess, setUsernameSuccess] = useState('');
+  const [adminUsername, setAdminUsername] = useState('');
 
   useEffect(() => {
     // Verify auth on mount
@@ -171,6 +177,26 @@ export default function AdminLayout() {
     fetchShopName();
   }, []);
 
+  // Fetch admin username
+  useEffect(() => {
+    const fetchAdminUsername = async () => {
+      const token = localStorage.getItem('adminToken');
+      if (!token) return;
+      try {
+        const response = await fetch(`${API_URL}/api/auth/me`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setAdminUsername(data.username);
+        }
+      } catch (err) {
+        console.error('Failed to fetch admin username:', err);
+      }
+    };
+    fetchAdminUsername();
+  }, []);
+
   const handleChangePassword = async () => {
     setPasswordError('');
     setPasswordSuccess('');
@@ -210,6 +236,45 @@ export default function AdminLayout() {
       setPasswordError(err.message);
     } finally {
       setPasswordSaving(false);
+    }
+  };
+
+  const handleChangeUsername = async () => {
+    setUsernameError('');
+    setUsernameSuccess('');
+    if (!usernameForm.new_username || usernameForm.new_username.trim().length < 3) {
+      setUsernameError('Username must be at least 3 characters');
+      return;
+    }
+    setUsernameSaving(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch(`${API_URL}/api/auth/change-username`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          current_password: usernameForm.current_password,
+          new_username: usernameForm.new_username,
+        }),
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || 'Failed to change username');
+      }
+      setUsernameSuccess('Username changed successfully!');
+      setAdminUsername(usernameForm.new_username.trim());
+      setUsernameForm({ current_password: '', new_username: '' });
+      setTimeout(() => {
+        setShowUsernameModal(false);
+        setUsernameSuccess('');
+      }, 2000);
+    } catch (err) {
+      setUsernameError(err.message);
+    } finally {
+      setUsernameSaving(false);
     }
   };
 
@@ -255,7 +320,10 @@ export default function AdminLayout() {
       <aside className={`sidebar${sidebarOpen ? ' open' : ''}`} style={styles.sidebar}>
         <div style={styles.sidebarHeader}>
           <h2 style={styles.logo}>{shopName ? shopName.toUpperCase() : 'ADMIN PANEL'}</h2>
-          <span style={styles.badge}>ADMIN</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={styles.badge}>ADMIN</span>
+            {adminUsername && <span style={styles.usernameLabel}>{adminUsername}</span>}
+          </div>
         </div>
 
         <nav style={styles.nav}>
@@ -293,6 +361,10 @@ export default function AdminLayout() {
           <NavLink to="/" style={styles.backLink}>
             ← Back to Website
           </NavLink>
+          <button onClick={() => { setShowUsernameModal(true); setUsernameError(''); setUsernameSuccess(''); setUsernameForm({ current_password: '', new_username: adminUsername }); }} style={styles.logoutBtn} data-testid="change-username-btn">
+            <User size={18} />
+            <span>Change Username</span>
+          </button>
           <button onClick={() => { setShowPasswordModal(true); setPasswordError(''); setPasswordSuccess(''); }} style={styles.logoutBtn} data-testid="change-password-btn">
             <Lock size={18} />
             <span>Change Password</span>
@@ -463,6 +535,61 @@ export default function AdminLayout() {
           </div>
         </div>
       )}
+
+      {/* Change Username Modal */}
+      {showUsernameModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modal}>
+            <div style={styles.modalHeader}>
+              <h2 style={styles.modalTitle}>CHANGE USERNAME</h2>
+              <button onClick={() => setShowUsernameModal(false)} style={styles.closeBtn}>
+                <X size={24} />
+              </button>
+            </div>
+            <div style={styles.modalBody}>
+              {usernameError && (
+                <div style={styles.errorBox}>
+                  <AlertCircle size={16} />
+                  <span>{usernameError}</span>
+                </div>
+              )}
+              {usernameSuccess && (
+                <div style={styles.successBox}>
+                  <CheckCircle size={16} />
+                  <span>{usernameSuccess}</span>
+                </div>
+              )}
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>New Username</label>
+                <input
+                  type="text"
+                  value={usernameForm.new_username}
+                  onChange={(e) => setUsernameForm({ ...usernameForm, new_username: e.target.value })}
+                  style={styles.input}
+                  placeholder="Enter new username"
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Confirm Password</label>
+                <input
+                  type="password"
+                  value={usernameForm.current_password}
+                  onChange={(e) => setUsernameForm({ ...usernameForm, current_password: e.target.value })}
+                  style={styles.input}
+                  placeholder="Enter your password to confirm"
+                />
+              </div>
+              <div style={styles.modalFooter}>
+                <button onClick={() => setShowUsernameModal(false)} style={styles.cancelBtn}>Cancel</button>
+                <button onClick={handleChangeUsername} disabled={usernameSaving} style={styles.saveBtn}>
+                  {usernameSaving ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={16} />}
+                  {usernameSaving ? 'Saving...' : 'Update Username'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -536,12 +663,19 @@ const styles = {
     fontWeight: 700,
     letterSpacing: '2px',
   },
+  usernameLabel: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '12px',
+    color: '#ababab',
+    fontWeight: 500,
+  },
   nav: {
     flex: 1,
     padding: '20px 12px',
     display: 'flex',
     flexDirection: 'column',
     gap: '6px',
+    overflowY: 'auto',
   },
   navItem: {
     display: 'flex',

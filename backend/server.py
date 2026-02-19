@@ -68,6 +68,10 @@ class ChangePasswordRequest(BaseModel):
     current_password: str
     new_password: str
 
+class ChangeUsernameRequest(BaseModel):
+    current_password: str
+    new_username: str
+
 class VehiclePricing(BaseModel):
     sedan: float
     suv_2row: float
@@ -508,6 +512,26 @@ async def change_password(request: ChangePasswordRequest):
         {"$set": {"password_hash": new_hash}}
     )
     return {"message": "Password changed successfully"}
+
+@app.put("/api/auth/change-username", dependencies=[Depends(verify_token)])
+async def change_username(request: ChangeUsernameRequest):
+    """Change admin username (admin only)."""
+    admin = await get_admin_credentials()
+    if not pwd_context.verify(request.current_password, admin["password_hash"]):
+        raise HTTPException(status_code=400, detail="Password is incorrect")
+    if not request.new_username or len(request.new_username.strip()) < 3:
+        raise HTTPException(status_code=400, detail="Username must be at least 3 characters")
+    await db.admin.update_one(
+        {"type": "admin_credentials"},
+        {"$set": {"username": request.new_username.strip()}}
+    )
+    return {"message": "Username changed successfully"}
+
+@app.get("/api/auth/me", dependencies=[Depends(verify_token)])
+async def get_admin_info():
+    """Get current admin username."""
+    admin = await get_admin_credentials()
+    return {"username": admin["username"]}
 
 # ============== Categories Routes ==============
 
