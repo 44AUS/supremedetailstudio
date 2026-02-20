@@ -38,6 +38,7 @@ function SortableCategory({ category, onEdit, onDelete }) {
       <div {...attributes} {...listeners} style={styles.dragHandle}>
         <GripVertical size={18} />
       </div>
+      <div style={{ ...styles.colorSwatch, background: category.color || '#e80200' }} />
       <div style={styles.categoryInfo}>
         <div style={styles.categoryName}>{category.label}</div>
         <div style={styles.categorySlug}>{category.name}</div>
@@ -78,7 +79,8 @@ export default function AdminCategories() {
     sort_order: 0,
     can_combine_with: [],
     is_addon: false,
-    applies_to_categories: []
+    applies_to_categories: [],
+    color: '#e80200'
   });
 
   const sensors = useSensors(
@@ -143,7 +145,8 @@ export default function AdminCategories() {
       sort_order: category.sort_order || 0,
       can_combine_with: category.can_combine_with || [],
       is_addon: category.is_addon || false,
-      applies_to_categories: category.applies_to_categories || []
+      applies_to_categories: category.applies_to_categories || [],
+      color: category.color || '#e80200'
     });
     setShowForm(true);
   };
@@ -157,7 +160,8 @@ export default function AdminCategories() {
       sort_order: categories.length,
       can_combine_with: [],
       is_addon: false,
-      applies_to_categories: []
+      applies_to_categories: [],
+      color: '#e80200'
     });
     setShowForm(true);
   };
@@ -321,6 +325,33 @@ export default function AdminCategories() {
               </div>
 
               <div style={styles.inputGroup}>
+                <label style={styles.label}>Calendar Color</label>
+                <div style={styles.colorPickerRow}>
+                  {['#e80200', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316'].map(c => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, color: c })}
+                      style={{
+                        ...styles.colorOption,
+                        background: c,
+                        outline: formData.color === c ? '2px solid #fff' : 'none',
+                        outlineOffset: '2px',
+                      }}
+                    />
+                  ))}
+                  <input
+                    type="color"
+                    value={formData.color}
+                    onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                    style={styles.colorInput}
+                    title="Custom color"
+                  />
+                </div>
+                <span style={styles.helpText}>This color will appear on the booking calendar</span>
+              </div>
+
+              <div style={styles.inputGroup}>
                 <label style={styles.checkboxLabel}>
                   <input
                     type="checkbox"
@@ -442,6 +473,11 @@ const styles = {
     color: '#525252',
     cursor: 'grab',
     padding: '4px',
+  },
+  colorSwatch: {
+    width: '6px',
+    alignSelf: 'stretch',
+    flexShrink: 0,
   },
   categoryInfo: {
     flex: 1,
@@ -598,6 +634,27 @@ const styles = {
     height: '18px',
     accentColor: '#e80200',
     cursor: 'pointer',
+  },
+  colorPickerRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    flexWrap: 'wrap',
+  },
+  colorOption: {
+    width: '28px',
+    height: '28px',
+    border: 'none',
+    cursor: 'pointer',
+    padding: 0,
+  },
+  colorInput: {
+    width: '28px',
+    height: '28px',
+    border: '1px solid #262626',
+    background: '#0a0a0a',
+    cursor: 'pointer',
+    padding: 0,
   },
   checkboxGrid: {
     display: 'grid',

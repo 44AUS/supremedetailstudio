@@ -226,6 +226,7 @@ class CategoryCreate(BaseModel):
     sort_order: Optional[int] = 0
     can_combine_with: Optional[List[str]] = []  # List of category names this can be paired with
     is_addon: Optional[bool] = False  # Whether this is an add-on category
+    color: Optional[str] = "#e80200"  # Calendar color for this category
 
 class CategoryUpdate(BaseModel):
     name: Optional[str] = None
@@ -234,6 +235,7 @@ class CategoryUpdate(BaseModel):
     sort_order: Optional[int] = None
     can_combine_with: Optional[List[str]] = None
     is_addon: Optional[bool] = None
+    color: Optional[str] = None
 
 class CategoryReorder(BaseModel):
     category_ids: List[str]  # List of category IDs in new order

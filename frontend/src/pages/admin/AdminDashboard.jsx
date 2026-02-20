@@ -33,6 +33,8 @@ export default function AdminDashboard() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedBooking, setSelectedBooking] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [services, setServices] = useState([]);
 
   const getToken = () => localStorage.getItem('adminToken');
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
@@ -46,6 +48,8 @@ export default function AdminDashboard() {
   useEffect(() => {
     fetchStats();
     fetchAllBookings();
+    fetchCategories();
+    fetchServices();
   }, []);
 
   const fetchStats = async () => {
@@ -123,6 +127,39 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error('Error updating payment status:', err);
     }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/categories`);
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch categories:', err);
+    }
+  };
+
+  const fetchServices = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/services`);
+      if (response.ok) {
+        const data = await response.json();
+        setServices(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch services:', err);
+    }
+  };
+
+  const getCategoryColor = (booking) => {
+    if (!booking) return '#e80200';
+    // Find the service to get its category
+    const svc = services.find(s => s.id === booking.service_id || s.name === booking.service_name);
+    const catName = svc?.category || '';
+    const cat = categories.find(c => c.name === catName);
+    return cat?.color || '#e80200';
   };
 
   // Group bookings by date
@@ -228,8 +265,8 @@ export default function AdminDashboard() {
           </h2>
         </div>
 
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', ...(isMobile && { flexDirection: 'column' }) }}>
-        <div style={{ ...styles.calendarContainer, width: '600px', flexShrink: 0, ...(isMobile && { padding: '14px', width: '100%', maxWidth: '100%' }) }}>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexDirection: 'column' }}>
+        <div style={{ ...styles.calendarContainer, width: '100%', maxWidth: '900px', flexShrink: 0, ...(isMobile && { padding: '14px', width: '100%', maxWidth: '100%' }) }}>
           {/* Month Navigation */}
           <div style={styles.calendarNav}>
             <button onClick={prevMonth} style={styles.calendarNavBtn}>
@@ -267,7 +304,6 @@ export default function AdminDashboard() {
                 const dayBookings = bookingsByDate[dateStr] || [];
                 const isToday = dateStr === todayStr;
                 const isSelected = dateStr === selectedDate;
-                const bookingCount = dayBookings.length;
 
                 return (
                   <button
@@ -285,18 +321,34 @@ export default function AdminDashboard() {
                     }}>
                       {day}
                     </span>
-                    {bookingCount > 0 && (
-                      <div style={styles.bookingDots}>
-                        {bookingCount <= 3 ? (
-                          dayBookings.slice(0, 3).map((b, idx) => {
-                            const sc = getStatusStyle(b.status);
-                            return <span key={idx} style={{ ...styles.dot, background: sc.color }} />;
-                          })
-                        ) : (
-                          <span style={styles.bookingCount}>{bookingCount}</span>
-                        )}
-                      </div>
-                    )}
+                    <div style={styles.dayCellBookings}>
+                      {dayBookings
+                        .sort((a, b) => (a.booking_time || '').localeCompare(b.booking_time || ''))
+                        .slice(0, isMobile ? 2 : 3)
+                        .map((b, idx) => {
+                          const catColor = getCategoryColor(b);
+                          return (
+                            <div
+                              key={idx}
+                              style={{
+                                ...styles.calBookingBar,
+                                borderLeft: `3px solid ${catColor}`,
+                              }}
+                              title={`${b.booking_time} - ${b.customer_first_name} ${b.customer_last_name} - ${b.service_name}`}
+                            >
+                              <span style={styles.calBookingText}>
+                                {b.service_name?.length > (isMobile ? 8 : 14) ? b.service_name.slice(0, isMobile ? 8 : 14) + '…' : b.service_name}
+                              </span>
+                              <span style={styles.calBookingCustomer}>
+                                {b.customer_first_name}
+                              </span>
+                            </div>
+                          );
+                        })}
+                      {dayBookings.length > (isMobile ? 2 : 3) && (
+                        <span style={styles.calMoreCount}>+{dayBookings.length - (isMobile ? 2 : 3)} more</span>
+                      )}
+                    </div>
                   </button>
                 );
               })}
@@ -379,7 +431,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Revenue Panel */}
-        <div style={{ ...styles.revenuePanel, ...(isMobile && { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }) }}>
+        <div style={{ ...styles.revenuePanel, width: '100%', maxWidth: '900px', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)' }}>
           <div style={styles.revenueCard}>
             <div style={{ ...styles.revenueIconWrap, background: 'rgba(16, 185, 129, 0.15)' }}>
               <DollarSign size={20} color="#10b981" />
@@ -875,7 +927,6 @@ const styles = {
     background: '#111111',
     border: '1px solid #262626',
     padding: '20px',
-    maxWidth: '600px',
   },
   calendarNav: {
     display: 'flex',
@@ -924,58 +975,75 @@ const styles = {
     gap: '3px',
   },
   dayEmpty: {
-    aspectRatio: '1',
+    minHeight: '100px',
   },
   dayCell: {
-    aspectRatio: '1',
+    minHeight: '100px',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '2px',
+    alignItems: 'stretch',
+    gap: '3px',
     background: '#0a0a0a',
     border: '1px solid #1a1a1a',
     cursor: 'pointer',
-    padding: '2px',
+    padding: '4px 5px',
     transition: 'all 0.15s ease',
+    textAlign: 'left',
+    verticalAlign: 'top',
   },
   dayCellToday: {
     border: '1px solid rgba(232, 2, 0, 0.5)',
     background: 'rgba(232, 2, 0, 0.05)',
   },
   dayCellSelected: {
-    background: '#e80200',
+    background: 'rgba(232, 2, 0, 0.15)',
     border: '1px solid #e80200',
   },
   dayNumber: {
     fontFamily: "'Montserrat', sans-serif",
     fontSize: '12px',
     fontWeight: 600,
+    marginBottom: '2px',
   },
-  bookingDots: {
+  dayCellBookings: {
     display: 'flex',
-    gap: '3px',
+    flexDirection: 'column',
+    gap: '2px',
+    flex: 1,
+    overflow: 'hidden',
+  },
+  calBookingBar: {
+    display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: '4px',
+    padding: '2px 4px',
+    background: 'rgba(255,255,255,0.05)',
+    overflow: 'hidden',
+    whiteSpace: 'nowrap',
   },
-  dot: {
-    width: '5px',
-    height: '5px',
-    borderRadius: '50%',
-    flexShrink: 0,
+  calBookingText: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '10px',
+    fontWeight: 600,
+    color: '#fff',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
-  bookingCount: {
+  calBookingCustomer: {
     fontFamily: "'Montserrat', sans-serif",
     fontSize: '9px',
-    fontWeight: 700,
-    color: '#fff',
-    background: 'rgba(232, 2, 0, 0.6)',
-    borderRadius: '50%',
-    width: '16px',
-    height: '16px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+    color: '#ababab',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    marginLeft: 'auto',
+  },
+  calMoreCount: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '9px',
+    fontWeight: 600,
+    color: '#ababab',
+    textAlign: 'center',
+    padding: '1px 0',
   },
 
   // Day detail panel
@@ -1388,10 +1456,8 @@ const styles = {
   },
   revenuePanel: {
     display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
+    gridTemplateColumns: 'repeat(4, 1fr)',
     gap: '12px',
-    flex: 1,
-    minWidth: '380px',
   },
   revenueCard: {
     display: 'flex',
