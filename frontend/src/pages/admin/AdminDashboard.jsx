@@ -322,33 +322,65 @@ export default function AdminDashboard() {
                       {day}
                     </span>
                     <div style={styles.dayCellBookings}>
-                      {dayBookings
-                        .sort((a, b) => (a.booking_time || '').localeCompare(b.booking_time || ''))
-                        .slice(0, isMobile ? 2 : 3)
-                        .map((b, idx) => {
-                          const catColor = getCategoryColor(b);
-                          const isComplete = b.status === 'complete';
-                          return (
-                            <div
-                              key={idx}
-                              style={{
-                                ...styles.calBookingBar,
-                                borderLeft: `3px solid ${isComplete ? '#22c55e' : catColor}`,
-                                background: isComplete ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.05)',
-                              }}
-                              title={`${b.booking_time} - ${b.customer_first_name} ${b.customer_last_name} - ${b.service_name}`}
-                            >
-                              <span style={styles.calBookingText}>
-                                {b.service_name?.length > (isMobile ? 8 : 14) ? b.service_name.slice(0, isMobile ? 8 : 14) + '…' : b.service_name}
-                              </span>
-                              <span style={styles.calBookingCustomer}>
-                                {b.customer_first_name}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      {dayBookings.length > (isMobile ? 2 : 3) && (
-                        <span style={styles.calMoreCount}>+{dayBookings.length - (isMobile ? 2 : 3)} more</span>
+                      {isMobile ? (
+                        /* Mobile: colored dots */
+                        <>
+                          <div style={styles.calDotRow}>
+                            {dayBookings
+                              .sort((a, b) => (a.booking_time || '').localeCompare(b.booking_time || ''))
+                              .slice(0, 4)
+                              .map((b, idx) => {
+                                const catColor = getCategoryColor(b);
+                                const isComplete = b.status === 'complete';
+                                return (
+                                  <div
+                                    key={idx}
+                                    style={{
+                                      ...styles.calDot,
+                                      background: isComplete ? '#22c55e' : catColor,
+                                    }}
+                                    title={`${b.booking_time} - ${b.service_name}`}
+                                  />
+                                );
+                              })}
+                          </div>
+                          {dayBookings.length > 4 && (
+                            <span style={styles.calMoreCount}>+{dayBookings.length - 4}</span>
+                          )}
+                        </>
+                      ) : (
+                        /* Desktop: time + service on line 1, customer on line 2 */
+                        <>
+                          {dayBookings
+                            .sort((a, b) => (a.booking_time || '').localeCompare(b.booking_time || ''))
+                            .slice(0, 3)
+                            .map((b, idx) => {
+                              const catColor = getCategoryColor(b);
+                              const isComplete = b.status === 'complete';
+                              const timeStr = (b.booking_time || '').replace(/\s/g, '').toUpperCase();
+                              return (
+                                <div
+                                  key={idx}
+                                  style={{
+                                    ...styles.calBookingBar,
+                                    borderLeft: `3px solid ${isComplete ? '#22c55e' : catColor}`,
+                                    background: isComplete ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.05)',
+                                  }}
+                                  title={`${b.booking_time} - ${b.customer_first_name} ${b.customer_last_name} - ${b.service_name}`}
+                                >
+                                  <span style={styles.calBookingText}>
+                                    {timeStr} - {b.service_name?.length > 12 ? b.service_name.slice(0, 12) + '…' : b.service_name}
+                                  </span>
+                                  <span style={styles.calBookingCustomer}>
+                                    {b.customer_first_name} {b.customer_last_name}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          {dayBookings.length > 3 && (
+                            <span style={styles.calMoreCount}>+{dayBookings.length - 3} more</span>
+                          )}
+                        </>
                       )}
                     </div>
                   </button>
@@ -1018,8 +1050,8 @@ const styles = {
   },
   calBookingBar: {
     display: 'flex',
-    alignItems: 'center',
-    gap: '4px',
+    flexDirection: 'column',
+    gap: '0px',
     padding: '2px 4px',
     background: 'rgba(255,255,255,0.05)',
     overflow: 'hidden',
@@ -1027,19 +1059,33 @@ const styles = {
   },
   calBookingText: {
     fontFamily: "'Montserrat', sans-serif",
-    fontSize: '10px',
+    fontSize: '9px',
     fontWeight: 600,
     color: '#fff',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
+    lineHeight: '1.2',
   },
   calBookingCustomer: {
     fontFamily: "'Montserrat', sans-serif",
-    fontSize: '9px',
+    fontSize: '8px',
     color: '#ababab',
     overflow: 'hidden',
     textOverflow: 'ellipsis',
-    marginLeft: 'auto',
+    lineHeight: '1.2',
+  },
+  calDotRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '3px',
+    justifyContent: 'center',
+    marginTop: '2px',
+  },
+  calDot: {
+    width: '7px',
+    height: '7px',
+    borderRadius: '50%',
+    flexShrink: 0,
   },
   calMoreCount: {
     fontFamily: "'Montserrat', sans-serif",
