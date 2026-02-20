@@ -326,7 +326,7 @@ export default function AdminLayout() {
           </div>
         </div>
 
-        <nav style={styles.nav}>
+        <nav className="admin-nav" style={styles.nav}>
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -1041,6 +1041,13 @@ const styles = {
 
 // Add responsive styles
 const mediaQuery = `
+  .admin-nav {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .admin-nav::-webkit-scrollbar {
+    display: none;
+  }
   @media (max-width: 768px) {
     .admin-layout .mobile-header { display: flex !important; }
     .admin-layout .sidebar {
