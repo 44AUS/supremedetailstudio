@@ -291,7 +291,7 @@ export default function AdminLayout() {
     { path: '/admin/schedule', icon: Calendar, label: 'Schedule' },
     { path: '/admin/bookings', icon: ClipboardList, label: 'Bookings' },
     { path: '/admin/customers', icon: Users, label: 'Customers' },
-    { path: '/admin/sms', icon: MessageSquare, label: 'SMS / Texting', badge: unreadSmsCount },
+    { path: '/admin/sms', icon: MessageSquare, label: 'Messaging', badge: unreadSmsCount },
     { path: '/admin/quotes', icon: FileText, label: 'Quote Requests' },
     { path: '/admin/contacts', icon: Mail, label: 'Contact Messages' },
     { path: '/admin/settings', icon: Settings, label: 'Business Settings' },

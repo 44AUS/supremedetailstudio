@@ -319,6 +319,32 @@ class OnMyWayRequest(BaseModel):
     booking_id: str
     custom_eta: Optional[str] = None
 
+# ============== Email Models ==============
+
+class EmailSettings(BaseModel):
+    email_enabled: bool = False
+    from_name: str = "Supreme Detail Studio"
+
+class EmailTemplateUpdate(BaseModel):
+    name: Optional[str] = None
+    subject: Optional[str] = None
+    body: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class SendEmailRequest(BaseModel):
+    to_email: str
+    subject: str
+    body_html: str
+    customer_id: Optional[str] = None
+    booking_id: Optional[str] = None
+
+class MassEmailRequest(BaseModel):
+    subject: str
+    body_html: str
+    filter_tags: Optional[List[str]] = []
+    filter_min_bookings: Optional[int] = None
+    filter_min_spent: Optional[float] = None
+
 # ============== Auth Helpers ==============
 
 def create_access_token(data: dict):
@@ -589,6 +615,180 @@ async def send_booking_email(booking_data: dict, booking_id: str):
             "created_at": datetime.now(timezone.utc).isoformat()
         })
         return {"success": False, "error": str(e)}
+
+
+def build_branded_email_wrapper(inner_html: str, shop_name: str = "Supreme Detail Studio", shop_phone: str = "", shop_address: str = "") -> str:
+    """Wraps any HTML content in the branded email shell."""
+    return f"""<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+</head><body style="margin:0;padding:0;background:#0a0a0a;font-family:Montserrat,Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#111;border:1px solid #262626;max-width:600px;width:100%">
+  <tr><td style="padding:32px 32px 24px;border-bottom:1px solid #262626;text-align:center">
+    <h1 style="margin:0;font-family:Oswald,sans-serif;font-size:28px;font-weight:700;color:#e80200;letter-spacing:3px;text-transform:uppercase">{shop_name}</h1>
+  </td></tr>
+  <tr><td style="padding:32px">
+    {inner_html}
+  </td></tr>
+  <tr><td style="padding:20px 32px;border-top:1px solid #262626;text-align:center">
+    <p style="margin:0;font-family:Montserrat,sans-serif;font-size:11px;color:#525252">{shop_name}{(' · ' + shop_address) if shop_address else ''}{(' · ' + shop_phone) if shop_phone else ''}</p>
+  </td></tr>
+</table>
+</td></tr></table>
+</body></html>"""
+
+
+async def build_email_context(booking_data: dict) -> dict:
+    """Build template variable context for email templates (same as SMS)."""
+    settings = await db.settings.find_one({"type": "business"})
+    shop_name = settings.get("shop_name", "Supreme Detail Studio") if settings else "Supreme Detail Studio"
+    shop_phone = settings.get("shop_phone", "") if settings else ""
+    shop_address = settings.get("shop_address", "") if settings else ""
+
+    email_settings = await db.settings.find_one({"type": "email"})
+    review_url = ""
+    sms_settings = await db.settings.find_one({"type": "sms"})
+    if sms_settings:
+        review_url = sms_settings.get("review_url", "")
+
+    date_str = booking_data.get("booking_date", "")
+    time_str = booking_data.get("booking_time", "")
+    try:
+        dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+        formatted_dt = dt.strftime("%B %d, %Y at %I:%M %p")
+    except Exception:
+        formatted_dt = f"{date_str} {time_str}"
+
+    vehicle_info = f"{booking_data.get('vehicle_year', '')} {booking_data.get('vehicle_make', '')} {booking_data.get('vehicle_model', '')}".strip()
+    customer_name = f"{booking_data.get('customer_first_name', '')} {booking_data.get('customer_last_name', '')}".strip()
+
+    return {
+        "SHOP_NAME": shop_name,
+        "SHOP_NUMBER": shop_phone,
+        "SHOP_ADDRESS": shop_address,
+        "BOOKING_DATE_TIME": formatted_dt,
+        "VEHICLE_INFO": vehicle_info,
+        "CUSTOMER_NAME": customer_name,
+        "REVIEW_URL": review_url,
+        "SERVICE_NAME": booking_data.get("service_name", ""),
+    }
+
+
+async def render_email_template(template_key: str, context: dict) -> Optional[dict]:
+    """Fetch email template and replace placeholders in subject and body."""
+    template = await db.email_templates.find_one({"template_key": template_key, "is_active": True})
+    if not template:
+        return None
+    subject = template.get("subject", "")
+    body = template.get("body", "")
+    for key, value in context.items():
+        subject = subject.replace(f"{{{key}}}", str(value))
+        body = body.replace(f"{{{key}}}", str(value))
+    return {"subject": subject, "body": body}
+
+
+async def send_email(to_email: str, subject: str, body_html: str, customer_name: str = "",
+                     customer_id: str = None, booking_id: str = None,
+                     template_key: str = None) -> dict:
+    """Send an email via Resend API and log to db.email_logs."""
+    if not RESEND_API_KEY:
+        return {"success": False, "error": "Resend API key not configured"}
+
+    email_settings = await db.settings.find_one({"type": "email"})
+    if email_settings and not email_settings.get("email_enabled", False):
+        return {"success": False, "error": "Email sending is disabled"}
+
+    from_name = email_settings.get("from_name", "Supreme Detail Studio") if email_settings else "Supreme Detail Studio"
+    from_header = f"{from_name} <{RESEND_FROM_EMAIL}>"
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.resend.com/emails",
+                headers={
+                    "Authorization": f"Bearer {RESEND_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "from": from_header,
+                    "to": [to_email],
+                    "subject": subject,
+                    "html": body_html,
+                },
+            )
+            response_data = response.json()
+
+        if response.status_code in (200, 201):
+            await db.email_logs.insert_one({
+                "to_email": to_email,
+                "customer_name": customer_name,
+                "customer_id": customer_id,
+                "booking_id": booking_id,
+                "subject": subject,
+                "body_html": body_html,
+                "resend_id": response_data.get("id"),
+                "status": "sent",
+                "template_key": template_key,
+                "direction": "outbound",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+            return {"success": True, "id": response_data.get("id")}
+        else:
+            error_msg = response_data.get("message", str(response_data))
+            await db.email_logs.insert_one({
+                "to_email": to_email,
+                "customer_name": customer_name,
+                "customer_id": customer_id,
+                "booking_id": booking_id,
+                "subject": subject,
+                "body_html": body_html,
+                "status": "failed",
+                "error": error_msg,
+                "template_key": template_key,
+                "direction": "outbound",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+            return {"success": False, "error": error_msg}
+    except Exception as e:
+        await db.email_logs.insert_one({
+            "to_email": to_email,
+            "customer_name": customer_name,
+            "customer_id": customer_id,
+            "booking_id": booking_id,
+            "subject": subject,
+            "status": "failed",
+            "error": str(e),
+            "template_key": template_key,
+            "direction": "outbound",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        return {"success": False, "error": str(e)}
+
+
+async def trigger_booking_email(booking_data: dict, template_key: str, booking_id: str):
+    """Trigger an email using a template for a booking event."""
+    context = await build_email_context(booking_data)
+    rendered = await render_email_template(template_key, context)
+    if not rendered:
+        return
+    to_email = booking_data.get("customer_email", "")
+    if not to_email:
+        return
+
+    settings = await db.settings.find_one({"type": "business"})
+    shop_name = settings.get("shop_name", "Supreme Detail Studio") if settings else "Supreme Detail Studio"
+    shop_phone = settings.get("shop_phone", "") if settings else ""
+    shop_address = settings.get("shop_address", "") if settings else ""
+
+    full_html = build_branded_email_wrapper(rendered["body"], shop_name, shop_phone, shop_address)
+    customer_name = f"{booking_data.get('customer_first_name', '')} {booking_data.get('customer_last_name', '')}".strip()
+    await send_email(
+        to_email=to_email, subject=rendered["subject"], body_html=full_html,
+        customer_name=customer_name, customer_id=booking_data.get("customer_id"),
+        booking_id=booking_id, template_key=template_key
+    )
 
 
 async def schedule_review_request(booking_id: str):
@@ -1283,15 +1483,21 @@ async def update_booking_status(booking_id: str, status_update: BookingStatusUpd
                 {"$inc": {"total_spent": -total_price}}
             )
 
-    # SMS triggers on status change
+    # SMS & Email triggers on status change
     if status_update.status != old_status:
         booking["status"] = status_update.status
         if status_update.status == "complete":
             template_key = "job_complete_shop" if booking.get("service_location") == "shop" else "job_complete_mobile"
             background_tasks.add_task(trigger_booking_sms, booking, template_key, booking_id)
             background_tasks.add_task(schedule_review_request, booking_id)
+            # Email trigger for completion
+            if booking.get("customer_email"):
+                background_tasks.add_task(trigger_booking_email, booking, "email_job_complete", booking_id)
         elif status_update.status == "cancelled":
             background_tasks.add_task(trigger_booking_sms, booking, "cancelled", booking_id)
+            # Email trigger for cancellation
+            if booking.get("customer_email"):
+                background_tasks.add_task(trigger_booking_email, booking, "email_cancelled", booking_id)
 
     return {"message": "Booking status updated successfully"}
 
@@ -2230,6 +2436,172 @@ async def twilio_incoming_webhook(request: Request):
         content='<?xml version="1.0" encoding="UTF-8"?><Response></Response>',
         media_type="application/xml"
     )
+
+# ============== Email Templates & Endpoints ==============
+
+DEFAULT_EMAIL_TEMPLATES = [
+    {"template_key": "email_booking_confirmation", "name": "Booking Confirmation",
+     "subject": "Booking Confirmed - {SHOP_NAME}",
+     "body": '<p style="margin:0 0 24px;font-family:Montserrat,sans-serif;font-size:15px;color:#fff;line-height:1.6">Hi {CUSTOMER_NAME},<br><br>Your appointment has been scheduled for <strong>{BOOKING_DATE_TIME}</strong>.</p><p style="margin:0 0 16px;font-family:Montserrat,sans-serif;font-size:14px;color:#ccc;line-height:1.6"><strong>Vehicle:</strong> {VEHICLE_INFO}<br><strong>Service:</strong> {SERVICE_NAME}</p><p style="margin:0;font-family:Montserrat,sans-serif;font-size:13px;color:#ababab;line-height:1.6">If you need to reschedule or have any questions, please call us at {SHOP_NUMBER}.</p>',
+     "is_active": True},
+    {"template_key": "email_job_complete", "name": "Job Completed",
+     "subject": "Service Complete - {SHOP_NAME}",
+     "body": '<p style="margin:0 0 24px;font-family:Montserrat,sans-serif;font-size:15px;color:#fff;line-height:1.6">Hi {CUSTOMER_NAME},<br><br>We\'ve finished working on your <strong>{VEHICLE_INFO}</strong>. Thank you for choosing {SHOP_NAME}!</p><p style="margin:0;font-family:Montserrat,sans-serif;font-size:13px;color:#ababab;line-height:1.6">If you have any questions, please call us at {SHOP_NUMBER}.</p>',
+     "is_active": True},
+    {"template_key": "email_review_request", "name": "Review Request",
+     "subject": "How was your experience? - {SHOP_NAME}",
+     "body": '<p style="margin:0 0 24px;font-family:Montserrat,sans-serif;font-size:15px;color:#fff;line-height:1.6">Hi {CUSTOMER_NAME},<br><br>Thanks for choosing {SHOP_NAME}. We enjoyed working on your {VEHICLE_INFO}.</p><p style="margin:0 0 16px;font-family:Montserrat,sans-serif;font-size:14px;color:#ccc;line-height:1.6">If you aren\'t 100% satisfied, please let us know and we\'ll make it right. Otherwise, we\'d appreciate a review:</p><p style="margin:0;text-align:center"><a href="{REVIEW_URL}" style="display:inline-block;padding:12px 28px;background:#e80200;color:#fff;text-decoration:none;font-family:Oswald,sans-serif;font-size:14px;font-weight:600;letter-spacing:1px;text-transform:uppercase">LEAVE A REVIEW</a></p>',
+     "is_active": True},
+    {"template_key": "email_cancelled", "name": "Booking Cancelled",
+     "subject": "Booking Cancelled - {SHOP_NAME}",
+     "body": '<p style="margin:0 0 24px;font-family:Montserrat,sans-serif;font-size:15px;color:#fff;line-height:1.6">Hi {CUSTOMER_NAME},<br><br>Your appointment on <strong>{BOOKING_DATE_TIME}</strong> has been cancelled.</p><p style="margin:0;font-family:Montserrat,sans-serif;font-size:13px;color:#ababab;line-height:1.6">If you would like to reschedule, please call us at {SHOP_NUMBER}.</p>',
+     "is_active": True},
+    {"template_key": "email_general", "name": "General Email",
+     "subject": "{SHOP_NAME}",
+     "body": '<p style="margin:0;font-family:Montserrat,sans-serif;font-size:15px;color:#fff;line-height:1.6">Hello,</p>',
+     "is_active": True},
+]
+
+@app.get("/api/settings/email", dependencies=[Depends(verify_token)])
+async def get_email_settings():
+    defaults = {
+        "email_enabled": False,
+        "from_name": "Supreme Detail Studio",
+        "from_email": RESEND_FROM_EMAIL,
+    }
+    settings = await db.settings.find_one({"type": "email"})
+    if not settings:
+        return defaults
+    settings.pop("_id", None)
+    settings.pop("type", None)
+    settings["from_email"] = RESEND_FROM_EMAIL
+    return {**defaults, **settings}
+
+@app.put("/api/settings/email", dependencies=[Depends(verify_token)])
+async def update_email_settings(settings: EmailSettings):
+    settings_dict = settings.model_dump()
+    settings_dict["type"] = "email"
+    settings_dict["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.settings.update_one({"type": "email"}, {"$set": settings_dict}, upsert=True)
+    return {"message": "Email settings updated successfully"}
+
+@app.get("/api/email/templates", dependencies=[Depends(verify_token)])
+async def get_email_templates():
+    templates = []
+    async for t in db.email_templates.find():
+        t["id"] = str(t.pop("_id"))
+        templates.append(t)
+    if not templates:
+        for d in DEFAULT_EMAIL_TEMPLATES:
+            d_copy = {**d, "created_at": datetime.now(timezone.utc).isoformat()}
+            result = await db.email_templates.insert_one(d_copy)
+            d_copy["id"] = str(result.inserted_id)
+            d_copy.pop("_id", None)
+            templates.append(d_copy)
+    return templates
+
+@app.put("/api/email/templates/{template_id}", dependencies=[Depends(verify_token)])
+async def update_email_template(template_id: str, update: EmailTemplateUpdate):
+    update_data = {k: v for k, v in update.model_dump().items() if v is not None}
+    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    await db.email_templates.update_one({"_id": ObjectId(template_id)}, {"$set": update_data})
+    return {"message": "Email template updated"}
+
+@app.post("/api/email/send", dependencies=[Depends(verify_token)])
+async def send_email_endpoint(req: SendEmailRequest):
+    settings = await db.settings.find_one({"type": "business"})
+    shop_name = settings.get("shop_name", "Supreme Detail Studio") if settings else "Supreme Detail Studio"
+    shop_phone = settings.get("shop_phone", "") if settings else ""
+    shop_address = settings.get("shop_address", "") if settings else ""
+
+    full_html = build_branded_email_wrapper(req.body_html, shop_name, shop_phone, shop_address)
+
+    # Look up customer name
+    customer_name = ""
+    if req.customer_id:
+        customer = await db.customers.find_one({"_id": ObjectId(req.customer_id)})
+        if customer:
+            customer_name = f"{customer.get('first_name', '')} {customer.get('last_name', '')}".strip()
+
+    result = await send_email(
+        to_email=req.to_email, subject=req.subject, body_html=full_html,
+        customer_name=customer_name, customer_id=req.customer_id,
+        booking_id=req.booking_id, template_key="manual"
+    )
+    if not result["success"]:
+        raise HTTPException(status_code=500, detail=result.get("error", "Email failed"))
+    return {"message": "Email sent successfully", "id": result.get("id")}
+
+@app.post("/api/email/mass-send", dependencies=[Depends(verify_token)])
+async def mass_send_email(req: MassEmailRequest, background_tasks: BackgroundTasks):
+    query = {}
+    if req.filter_tags:
+        query["tags"] = {"$in": req.filter_tags}
+    if req.filter_min_bookings is not None:
+        query["total_bookings"] = {"$gte": req.filter_min_bookings}
+    if req.filter_min_spent is not None:
+        query["total_spent"] = {"$gte": req.filter_min_spent}
+    customers = await db.customers.find(query).to_list(10000)
+    customer_count = len(customers)
+
+    settings = await db.settings.find_one({"type": "business"})
+    shop_name = settings.get("shop_name", "Supreme Detail Studio") if settings else "Supreme Detail Studio"
+    shop_phone = settings.get("shop_phone", "") if settings else ""
+    shop_address = settings.get("shop_address", "") if settings else ""
+
+    full_html = build_branded_email_wrapper(req.body_html, shop_name, shop_phone, shop_address)
+
+    async def do_mass_email():
+        sent = 0
+        failed = 0
+        for customer in customers:
+            email = customer.get("email", "")
+            if not email:
+                failed += 1
+                continue
+            name = f"{customer.get('first_name', '')} {customer.get('last_name', '')}".strip()
+            r = await send_email(
+                to_email=email, subject=req.subject, body_html=full_html,
+                customer_name=name, customer_id=str(customer["_id"]),
+                template_key="mass_email"
+            )
+            if r["success"]:
+                sent += 1
+            else:
+                failed += 1
+            await asyncio.sleep(0.5)  # Resend rate limit: ~2/sec
+        await db.email_mass_logs.insert_one({
+            "subject": req.subject, "total_recipients": customer_count,
+            "sent": sent, "failed": failed,
+            "filters": req.model_dump(),
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+
+    background_tasks.add_task(do_mass_email)
+    return {"message": f"Mass email queued for {customer_count} recipients", "count": customer_count}
+
+@app.get("/api/email/logs", dependencies=[Depends(verify_token)])
+async def get_email_logs(email: Optional[str] = None, limit: int = 100):
+    query = {}
+    if email:
+        query["to_email"] = email
+    logs = []
+    async for log in db.email_logs.find(query).sort("created_at", -1).limit(limit):
+        log["id"] = str(log.pop("_id"))
+        logs.append(log)
+    return logs
+
+@app.get("/api/email/customer-count", dependencies=[Depends(verify_token)])
+async def get_email_customer_count(tags: Optional[str] = None, min_bookings: Optional[int] = None, min_spent: Optional[float] = None):
+    query = {"email": {"$exists": True, "$ne": ""}}
+    if tags:
+        query["tags"] = {"$in": tags.split(",")}
+    if min_bookings is not None:
+        query["total_bookings"] = {"$gte": min_bookings}
+    if min_spent is not None:
+        query["total_spent"] = {"$gte": min_spent}
+    count = await db.customers.count_documents(query)
+    return {"count": count}
 
 # ============== Background Tasks ==============
 

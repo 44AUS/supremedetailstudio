@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   MessageSquare, Send, Users, Filter, Search, Edit2, Save, X, Loader2, Trash2,
-  Settings, FileText, Phone, Clock, CheckCircle, AlertCircle, ToggleLeft, ToggleRight
+  Settings, FileText, Phone, Clock, CheckCircle, AlertCircle, ToggleLeft, ToggleRight,
+  Mail, AtSign
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
@@ -10,7 +11,10 @@ const getToken = () => localStorage.getItem('adminToken');
 const TABS = [
   { key: 'conversations', label: 'Conversations', icon: MessageSquare },
   { key: 'mass', label: 'Mass Text', icon: Users },
-  { key: 'templates', label: 'Templates', icon: FileText },
+  { key: 'email_compose', label: 'Email', icon: Mail },
+  { key: 'mass_email', label: 'Mass Email', icon: AtSign },
+  { key: 'templates', label: 'SMS Templates', icon: FileText },
+  { key: 'email_templates', label: 'Email Templates', icon: FileText },
   { key: 'settings', label: 'Settings', icon: Settings },
 ];
 
@@ -47,6 +51,33 @@ export default function AdminSMS() {
   });
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [settingsSuccess, setSettingsSuccess] = useState('');
+
+  // Email compose state
+  const [emailTo, setEmailTo] = useState('');
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody] = useState('');
+  const [emailSending, setEmailSending] = useState(false);
+  const [emailResult, setEmailResult] = useState(null);
+  const [emailLogs, setEmailLogs] = useState([]);
+
+  // Mass email state
+  const [massEmailSubject, setMassEmailSubject] = useState('');
+  const [massEmailBody, setMassEmailBody] = useState('');
+  const [massEmailFilters, setMassEmailFilters] = useState({ tags: '', min_bookings: '', min_spent: '' });
+  const [emailCustomerCount, setEmailCustomerCount] = useState(0);
+  const [massEmailSending, setMassEmailSending] = useState(false);
+  const [showMassEmailConfirm, setShowMassEmailConfirm] = useState(false);
+  const [massEmailResult, setMassEmailResult] = useState(null);
+
+  // Email templates state
+  const [emailTemplates, setEmailTemplates] = useState([]);
+  const [editingEmailTemplate, setEditingEmailTemplate] = useState(null);
+  const [emailTemplateSaving, setEmailTemplateSaving] = useState(false);
+
+  // Email settings state
+  const [emailSettings, setEmailSettings] = useState({
+    email_enabled: false, from_name: 'Supreme Detail Studio', from_email: '',
+  });
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
@@ -268,15 +299,198 @@ export default function AdminSMS() {
     }
   };
 
+  // Email compose
+  const handleSendEmail = async () => {
+    if (!emailTo.trim() || !emailSubject.trim() || !emailBody.trim()) return;
+    setEmailSending(true);
+    setEmailResult(null);
+    try {
+      const res = await fetch(`${API_URL}/api/email/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({ to_email: emailTo, subject: emailSubject, body_html: emailBody }),
+      });
+      if (res.ok) {
+        setEmailResult('Email sent successfully!');
+        setEmailTo('');
+        setEmailSubject('');
+        setEmailBody('');
+        fetchEmailLogs();
+        setTimeout(() => setEmailResult(null), 3000);
+      } else {
+        const data = await res.json();
+        setEmailResult(`Error: ${data.detail || 'Failed to send'}`);
+      }
+    } catch (err) {
+      setEmailResult('Error: Failed to send email');
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
+  const fetchEmailLogs = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/email/logs?limit=50`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setEmailLogs(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch email logs:', err);
+    }
+  };
+
+  // Mass email
+  const fetchEmailCustomerCount = async () => {
+    const params = new URLSearchParams();
+    if (massEmailFilters.tags) params.set('tags', massEmailFilters.tags);
+    if (massEmailFilters.min_bookings) params.set('min_bookings', massEmailFilters.min_bookings);
+    if (massEmailFilters.min_spent) params.set('min_spent', massEmailFilters.min_spent);
+    try {
+      const res = await fetch(`${API_URL}/api/email/customer-count?${params}`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setEmailCustomerCount(data.count);
+      }
+    } catch (err) {
+      console.error('Failed to fetch email customer count:', err);
+    }
+  };
+
+  const handleMassEmailSend = async () => {
+    setMassEmailSending(true);
+    setMassEmailResult(null);
+    try {
+      const body = { subject: massEmailSubject, body_html: massEmailBody };
+      if (massEmailFilters.tags) body.filter_tags = massEmailFilters.tags.split(',').map(t => t.trim());
+      if (massEmailFilters.min_bookings) body.filter_min_bookings = parseInt(massEmailFilters.min_bookings);
+      if (massEmailFilters.min_spent) body.filter_min_spent = parseFloat(massEmailFilters.min_spent);
+      const res = await fetch(`${API_URL}/api/email/mass-send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify(body),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setMassEmailResult(data.message);
+        setMassEmailSubject('');
+        setMassEmailBody('');
+        setShowMassEmailConfirm(false);
+      }
+    } catch (err) {
+      console.error('Failed to send mass email:', err);
+    } finally {
+      setMassEmailSending(false);
+    }
+  };
+
+  // Email templates
+  const fetchEmailTemplates = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/email/templates`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setEmailTemplates(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch email templates:', err);
+    }
+  };
+
+  const saveEmailTemplate = async () => {
+    if (!editingEmailTemplate) return;
+    setEmailTemplateSaving(true);
+    try {
+      const res = await fetch(`${API_URL}/api/email/templates/${editingEmailTemplate.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({
+          name: editingEmailTemplate.name,
+          subject: editingEmailTemplate.subject,
+          body: editingEmailTemplate.body,
+          is_active: editingEmailTemplate.is_active,
+        }),
+      });
+      if (res.ok) {
+        setEditingEmailTemplate(null);
+        fetchEmailTemplates();
+      }
+    } catch (err) {
+      console.error('Failed to save email template:', err);
+    } finally {
+      setEmailTemplateSaving(false);
+    }
+  };
+
+  // Email settings
+  const fetchEmailSettings = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/settings/email`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setEmailSettings(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch email settings:', err);
+    }
+  };
+
+  const saveAllSettings = async () => {
+    setSettingsSaving(true);
+    setSettingsSuccess('');
+    try {
+      // Save SMS settings
+      await fetch(`${API_URL}/api/settings/sms`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({
+          sms_enabled: smsSettings.sms_enabled,
+          reminder_enabled: smsSettings.reminder_enabled,
+          reminder_hours_before: parseInt(smsSettings.reminder_hours_before) || 24,
+          review_request_enabled: smsSettings.review_request_enabled,
+          review_delay_hours: parseInt(smsSettings.review_delay_hours) || 2,
+          review_url: smsSettings.review_url,
+        }),
+      });
+      // Save Email settings
+      await fetch(`${API_URL}/api/settings/email`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({
+          email_enabled: emailSettings.email_enabled,
+          from_name: emailSettings.from_name,
+        }),
+      });
+      setSettingsSuccess('All settings saved successfully');
+      setTimeout(() => setSettingsSuccess(''), 3000);
+    } catch (err) {
+      console.error('Failed to save settings:', err);
+    } finally {
+      setSettingsSaving(false);
+    }
+  };
+
   useEffect(() => {
     fetchConversations();
     fetchTemplates();
     fetchSettings();
+    fetchEmailTemplates();
+    fetchEmailSettings();
+    fetchEmailLogs();
   }, []);
 
   useEffect(() => {
     if (activeTab === 'mass') fetchCustomerCount();
-  }, [activeTab, massFilters]);
+    if (activeTab === 'mass_email') fetchEmailCustomerCount();
+  }, [activeTab, massFilters, massEmailFilters]);
 
   useEffect(() => {
     if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -311,8 +525,8 @@ export default function AdminSMS() {
       {/* Header */}
       <div style={styles.header}>
         <div>
-          <h1 style={styles.title}>SMS / Texting</h1>
-          <p style={styles.subtitle}>Manage conversations, mass texts, and templates</p>
+          <h1 style={styles.title}>Messaging</h1>
+          <p style={styles.subtitle}>SMS, email, mass messaging, and templates</p>
         </div>
       </div>
 
@@ -652,6 +866,298 @@ export default function AdminSMS() {
         </div>
       )}
 
+      {activeTab === 'email_compose' && (
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>Send Email</h2>
+          <p style={styles.sectionDesc}>Compose and send an email to a customer.</p>
+
+          <div style={{ maxWidth: '700px' }}>
+            <div style={styles.formGroup}>
+              <label style={styles.formLabel}>To (Email Address)</label>
+              <input
+                value={emailTo}
+                onChange={(e) => setEmailTo(e.target.value)}
+                placeholder="customer@example.com"
+                style={styles.formInput}
+                type="email"
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.formLabel}>Subject</label>
+              <input
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+                placeholder="Enter email subject..."
+                style={styles.formInput}
+              />
+            </div>
+            <div style={styles.formGroup}>
+              <label style={styles.formLabel}>Message Body</label>
+              <textarea
+                value={emailBody}
+                onChange={(e) => setEmailBody(e.target.value)}
+                placeholder="Type your email message here... (HTML supported)"
+                style={styles.massTextarea}
+                rows={8}
+              />
+              <div style={styles.charCount}>Tip: Use HTML for formatting. E.g. &lt;b&gt;bold&lt;/b&gt;, &lt;br&gt; for line break</div>
+            </div>
+
+            {emailResult && (
+              <div style={{
+                ...styles.successBanner,
+                ...(emailResult.startsWith('Error') ? { background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)', color: '#ef4444' } : {}),
+              }}>
+                {emailResult.startsWith('Error') ? <AlertCircle size={16} /> : <CheckCircle size={16} />} {emailResult}
+              </div>
+            )}
+
+            <button
+              onClick={handleSendEmail}
+              disabled={emailSending || !emailTo.trim() || !emailSubject.trim() || !emailBody.trim()}
+              style={{ ...styles.primaryBtn, opacity: emailSending || !emailTo.trim() || !emailSubject.trim() || !emailBody.trim() ? 0.5 : 1 }}
+            >
+              {emailSending ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={16} />}
+              Send Email
+            </button>
+          </div>
+
+          {/* Recent Email Logs */}
+          {emailLogs.length > 0 && (
+            <div style={{ marginTop: '40px' }}>
+              <h3 style={{ ...styles.sectionTitle, fontSize: '18px', marginBottom: '16px' }}>Recent Emails</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {emailLogs.slice(0, 20).map((log) => (
+                  <div key={log.id} style={styles.emailLogItem}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={styles.emailLogTo}>{log.to_email}</div>
+                      <div style={styles.emailLogSubject}>{log.subject}</div>
+                    </div>
+                    <span style={{
+                      ...styles.activeBadge,
+                      background: log.status === 'sent' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                      color: log.status === 'sent' ? '#10b981' : '#ef4444',
+                    }}>
+                      {log.status}
+                    </span>
+                    <span style={styles.emailLogTime}>{formatTime(log.created_at)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'mass_email' && (
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>Mass Email</h2>
+          <p style={styles.sectionDesc}>Send an email to multiple customers at once.</p>
+
+          <div style={{ ...styles.massGrid, ...(isMobile ? { gridTemplateColumns: '1fr' } : {}) }}>
+            <div style={styles.massLeft}>
+              <div style={styles.formGroup}>
+                <label style={styles.formLabel}>Subject</label>
+                <input
+                  value={massEmailSubject}
+                  onChange={(e) => setMassEmailSubject(e.target.value)}
+                  placeholder="Enter email subject..."
+                  style={styles.formInput}
+                />
+              </div>
+              <label style={styles.formLabel}>Message Body</label>
+              <textarea
+                value={massEmailBody}
+                onChange={(e) => setMassEmailBody(e.target.value)}
+                placeholder="Type your email message here... (HTML supported)"
+                style={styles.massTextarea}
+                rows={8}
+              />
+              <div style={styles.charCount}>Tip: Use HTML for formatting. Your message will be wrapped in a branded email template.</div>
+            </div>
+            <div style={styles.massRight}>
+              <h3 style={styles.filterTitle}><Filter size={16} /> Filters (optional)</h3>
+              <div style={styles.formGroup}>
+                <label style={styles.formLabel}>Tags (comma separated)</label>
+                <input
+                  value={massEmailFilters.tags}
+                  onChange={(e) => setMassEmailFilters({ ...massEmailFilters, tags: e.target.value })}
+                  placeholder="e.g. vip, returning"
+                  style={styles.formInput}
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label style={styles.formLabel}>Min Bookings</label>
+                <input
+                  type="number"
+                  value={massEmailFilters.min_bookings}
+                  onChange={(e) => setMassEmailFilters({ ...massEmailFilters, min_bookings: e.target.value })}
+                  placeholder="e.g. 2"
+                  style={styles.formInput}
+                />
+              </div>
+              <div style={styles.formGroup}>
+                <label style={styles.formLabel}>Min Total Spent ($)</label>
+                <input
+                  type="number"
+                  value={massEmailFilters.min_spent}
+                  onChange={(e) => setMassEmailFilters({ ...massEmailFilters, min_spent: e.target.value })}
+                  placeholder="e.g. 500"
+                  style={styles.formInput}
+                />
+              </div>
+              <div style={styles.recipientCount}>
+                <Mail size={16} />
+                <span>{emailCustomerCount} recipient{emailCustomerCount !== 1 ? 's' : ''} with email</span>
+              </div>
+            </div>
+          </div>
+
+          {massEmailResult && (
+            <div style={styles.successBanner}>
+              <CheckCircle size={16} /> {massEmailResult}
+            </div>
+          )}
+
+          <button
+            onClick={() => setShowMassEmailConfirm(true)}
+            disabled={!massEmailSubject.trim() || !massEmailBody.trim() || emailCustomerCount === 0}
+            style={{ ...styles.primaryBtn, opacity: !massEmailSubject.trim() || !massEmailBody.trim() || emailCustomerCount === 0 ? 0.5 : 1 }}
+          >
+            <Mail size={16} /> Email {emailCustomerCount} Customer{emailCustomerCount !== 1 ? 's' : ''}
+          </button>
+
+          {/* Confirm modal */}
+          {showMassEmailConfirm && (
+            <div style={styles.modalOverlay} onClick={() => setShowMassEmailConfirm(false)}>
+              <div style={styles.confirmModal} onClick={(e) => e.stopPropagation()}>
+                <h3 style={styles.confirmTitle}>Confirm Mass Email</h3>
+                <p style={styles.confirmText}>
+                  You are about to send an email to <strong>{emailCustomerCount}</strong> customer{emailCustomerCount !== 1 ? 's' : ''}.
+                  This action cannot be undone.
+                </p>
+                <div style={styles.confirmPreview}>
+                  <strong>Subject:</strong> {massEmailSubject}
+                </div>
+                <div style={styles.confirmActions}>
+                  <button onClick={() => setShowMassEmailConfirm(false)} style={styles.cancelBtn}>Cancel</button>
+                  <button onClick={handleMassEmailSend} disabled={massEmailSending} style={styles.dangerBtn}>
+                    {massEmailSending ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={16} />}
+                    {massEmailSending ? 'Sending...' : 'Send Now'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {activeTab === 'email_templates' && (
+        <div style={styles.section}>
+          <h2 style={styles.sectionTitle}>Email Templates</h2>
+          <p style={styles.sectionDesc}>Customize automated email messages sent during the booking lifecycle.</p>
+
+          <div style={styles.variableRef}>
+            <span style={styles.variableRefTitle}>Available Variables:</span>
+            {['{SHOP_NAME}', '{SHOP_NUMBER}', '{BOOKING_DATE_TIME}', '{VEHICLE_INFO}', '{CUSTOMER_NAME}', '{REVIEW_URL}', '{SERVICE_NAME}'].map(v => (
+              <span key={v} style={styles.variableTag}>{v}</span>
+            ))}
+          </div>
+
+          <div style={styles.templateList}>
+            {emailTemplates.map((t) => (
+              <div key={t.id} style={styles.templateCard}>
+                <div style={styles.templateHeader}>
+                  <div>
+                    <h3 style={styles.templateName}>{t.name}</h3>
+                    <span style={styles.templateKey}>{t.template_key}</span>
+                    <div style={{ marginTop: '4px', fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: '#ababab' }}>
+                      Subject: {t.subject}
+                    </div>
+                  </div>
+                  <div style={styles.templateActions}>
+                    <span style={{
+                      ...styles.activeBadge,
+                      background: t.is_active ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                      color: t.is_active ? '#10b981' : '#6b7280',
+                    }}>
+                      {t.is_active ? 'Active' : 'Disabled'}
+                    </span>
+                    <button onClick={() => setEditingEmailTemplate({ ...t })} style={styles.editBtn}>
+                      <Edit2 size={14} /> Edit
+                    </button>
+                  </div>
+                </div>
+                <div style={{ ...styles.templateBody, fontSize: '12px' }} dangerouslySetInnerHTML={{ __html: t.body?.replace(/<[^>]*>/g, ' ').substring(0, 200) + '...' }} />
+              </div>
+            ))}
+          </div>
+
+          {/* Edit Email Template Modal */}
+          {editingEmailTemplate && (
+            <div style={styles.modalOverlay} onClick={() => setEditingEmailTemplate(null)}>
+              <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+                <div style={styles.modalHeader}>
+                  <h2 style={styles.modalTitle}>Edit Email Template</h2>
+                  <button onClick={() => setEditingEmailTemplate(null)} style={styles.closeBtn}><X size={20} /></button>
+                </div>
+                <div style={styles.modalBody}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Template Name</label>
+                    <input
+                      value={editingEmailTemplate.name}
+                      onChange={(e) => setEditingEmailTemplate({ ...editingEmailTemplate, name: e.target.value })}
+                      style={styles.formInput}
+                    />
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Subject Line</label>
+                    <input
+                      value={editingEmailTemplate.subject}
+                      onChange={(e) => setEditingEmailTemplate({ ...editingEmailTemplate, subject: e.target.value })}
+                      style={styles.formInput}
+                    />
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Email Body (HTML)</label>
+                    <textarea
+                      value={editingEmailTemplate.body}
+                      onChange={(e) => setEditingEmailTemplate({ ...editingEmailTemplate, body: e.target.value })}
+                      style={styles.massTextarea}
+                      rows={8}
+                    />
+                  </div>
+                  <div style={styles.toggleRow}>
+                    <span style={styles.formLabel}>Active</span>
+                    <button
+                      onClick={() => setEditingEmailTemplate({ ...editingEmailTemplate, is_active: !editingEmailTemplate.is_active })}
+                      style={styles.toggleBtn}
+                    >
+                      {editingEmailTemplate.is_active
+                        ? <ToggleRight size={28} color="#10b981" />
+                        : <ToggleLeft size={28} color="#525252" />}
+                    </button>
+                  </div>
+                  <div style={styles.variableRef}>
+                    <span style={styles.variableRefTitle}>Variables:</span>
+                    {['{SHOP_NAME}', '{SHOP_NUMBER}', '{BOOKING_DATE_TIME}', '{VEHICLE_INFO}', '{CUSTOMER_NAME}', '{REVIEW_URL}', '{SERVICE_NAME}'].map(v => (
+                      <span key={v} style={styles.variableTag}>{v}</span>
+                    ))}
+                  </div>
+                </div>
+                <div style={styles.modalFooter}>
+                  <button onClick={() => setEditingEmailTemplate(null)} style={styles.cancelBtn}>Cancel</button>
+                  <button onClick={saveEmailTemplate} disabled={emailTemplateSaving} style={styles.saveBtn}>
+                    {emailTemplateSaving ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={16} />}
+                    Save
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       {activeTab === 'settings' && (
         <div style={styles.section}>
           <h2 style={styles.sectionTitle}>SMS Settings</h2>
@@ -744,15 +1250,61 @@ export default function AdminSMS() {
             </div>
           </div>
 
+          {/* Email Settings Section */}
+          <h2 style={{ ...styles.sectionTitle, marginTop: '32px', marginBottom: '4px' }}>Email Settings</h2>
+          <p style={styles.sectionDesc}>Configure Resend email integration.</p>
+
+          <div style={styles.settingsGrid}>
+            {/* Email Enabled */}
+            <div style={styles.settingsCard}>
+              <div style={styles.settingsCardHeader}>
+                <h3 style={styles.settingsCardTitle}>Email Enabled</h3>
+                <button
+                  onClick={() => setEmailSettings({ ...emailSettings, email_enabled: !emailSettings.email_enabled })}
+                  style={styles.toggleBtn}
+                >
+                  {emailSettings.email_enabled
+                    ? <ToggleRight size={32} color="#10b981" />
+                    : <ToggleLeft size={32} color="#525252" />}
+                </button>
+              </div>
+              <p style={styles.settingsCardDesc}>Turn automated emails on or off globally.</p>
+            </div>
+
+            {/* From Email */}
+            <div style={styles.settingsCard}>
+              <h3 style={styles.settingsCardTitle}>From Email</h3>
+              <p style={styles.settingsCardDesc}>Configured via environment variable.</p>
+              <div style={styles.readOnlyField}>
+                <Mail size={14} />
+                {emailSettings.from_email || 'Not configured'}
+              </div>
+            </div>
+
+            {/* From Name */}
+            <div style={styles.settingsCard}>
+              <h3 style={styles.settingsCardTitle}>From Name</h3>
+              <p style={styles.settingsCardDesc}>Display name shown in the From header.</p>
+              <div style={styles.formGroup}>
+                <input
+                  value={emailSettings.from_name}
+                  onChange={(e) => setEmailSettings({ ...emailSettings, from_name: e.target.value })}
+                  placeholder="Supreme Detail Studio"
+                  style={styles.formInput}
+                />
+              </div>
+            </div>
+          </div>
+
           {settingsSuccess && (
             <div style={styles.successBanner}>
               <CheckCircle size={16} /> {settingsSuccess}
             </div>
           )}
 
-          <button onClick={saveSettings} disabled={settingsSaving} style={styles.primaryBtn}>
+          <button onClick={saveAllSettings} disabled={settingsSaving} style={styles.primaryBtn}>
             {settingsSaving ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Save size={16} />}
-            Save Settings
+            Save All Settings
           </button>
         </div>
       )}
@@ -1458,5 +2010,38 @@ const styles = {
     display: 'flex',
     justifyContent: 'flex-end',
     gap: '12px',
+  },
+  // Email logs
+  emailLogItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    padding: '14px 16px',
+    background: '#111111',
+    border: '1px solid #262626',
+    borderRadius: '8px',
+  },
+  emailLogTo: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#fff',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  emailLogSubject: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '12px',
+    color: '#6b7280',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+  emailLogTime: {
+    fontFamily: "'Montserrat', sans-serif",
+    fontSize: '11px',
+    color: '#525252',
+    flexShrink: 0,
   },
 };
