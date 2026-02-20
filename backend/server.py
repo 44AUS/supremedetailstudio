@@ -13,6 +13,9 @@ import os
 import re
 import asyncio
 import httpx
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 from twilio.rest import Client as TwilioClient
 
@@ -53,6 +56,13 @@ TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID", "")
 TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
 TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
 GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "")
+
+# SMTP / Email Config
+SMTP_HOST = os.environ.get("SMTP_HOST", "")
+SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
+SMTP_USERNAME = os.environ.get("SMTP_USERNAME", "")
+SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
+SMTP_FROM_EMAIL = os.environ.get("SMTP_FROM_EMAIL", "")
 
 # ============== Models ==============
 
@@ -159,6 +169,8 @@ class BookingCreate(BaseModel):
     total_price: float
     total_duration: Optional[int] = None  # Total duration in minutes for all services
     notes: Optional[str] = ""
+    sms_consent: Optional[bool] = False
+    email_consent: Optional[bool] = False
 
 class BookingStatusUpdate(BaseModel):
     status: str  # pending, in_progress, complete, incomplete
@@ -435,6 +447,139 @@ async def trigger_booking_sms(booking_data: dict, template_key: str, booking_id:
             booking_id=booking_id,
             template_key=template_key
         )
+
+# ============== Email Functions ==============
+
+def build_booking_email_html(booking_data: dict, shop_name: str, shop_phone: str, shop_address: str) -> str:
+    customer_name = f"{booking_data.get('customer_first_name', '')} {booking_data.get('customer_last_name', '')}".strip()
+    date_str = booking_data.get("booking_date", "")
+    time_str = booking_data.get("booking_time", "")
+    try:
+        dt = datetime.strptime(f"{date_str} {time_str}", "%Y-%m-%d %H:%M")
+        formatted_dt = dt.strftime("%B %d, %Y at %I:%M %p")
+    except Exception:
+        formatted_dt = f"{date_str} {time_str}"
+
+    vehicle_info = f"{booking_data.get('vehicle_year', '')} {booking_data.get('vehicle_make', '')} {booking_data.get('vehicle_model', '')}".strip()
+    service_name = booking_data.get("service_name", "")
+    total_price = booking_data.get("total_price", 0)
+    service_location = "In Shop" if booking_data.get("service_location") == "shop" else "Mobile Service"
+
+    # Build services list HTML
+    services_html = ""
+    services_list = booking_data.get("services", [])
+    if services_list:
+        for svc in services_list:
+            services_html += f'<tr><td style="padding:8px 0;border-bottom:1px solid #333;color:#ccc;font-family:Montserrat,sans-serif;font-size:14px">{svc.get("service_name","")}</td><td style="padding:8px 0;border-bottom:1px solid #333;color:#fff;font-family:Montserrat,sans-serif;font-size:14px;text-align:right">${svc.get("base_price",0):.2f}</td></tr>'
+    else:
+        services_html = f'<tr><td style="padding:8px 0;border-bottom:1px solid #333;color:#ccc;font-family:Montserrat,sans-serif;font-size:14px">{service_name}</td><td style="padding:8px 0;border-bottom:1px solid #333;color:#fff;font-family:Montserrat,sans-serif;font-size:14px;text-align:right">-</td></tr>'
+
+    return f"""<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+</head><body style="margin:0;padding:0;background:#0a0a0a;font-family:Montserrat,Arial,sans-serif">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0a0a;padding:40px 20px">
+<tr><td align="center">
+<table width="600" cellpadding="0" cellspacing="0" style="background:#111;border:1px solid #262626;max-width:600px;width:100%">
+  <tr><td style="padding:32px 32px 24px;border-bottom:1px solid #262626;text-align:center">
+    <h1 style="margin:0;font-family:Oswald,sans-serif;font-size:28px;font-weight:700;color:#e80200;letter-spacing:3px;text-transform:uppercase">{shop_name}</h1>
+    <p style="margin:8px 0 0;font-family:Montserrat,sans-serif;font-size:13px;color:#ababab">Booking Confirmation</p>
+  </td></tr>
+  <tr><td style="padding:32px">
+    <p style="margin:0 0 24px;font-family:Montserrat,sans-serif;font-size:15px;color:#fff;line-height:1.6">
+      Hi {customer_name},<br><br>
+      Your appointment has been scheduled. Here are your booking details:
+    </p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px">
+      <tr><td style="padding:12px 16px;background:#0a0a0a;border:1px solid #262626">
+        <table width="100%" cellpadding="0" cellspacing="0">
+          <tr><td style="padding:8px 0;font-family:Oswald,sans-serif;font-size:11px;color:#ababab;letter-spacing:1px;text-transform:uppercase">Date & Time</td>
+              <td style="padding:8px 0;font-family:Montserrat,sans-serif;font-size:14px;color:#fff;text-align:right;font-weight:600">{formatted_dt}</td></tr>
+          <tr><td style="padding:8px 0;border-top:1px solid #333;font-family:Oswald,sans-serif;font-size:11px;color:#ababab;letter-spacing:1px;text-transform:uppercase">Vehicle</td>
+              <td style="padding:8px 0;border-top:1px solid #333;font-family:Montserrat,sans-serif;font-size:14px;color:#fff;text-align:right">{vehicle_info}</td></tr>
+          <tr><td style="padding:8px 0;border-top:1px solid #333;font-family:Oswald,sans-serif;font-size:11px;color:#ababab;letter-spacing:1px;text-transform:uppercase">Location</td>
+              <td style="padding:8px 0;border-top:1px solid #333;font-family:Montserrat,sans-serif;font-size:14px;color:#fff;text-align:right">{service_location}</td></tr>
+        </table>
+      </td></tr>
+    </table>
+    <h3 style="margin:0 0 12px;font-family:Oswald,sans-serif;font-size:13px;color:#e80200;letter-spacing:1px;text-transform:uppercase">Services</h3>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px">
+      {services_html}
+      <tr><td style="padding:12px 0 0;font-family:Oswald,sans-serif;font-size:16px;color:#fff;font-weight:700;letter-spacing:1px">TOTAL</td>
+          <td style="padding:12px 0 0;font-family:Oswald,sans-serif;font-size:20px;color:#e80200;text-align:right;font-weight:700">${total_price:.2f}</td></tr>
+    </table>
+    <p style="margin:24px 0 0;font-family:Montserrat,sans-serif;font-size:13px;color:#ababab;line-height:1.6">
+      If you need to reschedule or have any questions, please call us at <span style="color:#fff;font-weight:600">{shop_phone}</span>.
+    </p>
+  </td></tr>
+  <tr><td style="padding:20px 32px;border-top:1px solid #262626;text-align:center">
+    <p style="margin:0;font-family:Montserrat,sans-serif;font-size:11px;color:#525252">{shop_name}{(' · ' + shop_address) if shop_address else ''} · {shop_phone}</p>
+  </td></tr>
+</table>
+</td></tr></table>
+</body></html>"""
+
+
+async def send_booking_email(booking_data: dict, booking_id: str):
+    """Send booking confirmation email via SMTP."""
+    if not SMTP_HOST or not SMTP_USERNAME or not SMTP_PASSWORD:
+        return {"success": False, "error": "SMTP not configured"}
+
+    to_email = booking_data.get("customer_email", "")
+    if not to_email:
+        return {"success": False, "error": "No customer email"}
+
+    settings = await db.settings.find_one({"type": "business"})
+    shop_name = settings.get("shop_name", "Supreme Detail Studio") if settings else "Supreme Detail Studio"
+    shop_phone = settings.get("shop_phone", "") if settings else ""
+    shop_address = settings.get("shop_address", "") if settings else ""
+
+    customer_name = f"{booking_data.get('customer_first_name', '')} {booking_data.get('customer_last_name', '')}".strip()
+    html_body = build_booking_email_html(booking_data, shop_name, shop_phone, shop_address)
+
+    msg = MIMEMultipart("alternative")
+    msg["Subject"] = f"Booking Confirmation - {shop_name}"
+    msg["From"] = SMTP_FROM_EMAIL or SMTP_USERNAME
+    msg["To"] = to_email
+
+    plain_text = f"Hi {customer_name}, your appointment with {shop_name} on {booking_data.get('booking_date', '')} at {booking_data.get('booking_time', '')} has been confirmed. Call {shop_phone} to reschedule."
+    msg.attach(MIMEText(plain_text, "plain"))
+    msg.attach(MIMEText(html_body, "html"))
+
+    try:
+        loop = asyncio.get_event_loop()
+        def _send():
+            with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+                server.starttls()
+                server.login(SMTP_USERNAME, SMTP_PASSWORD)
+                server.send_message(msg)
+        await loop.run_in_executor(None, _send)
+
+        await db.email_logs.insert_one({
+            "to_email": to_email,
+            "customer_name": customer_name,
+            "customer_id": booking_data.get("customer_id"),
+            "booking_id": booking_id,
+            "subject": msg["Subject"],
+            "status": "sent",
+            "template_key": "booking_confirmation",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        return {"success": True}
+    except Exception as e:
+        await db.email_logs.insert_one({
+            "to_email": to_email,
+            "customer_name": customer_name,
+            "customer_id": booking_data.get("customer_id"),
+            "booking_id": booking_id,
+            "subject": msg["Subject"],
+            "status": "failed",
+            "error": str(e),
+            "template_key": "booking_confirmation",
+            "created_at": datetime.now(timezone.utc).isoformat()
+        })
+        return {"success": False, "error": str(e)}
+
 
 async def schedule_review_request(booking_id: str):
     await db.sms_scheduled.insert_one({
@@ -1080,8 +1225,11 @@ async def create_booking(booking: BookingCreate, background_tasks: BackgroundTas
     booking_dict["id"] = str(result.inserted_id)
     booking_dict.pop("_id", None)
 
-    # SMS: Job Scheduled notification
-    background_tasks.add_task(trigger_booking_sms, booking_dict, "job_scheduled", booking_dict["id"])
+    # Send notifications based on consent
+    if booking_dict.get("sms_consent"):
+        background_tasks.add_task(trigger_booking_sms, booking_dict, "job_scheduled", booking_dict["id"])
+    if booking_dict.get("email_consent"):
+        background_tasks.add_task(send_booking_email, booking_dict, booking_dict["id"])
 
     return booking_dict
 
@@ -1221,8 +1369,11 @@ async def create_booking_admin(booking: BookingCreate, background_tasks: Backgro
     booking_dict["id"] = str(result.inserted_id)
     booking_dict.pop("_id", None)
 
-    # SMS: Job Scheduled notification
-    background_tasks.add_task(trigger_booking_sms, booking_dict, "job_scheduled", booking_dict["id"])
+    # Send notifications based on consent
+    if booking_dict.get("sms_consent"):
+        background_tasks.add_task(trigger_booking_sms, booking_dict, "job_scheduled", booking_dict["id"])
+    if booking_dict.get("email_consent"):
+        background_tasks.add_task(send_booking_email, booking_dict, booking_dict["id"])
 
     return booking_dict
 
@@ -1232,6 +1383,18 @@ async def delete_booking(booking_id: str):
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Booking not found")
     return {"message": "Booking deleted successfully"}
+
+@app.post("/api/bookings/{booking_id}/resend-email", dependencies=[Depends(verify_token)])
+async def resend_booking_email(booking_id: str, background_tasks: BackgroundTasks):
+    """Resend booking confirmation email for a specific booking."""
+    booking = await db.bookings.find_one({"_id": ObjectId(booking_id)})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    booking["id"] = str(booking.pop("_id"))
+    if not booking.get("customer_email"):
+        raise HTTPException(status_code=400, detail="No customer email on this booking")
+    background_tasks.add_task(send_booking_email, booking, booking["id"])
+    return {"message": "Confirmation email queued for resend"}
 
 # ============== Customer Helper ==============
 

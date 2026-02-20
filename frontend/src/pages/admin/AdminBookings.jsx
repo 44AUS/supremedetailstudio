@@ -49,6 +49,8 @@ const emptyBookingForm = {
   total_price: 0,
   notes: '',
   status: 'pending',
+  sms_consent: false,
+  email_consent: false,
 };
 
 export default function AdminBookings() {
@@ -75,6 +77,7 @@ export default function AdminBookings() {
   const [showSmsModal, setShowSmsModal] = useState(false);
   const [smsMessage, setSmsMessage] = useState('');
   const [sendingSms, setSendingSms] = useState(false);
+  const [resendingEmail, setResendingEmail] = useState(false);
   const addressInputRef = useRef(null);
   const autocompleteRef = useRef(null);
 
@@ -256,6 +259,25 @@ export default function AdminBookings() {
       alert('Failed to send SMS. Check SMS settings.');
     } finally {
       setSendingSms(false);
+    }
+  };
+
+  const resendEmail = async (bookingId) => {
+    setResendingEmail(true);
+    try {
+      const response = await fetch(`${API_URL}/api/bookings/${bookingId}/resend-email`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.detail || 'Failed to resend');
+      }
+      alert('Confirmation email has been resent!');
+    } catch (err) {
+      alert(err.message || 'Failed to resend email. Check SMTP settings.');
+    } finally {
+      setResendingEmail(false);
     }
   };
 
@@ -594,6 +616,8 @@ export default function AdminBookings() {
         total_price: bookingForm.total_price,
         total_duration: totalDuration,
         notes: bookingForm.notes,
+        sms_consent: bookingForm.sms_consent,
+        email_consent: bookingForm.email_consent,
       };
 
       if (editingBooking) {
@@ -698,6 +722,10 @@ export default function AdminBookings() {
             )}
             <button onClick={() => { setSmsMessage(''); setShowSmsModal(true); }} style={styles.smsBtn}>
               <MessageSquare size={16} /> Send SMS
+            </button>
+            <button onClick={() => resendEmail(selectedBooking.id)} disabled={resendingEmail} style={styles.resendEmailBtn}>
+              {resendingEmail ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Mail size={16} />}
+              Resend Email
             </button>
             <button onClick={() => openEditBooking(selectedBooking)} style={styles.editBtn} data-testid="edit-booking-btn">
               <Edit2 size={16} /> Edit
@@ -1528,6 +1556,38 @@ export default function AdminBookings() {
                 />
               </div>
 
+              {/* Notification Preferences */}
+              {!editingBooking && (
+                <div style={{ ...styles.formSection, marginBottom: '0', paddingBottom: '0', borderBottom: 'none' }}>
+                  <h3 style={styles.formSectionTitle}>Send Notifications</h3>
+                  <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: '#525252', margin: '0 0 16px' }}>
+                    Select which confirmation notifications to send the customer
+                  </p>
+                  <div style={{ display: 'flex', gap: '24px', flexWrap: 'wrap' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: '14px', color: '#fff' }}>
+                      <input
+                        type="checkbox"
+                        checked={bookingForm.sms_consent}
+                        onChange={(e) => setBookingForm({...bookingForm, sms_consent: e.target.checked})}
+                        style={{ width: '18px', height: '18px', accentColor: '#e80200', cursor: 'pointer' }}
+                      />
+                      <MessageSquare size={16} style={{ color: '#3b82f6' }} />
+                      Text Message (SMS)
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: '14px', color: '#fff' }}>
+                      <input
+                        type="checkbox"
+                        checked={bookingForm.email_consent}
+                        onChange={(e) => setBookingForm({...bookingForm, email_consent: e.target.checked})}
+                        style={{ width: '18px', height: '18px', accentColor: '#e80200', cursor: 'pointer' }}
+                      />
+                      <Mail size={16} style={{ color: '#10b981' }} />
+                      Email Confirmation
+                    </label>
+                  </div>
+                </div>
+              )}
+
               {/* Form Actions */}
               <div style={styles.formActions}>
                 <button onClick={() => setShowEditModal(false)} style={styles.cancelBtn}>
@@ -2109,6 +2169,20 @@ const styles = {
     background: 'rgba(59, 130, 246, 0.1)',
     border: '1px solid rgba(59, 130, 246, 0.3)',
     color: '#3b82f6',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    letterSpacing: '0.5px',
+  },
+  resendEmailBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 20px',
+    background: 'rgba(16, 185, 129, 0.1)',
+    border: '1px solid rgba(16, 185, 129, 0.3)',
+    color: '#10b981',
     fontFamily: "'Oswald', sans-serif",
     fontSize: '14px',
     fontWeight: 600,
