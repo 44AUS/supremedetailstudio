@@ -265,8 +265,8 @@ export default function AdminDashboard() {
           </h2>
         </div>
 
-        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexDirection: 'column' }}>
-        <div style={{ ...styles.calendarContainer, width: '100%', flexShrink: 0, ...(isMobile && { padding: '14px' }) }}>
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexDirection: 'column', width: '100%' }}>
+        <div style={{ ...styles.calendarContainer, width: '100%', ...(isMobile && { padding: '14px' }) }}>
           {/* Month Navigation */}
           <div style={styles.calendarNav}>
             <button onClick={prevMonth} style={styles.calendarNavBtn}>
@@ -327,7 +327,7 @@ export default function AdminDashboard() {
                         .slice(0, isMobile ? 2 : 3)
                         .map((b, idx) => {
                           const catColor = getCategoryColor(b);
-                          const isComplete = b.status === 'completed';
+                          const isComplete = b.status === 'complete';
                           return (
                             <div
                               key={idx}
@@ -929,6 +929,7 @@ const styles = {
     background: '#111111',
     border: '1px solid #262626',
     padding: '20px',
+    boxSizing: 'border-box',
   },
   calendarNav: {
     display: 'flex',

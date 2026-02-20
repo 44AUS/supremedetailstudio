@@ -672,6 +672,304 @@ export default function AdminBookings() {
     );
   }
 
+  // ── Booking Detail Page (replaces list when a booking is selected) ──
+  if (showModal && selectedBooking) {
+    return (
+      <div data-testid="admin-booking-detail" style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
+        <button
+          onClick={() => setShowModal(false)}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'none', border: 'none', color: '#ababab', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: '14px', marginBottom: '24px', padding: 0 }}
+        >
+          <ChevronDown size={18} style={{ transform: 'rotate(90deg)' }} />
+          Back to Bookings
+        </button>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px', flexWrap: 'wrap', gap: '16px' }}>
+          <div>
+            <h1 style={styles.title}>BOOKING DETAILS</h1>
+            <p style={styles.subtitle}>Ref: #{selectedBooking.id?.slice(-8).toUpperCase()}</p>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {selectedBooking.service_location === 'mobile' && ['pending', 'in_progress'].includes(selectedBooking.status) && (
+              <button onClick={() => sendOnMyWay(selectedBooking.id)} disabled={sendingOnMyWay} style={styles.onMyWayBtn}>
+                {sendingOnMyWay ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Navigation size={16} />}
+                On My Way
+              </button>
+            )}
+            <button onClick={() => { setSmsMessage(''); setShowSmsModal(true); }} style={styles.smsBtn}>
+              <MessageSquare size={16} /> Send SMS
+            </button>
+            <button onClick={() => openEditBooking(selectedBooking)} style={styles.editBtn} data-testid="edit-booking-btn">
+              <Edit2 size={16} /> Edit
+            </button>
+            <button onClick={() => deleteBooking(selectedBooking.id)} style={styles.deleteBtn} data-testid="delete-booking-btn">
+              <Trash2 size={16} /> Delete
+            </button>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: '24px' }}>
+          {/* Status & Payment */}
+          <div style={styles.detailCard}>
+            <h3 style={styles.detailCardTitle}>Status & Payment</h3>
+            <div style={{ marginBottom: '20px' }}>
+              <span style={{ ...styles.formLabel, marginBottom: '10px', display: 'block' }}>Status</span>
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {Object.entries(STATUS_CONFIG).map(([status, config]) => (
+                  <button
+                    key={status}
+                    onClick={() => updateBookingStatus(selectedBooking.id, status)}
+                    disabled={updatingStatus}
+                    style={{
+                      padding: '8px 14px',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      fontFamily: "'Oswald', sans-serif",
+                      letterSpacing: '1px',
+                      cursor: 'pointer',
+                      border: '1px solid',
+                      background: selectedBooking.status === status ? config.bg : 'transparent',
+                      color: selectedBooking.status === status ? config.color : '#ababab',
+                      borderColor: selectedBooking.status === status ? config.color : '#262626',
+                    }}
+                    data-testid={`status-btn-${status}`}
+                  >
+                    {config.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <span style={{ ...styles.formLabel, marginBottom: '10px', display: 'block' }}>Payment</span>
+              <button
+                onClick={() => togglePaid(selectedBooking.id, selectedBooking.is_paid)}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '8px',
+                  padding: '10px 20px', fontSize: '13px', fontWeight: 600,
+                  fontFamily: "'Oswald', sans-serif", letterSpacing: '1px',
+                  cursor: 'pointer', border: '1px solid',
+                  background: selectedBooking.is_paid ? 'rgba(16, 185, 129, 0.15)' : 'rgba(107, 114, 128, 0.15)',
+                  color: selectedBooking.is_paid ? '#10b981' : '#6b7280',
+                  borderColor: selectedBooking.is_paid ? '#10b981' : '#525252',
+                }}
+              >
+                <DollarSign size={16} />
+                {selectedBooking.is_paid ? 'PAID' : 'UNPAID'}
+              </button>
+            </div>
+          </div>
+
+          {/* Customer Info */}
+          <div style={styles.detailCard}>
+            <h3 style={styles.detailCardTitle}>
+              <User size={18} />
+              {selectedBooking.customer_type === 'business' ? 'Business' : 'Customer'}
+            </h3>
+            <div style={styles.detailRow}>
+              <User size={14} style={{ color: '#ababab', flexShrink: 0 }} />
+              <span style={styles.detailText}>
+                {selectedBooking.customer_type === 'business'
+                  ? (selectedBooking.business_name || selectedBooking.customer_first_name)
+                  : `${selectedBooking.customer_first_name} ${selectedBooking.customer_last_name}`}
+              </span>
+            </div>
+            <div style={styles.detailRow}>
+              <Phone size={14} style={{ color: '#ababab', flexShrink: 0 }} />
+              <span style={styles.detailText}>{selectedBooking.customer_phone}</span>
+            </div>
+            <div style={styles.detailRow}>
+              <Mail size={14} style={{ color: '#ababab', flexShrink: 0 }} />
+              <span style={styles.detailText}>{selectedBooking.customer_email}</span>
+            </div>
+            {selectedBooking.customer_address && (
+              <div style={styles.detailRow}>
+                <MapPin size={14} style={{ color: '#ababab', flexShrink: 0 }} />
+                <span style={styles.detailText}>{selectedBooking.customer_address}</span>
+              </div>
+            )}
+            {/* Communication Consent */}
+            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #262626' }}>
+              <span style={{ ...styles.formLabel, marginBottom: '8px', display: 'block' }}>Communication Consent</span>
+              <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                <span style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '4px 10px', fontSize: '12px',
+                  fontFamily: "'Montserrat', sans-serif",
+                  background: selectedBooking.sms_consent ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                  color: selectedBooking.sms_consent ? '#10b981' : '#6b7280',
+                  border: `1px solid ${selectedBooking.sms_consent ? 'rgba(16, 185, 129, 0.3)' : 'rgba(107, 114, 128, 0.3)'}`,
+                }}>
+                  {selectedBooking.sms_consent ? <CheckCircle size={12} /> : <XCircle size={12} />}
+                  SMS {selectedBooking.sms_consent ? 'Opted In' : 'Not Opted In'}
+                </span>
+                <span style={{
+                  display: 'flex', alignItems: 'center', gap: '6px',
+                  padding: '4px 10px', fontSize: '12px',
+                  fontFamily: "'Montserrat', sans-serif",
+                  background: selectedBooking.email_consent ? 'rgba(16, 185, 129, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                  color: selectedBooking.email_consent ? '#10b981' : '#6b7280',
+                  border: `1px solid ${selectedBooking.email_consent ? 'rgba(16, 185, 129, 0.3)' : 'rgba(107, 114, 128, 0.3)'}`,
+                }}>
+                  {selectedBooking.email_consent ? <CheckCircle size={12} /> : <XCircle size={12} />}
+                  Email {selectedBooking.email_consent ? 'Opted In' : 'Not Opted In'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Vehicle Info */}
+          <div style={styles.detailCard}>
+            <h3 style={styles.detailCardTitle}>
+              <Car size={18} />
+              Vehicle{(selectedBooking.vehicles && selectedBooking.vehicles.length > 1) ? 's' : ''}
+            </h3>
+            {selectedBooking.vehicles && selectedBooking.vehicles.length > 0 ? (
+              selectedBooking.vehicles.map((v, vIdx) => (
+                <div key={vIdx} style={{ ...(vIdx > 0 ? { marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #1a1a1a' } : {}) }}>
+                  <div style={{ fontSize: '15px', fontWeight: 600, color: '#fff', fontFamily: "'Montserrat', sans-serif" }}>
+                    {v.vehicle_year} {v.vehicle_make} {v.vehicle_model}
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#ababab', fontFamily: "'Montserrat', sans-serif", marginTop: '4px' }}>
+                    Type: {v.vehicle_type}{v.vehicle_color ? ` · Color: ${v.vehicle_color}` : ''}
+                  </div>
+                  {v.vin && (
+                    <div style={{ fontSize: '12px', color: '#ababab', fontFamily: "'Courier New', monospace", letterSpacing: '1px', marginTop: '4px' }}>VIN: {v.vin}</div>
+                  )}
+                  {v.services && v.services.length > 0 && (
+                    <div style={{ marginTop: '8px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                      {v.services.map((svc, si) => (
+                        <span key={si} style={{ fontSize: '11px', padding: '2px 8px', background: 'rgba(232, 2, 0, 0.08)', border: '1px solid rgba(232, 2, 0, 0.2)', color: '#e80200', fontFamily: "'Montserrat', sans-serif" }}>
+                          {svc.service_name}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div>
+                <div style={{ fontSize: '15px', fontWeight: 600, color: '#fff', fontFamily: "'Montserrat', sans-serif" }}>
+                  {selectedBooking.vehicle_year} {selectedBooking.vehicle_make} {selectedBooking.vehicle_model}
+                </div>
+                <div style={{ fontSize: '12px', color: '#ababab', fontFamily: "'Montserrat', sans-serif", marginTop: '4px' }}>
+                  Type: {selectedBooking.vehicle_type}{selectedBooking.vehicle_color ? ` · Color: ${selectedBooking.vehicle_color}` : ''}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Appointment Info */}
+          <div style={styles.detailCard}>
+            <h3 style={styles.detailCardTitle}>
+              <Calendar size={18} />
+              Appointment
+            </h3>
+            <div style={styles.detailRow}>
+              <Calendar size={14} style={{ color: '#e80200', flexShrink: 0 }} />
+              <span style={styles.detailText}>{selectedBooking.booking_date}</span>
+            </div>
+            <div style={styles.detailRow}>
+              <Clock size={14} style={{ color: '#e80200', flexShrink: 0 }} />
+              <span style={styles.detailText}>{selectedBooking.booking_time}</span>
+            </div>
+            <div style={styles.detailRow}>
+              <MapPin size={14} style={{ color: '#e80200', flexShrink: 0 }} />
+              <span style={styles.detailText}>{selectedBooking.service_location === 'shop' ? 'In Shop' : 'Mobile Service'}</span>
+            </div>
+            {selectedBooking.service_location === 'shop' && selectedBooking.pickup_delivery === 'yes' && (
+              <div style={styles.detailRow}>
+                <Car size={14} style={{ color: '#e80200', flexShrink: 0 }} />
+                <span style={styles.detailText}>
+                  Pickup & Delivery ({selectedBooking.pickup_distance === 'over15' ? '>15mi' : '<15mi'})
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Price Breakdown */}
+          <div style={styles.detailCard}>
+            <h3 style={styles.detailCardTitle}>
+              <DollarSign size={18} />
+              Price Breakdown
+            </h3>
+            {selectedBooking.services && selectedBooking.services.length > 0 ? (
+              selectedBooking.services.map((service, idx) => (
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #1a1a1a' }}>
+                  <span style={{ fontSize: '13px', color: '#fff', fontFamily: "'Montserrat', sans-serif" }}>
+                    {service.service_name}
+                    <span style={{ fontSize: '11px', color: '#6b7280', marginLeft: '8px' }}>({service.duration_minutes || 60} min)</span>
+                  </span>
+                  <span style={{ fontSize: '13px', color: '#fff', fontWeight: 600, fontFamily: "'Montserrat', sans-serif" }}>${fmt(service.base_price || 0)}</span>
+                </div>
+              ))
+            ) : (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #1a1a1a' }}>
+                <span style={{ fontSize: '13px', color: '#fff', fontFamily: "'Montserrat', sans-serif" }}>{selectedBooking.service_name}</span>
+                <span style={{ fontSize: '13px', color: '#fff', fontWeight: 600, fontFamily: "'Montserrat', sans-serif" }}>
+                  {(() => { const svc = services.find(s => s.id === selectedBooking.service_id); return svc ? `$${fmt(svc.base_price || 0)}` : '-'; })()}
+                </span>
+              </div>
+            )}
+            {selectedBooking.service_location === 'mobile' && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #1a1a1a' }}>
+                <span style={{ fontSize: '13px', color: '#ababab', fontFamily: "'Montserrat', sans-serif" }}>Mobile Service Fee</span>
+                <span style={{ fontSize: '13px', color: '#ababab', fontFamily: "'Montserrat', sans-serif" }}>+$50.00</span>
+              </div>
+            )}
+            {selectedBooking.pickup_delivery === 'yes' && (
+              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid #1a1a1a' }}>
+                <span style={{ fontSize: '13px', color: '#ababab', fontFamily: "'Montserrat', sans-serif" }}>Pickup & Delivery</span>
+                <span style={{ fontSize: '13px', color: '#ababab', fontFamily: "'Montserrat', sans-serif" }}>+${selectedBooking.pickup_distance === 'over15' ? '75.00' : '50.00'}</span>
+              </div>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '12px 0', marginTop: '4px' }}>
+              <span style={{ fontSize: '16px', fontWeight: 700, color: '#fff', fontFamily: "'Oswald', sans-serif", letterSpacing: '1px' }}>TOTAL</span>
+              <span style={{ fontSize: '20px', fontWeight: 700, color: '#e80200', fontFamily: "'Oswald', sans-serif" }}>${fmt(selectedBooking.total_price || 0)}</span>
+            </div>
+          </div>
+
+          {/* Notes */}
+          {selectedBooking.notes && (
+            <div style={styles.detailCard}>
+              <h3 style={styles.detailCardTitle}>Notes</h3>
+              <p style={{ fontSize: '14px', color: '#ababab', fontFamily: "'Montserrat', sans-serif", margin: 0, lineHeight: '1.6' }}>{selectedBooking.notes}</p>
+            </div>
+          )}
+        </div>
+
+        {/* Send SMS Modal (kept as modal since it's a quick action) */}
+        {showSmsModal && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}
+            onClick={() => setShowSmsModal(false)}>
+            <div style={{ background: '#111111', border: '1px solid #262626', padding: '24px', maxWidth: '480px', width: '100%' }}
+              onClick={(e) => e.stopPropagation()}>
+              <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '18px', fontWeight: 700, color: '#fff', margin: '0 0 4px', letterSpacing: '1px', textTransform: 'uppercase' }}>Send SMS</h3>
+              <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: '#525252', margin: '0 0 16px' }}>
+                To: {selectedBooking.customer_type === 'business'
+                  ? (selectedBooking.business_name || selectedBooking.customer_first_name)
+                  : `${selectedBooking.customer_first_name} ${selectedBooking.customer_last_name}`} ({selectedBooking.customer_phone})
+              </p>
+              <textarea
+                value={smsMessage}
+                onChange={(e) => setSmsMessage(e.target.value)}
+                placeholder="Type your message..."
+                rows={4}
+                style={{ width: '100%', padding: '12px', background: '#0a0a0a', border: '1px solid #262626', color: '#fff', fontFamily: "'Montserrat', sans-serif", fontSize: '14px', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
+              />
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
+                <button onClick={() => setShowSmsModal(false)} style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #262626', color: '#ababab', fontFamily: "'Oswald', sans-serif", fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
+                <button onClick={sendCustomSms} disabled={sendingSms || !smsMessage.trim()} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 20px', background: '#e80200', border: 'none', color: '#fff', fontFamily: "'Oswald', sans-serif", fontSize: '13px', cursor: 'pointer', opacity: sendingSms || !smsMessage.trim() ? 0.5 : 1 }}>
+                  {sendingSms ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={14} />}
+                  Send
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div data-testid="admin-bookings">
       <div style={styles.header}>
@@ -818,327 +1116,6 @@ export default function AdminBookings() {
               ? 'Try adjusting your filters'
               : 'Bookings will appear here when customers book appointments'}
           </p>
-        </div>
-      )}
-
-      {/* Booking Detail Modal */}
-      {showModal && selectedBooking && (
-        <div style={styles.modalOverlay} onClick={() => setShowModal(false)}>
-          <div style={styles.modal} onClick={(e) => e.stopPropagation()} data-testid="booking-modal">
-            <div style={styles.modalHeader}>
-              <h2 style={styles.modalTitle}>BOOKING DETAILS</h2>
-              <button onClick={() => setShowModal(false)} style={styles.closeBtn}>
-                <XCircle size={24} />
-              </button>
-            </div>
-            
-            <div style={styles.modalContent}>
-              {/* Booking Reference */}
-              <div style={styles.bookingReference}>
-                <span style={styles.referenceLabel}>Customer Ref:</span>
-                <span style={styles.referenceValue}>#{selectedBooking.id?.slice(-8).toUpperCase()}</span>
-                <span style={styles.fullIdLabel}>Full ID: {selectedBooking.id}</span>
-              </div>
-
-              {/* Status Section */}
-              <div style={styles.statusSection}>
-                <span style={styles.modalLabel}>Status:</span>
-                <div style={styles.statusButtons}>
-                  {Object.entries(STATUS_CONFIG).map(([status, config]) => (
-                    <button
-                      key={status}
-                      onClick={() => updateBookingStatus(selectedBooking.id, status)}
-                      disabled={updatingStatus}
-                      style={{
-                        ...styles.statusBtn,
-                        background: selectedBooking.status === status ? config.bg : 'transparent',
-                        color: selectedBooking.status === status ? config.color : '#ababab',
-                        borderColor: selectedBooking.status === status ? config.color : '#262626',
-                      }}
-                      data-testid={`status-btn-${status}`}
-                    >
-                      {config.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Payment Status */}
-              <div style={styles.paymentSection}>
-                <span style={styles.modalLabel}>Payment:</span>
-                <button
-                  onClick={() => togglePaid(selectedBooking.id, selectedBooking.is_paid)}
-                  style={{
-                    ...styles.paidToggleBtn,
-                    background: selectedBooking.is_paid ? 'rgba(16, 185, 129, 0.15)' : 'rgba(107, 114, 128, 0.15)',
-                    color: selectedBooking.is_paid ? '#10b981' : '#6b7280',
-                    borderColor: selectedBooking.is_paid ? '#10b981' : '#525252',
-                  }}
-                >
-                  <DollarSign size={16} />
-                  {selectedBooking.is_paid ? 'PAID' : 'UNPAID'}
-                </button>
-              </div>
-
-              {/* Customer Info */}
-              <div style={styles.infoSection}>
-                <h3 style={styles.infoTitle}>
-                  <User size={18} />
-                  {selectedBooking.customer_type === 'business' ? 'Business' : 'Customer'}
-                </h3>
-                <div style={styles.infoGrid}>
-                  <div style={styles.infoItem}>
-                    <User size={14} style={{ color: '#ababab' }} />
-                    <span>
-                      {selectedBooking.customer_type === 'business'
-                        ? (selectedBooking.business_name || selectedBooking.customer_first_name)
-                        : `${selectedBooking.customer_first_name} ${selectedBooking.customer_last_name}`}
-                    </span>
-                  </div>
-                  <div style={styles.infoItem}>
-                    <Phone size={14} style={{ color: '#ababab' }} />
-                    <span>{selectedBooking.customer_phone}</span>
-                  </div>
-                  <div style={styles.infoItem}>
-                    <Mail size={14} style={{ color: '#ababab' }} />
-                    <span>{selectedBooking.customer_email}</span>
-                  </div>
-                  <div style={styles.infoItem}>
-                    <MapPin size={14} style={{ color: '#ababab' }} />
-                    <span>{selectedBooking.customer_address}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Vehicle Info */}
-              <div style={styles.infoSection}>
-                <h3 style={styles.infoTitle}>
-                  <Car size={18} />
-                  Vehicle{(selectedBooking.vehicles && selectedBooking.vehicles.length > 1) ? 's' : ''}
-                </h3>
-                {selectedBooking.vehicles && selectedBooking.vehicles.length > 0 ? (
-                  selectedBooking.vehicles.map((v, vIdx) => (
-                    <div key={vIdx} style={{ ...styles.vehicleInfo, ...(vIdx > 0 ? { marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #1a1a1a' } : {}) }}>
-                      <span style={styles.vehicleMake}>
-                        {v.vehicle_year} {v.vehicle_make} {v.vehicle_model}
-                      </span>
-                      <span style={styles.vehicleType}>Type: {v.vehicle_type}</span>
-                      {v.vehicle_color && (
-                        <span style={styles.vehicleColor}>Color: {v.vehicle_color}</span>
-                      )}
-                      {v.vin && (
-                        <span style={{ fontSize: '13px', color: '#ababab', fontFamily: "'Courier New', monospace", letterSpacing: '1px' }}>VIN: {v.vin}</span>
-                      )}
-                      {v.services && v.services.length > 0 && (
-                        <div style={{ marginTop: '4px', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
-                          {v.services.map((svc, si) => (
-                            <span key={si} style={{ fontSize: '11px', padding: '2px 8px', background: 'rgba(232, 2, 0, 0.08)', border: '1px solid rgba(232, 2, 0, 0.2)', color: '#e80200', fontFamily: "'Montserrat', sans-serif" }}>
-                              {svc.service_name}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))
-                ) : (
-                  <div style={styles.vehicleInfo}>
-                    <span style={styles.vehicleMake}>
-                      {selectedBooking.vehicle_year} {selectedBooking.vehicle_make} {selectedBooking.vehicle_model}
-                    </span>
-                    <span style={styles.vehicleType}>Type: {selectedBooking.vehicle_type}</span>
-                    {selectedBooking.vehicle_color && (
-                      <span style={styles.vehicleColor}>Color: {selectedBooking.vehicle_color}</span>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Appointment Info */}
-              <div style={styles.infoSection}>
-                <h3 style={styles.infoTitle}>
-                  <Calendar size={18} />
-                  Appointment
-                </h3>
-                <div style={styles.appointmentInfo}>
-                  <div style={styles.appointmentDate}>
-                    <Calendar size={16} style={{ color: '#e80200' }} />
-                    <span>{selectedBooking.booking_date}</span>
-                  </div>
-                  <div style={styles.appointmentTime}>
-                    <Clock size={16} style={{ color: '#e80200' }} />
-                    <span>{selectedBooking.booking_time}</span>
-                  </div>
-                  <div style={styles.appointmentLocation}>
-                    <MapPin size={16} style={{ color: '#e80200' }} />
-                    <span>{selectedBooking.service_location === 'shop' ? 'In Shop' : 'Mobile Service'}</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Service Details */}
-              <div style={styles.infoSection}>
-                <h3 style={styles.infoTitle}>
-                  <MapPin size={18} />
-                  Service Details
-                </h3>
-                <div style={styles.serviceDetailsGrid}>
-                  <div style={styles.detailItem}>
-                    <span style={styles.detailLabel}>Service Location:</span>
-                    <span style={styles.detailValue}>
-                      {selectedBooking.service_location === 'shop' ? '🏪 In Shop' : '🚗 Mobile Service'}
-                    </span>
-                  </div>
-                  {selectedBooking.service_location === 'shop' && (
-                    <>
-                      <div style={styles.detailItem}>
-                        <span style={styles.detailLabel}>Pickup & Delivery:</span>
-                        <span style={styles.detailValue}>
-                          {selectedBooking.pickup_delivery === 'yes' ? '✅ Yes' : selectedBooking.pickup_delivery === 'no' ? '❌ No' : 'Not specified'}
-                        </span>
-                      </div>
-                      {selectedBooking.pickup_delivery === 'yes' && selectedBooking.pickup_distance && (
-                        <div style={styles.detailItem}>
-                          <span style={styles.detailLabel}>Pickup Distance:</span>
-                          <span style={styles.detailValue}>
-                            {selectedBooking.pickup_distance === 'under15' ? 'Under 15 miles (+$50)' : 'Over 15 miles (+$75)'}
-                          </span>
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Service & Price Breakdown */}
-              <div style={styles.infoSection}>
-                <h3 style={styles.infoTitle}>Service & Price Breakdown</h3>
-                <div style={styles.priceBreakdown}>
-                  {/* Display all services if multi-service booking, otherwise show single service */}
-                  {selectedBooking.services && selectedBooking.services.length > 0 ? (
-                    selectedBooking.services.map((service, idx) => (
-                      <div key={idx} style={styles.priceRow}>
-                        <span style={styles.priceLabel}>
-                          {service.service_name}
-                          <span style={{ fontSize: '11px', color: '#6b7280', marginLeft: '8px' }}>
-                            ({service.duration_minutes || 60} min)
-                          </span>
-                        </span>
-                        <span style={styles.priceValue}>${fmt(service.base_price || 0)}</span>
-                      </div>
-                    ))
-                  ) : (
-                    <div style={styles.priceRow}>
-                      <span style={styles.priceLabel}>{selectedBooking.service_name}</span>
-                      <span style={styles.priceValue}>
-                        {(() => {
-                          // Find the service to get base price
-                          const service = services.find(s => s.id === selectedBooking.service_id);
-                          if (service) {
-                            return `$${fmt(service.base_price || 0)}`;
-                          }
-                          return 'Base price';
-                        })()}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Vehicle Type Upcharge */}
-                  {selectedBooking.vehicle_type && selectedBooking.vehicle_type !== 'sedan' && (
-                    <div style={styles.priceRow}>
-                      <span style={styles.priceLabel}>
-                        Vehicle Size ({selectedBooking.vehicle_type === 'suv-2row' ? '2-Row SUV' : '3-Row SUV'})
-                      </span>
-                      <span style={styles.priceValue}>
-                        +${selectedBooking.vehicle_type === 'suv-2row' ? '50.00' : '100.00'}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Mobile Service Upcharge */}
-                  {selectedBooking.service_location === 'mobile' && (
-                    <div style={styles.priceRow}>
-                      <span style={styles.priceLabel}>Mobile Service Fee</span>
-                      <span style={styles.priceValue}>+$50.00</span>
-                    </div>
-                  )}
-
-                  {/* Pickup & Delivery Charge */}
-                  {selectedBooking.pickup_delivery === 'yes' && (
-                    <div style={styles.priceRow}>
-                      <span style={styles.priceLabel}>
-                        Pickup & Delivery ({selectedBooking.pickup_distance === 'over15' ? '>15mi' : '<15mi'})
-                      </span>
-                      <span style={styles.priceValue}>
-                        +${selectedBooking.pickup_distance === 'over15' ? '75.00' : '50.00'}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Total */}
-                  <div style={{...styles.priceRow, ...styles.totalRow}}>
-                    <span style={styles.totalLabel}>TOTAL</span>
-                    <span style={styles.totalPrice}>${fmt(selectedBooking.total_price || 0)}</span>
-                  </div>
-                </div>
-              </div>
-
-              {selectedBooking.notes && (
-                <div style={styles.notesSection}>
-                  <h3 style={styles.infoTitle}>Notes</h3>
-                  <p style={styles.notesText}>{selectedBooking.notes}</p>
-                </div>
-              )}
-
-              {/* Action Buttons */}
-              <div style={styles.modalActions}>
-                {selectedBooking.service_location === 'mobile' && ['pending', 'in_progress'].includes(selectedBooking.status) && (
-                  <button onClick={() => sendOnMyWay(selectedBooking.id)} disabled={sendingOnMyWay} style={styles.onMyWayBtn}>
-                    {sendingOnMyWay ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Navigation size={16} />}
-                    On My Way
-                  </button>
-                )}
-                <button onClick={() => { setSmsMessage(''); setShowSmsModal(true); }} style={styles.smsBtn}>
-                  <MessageSquare size={16} /> Send SMS
-                </button>
-                <button onClick={() => openEditBooking(selectedBooking)} style={styles.editBtn} data-testid="edit-booking-btn">
-                  <Edit2 size={16} /> Edit Booking
-                </button>
-                <button onClick={() => deleteBooking(selectedBooking.id)} style={styles.deleteBtn} data-testid="delete-booking-btn">
-                  <Trash2 size={16} /> Delete
-                </button>
-              </div>
-
-              {/* Send SMS Modal */}
-              {showSmsModal && (
-                <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100 }}
-                  onClick={() => setShowSmsModal(false)}>
-                  <div style={{ background: '#111111', border: '1px solid #262626', borderRadius: '12px', padding: '24px', maxWidth: '480px', width: '100%' }}
-                    onClick={(e) => e.stopPropagation()}>
-                    <h3 style={{ fontFamily: "'Oswald', sans-serif", fontSize: '18px', fontWeight: 700, color: '#fff', margin: '0 0 4px' }}>Send SMS</h3>
-                    <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: '#525252', margin: '0 0 16px' }}>
-                      To: {selectedBooking.customer_type === 'business'
-                        ? (selectedBooking.business_name || selectedBooking.customer_first_name)
-                        : `${selectedBooking.customer_first_name} ${selectedBooking.customer_last_name}`} ({selectedBooking.customer_phone})
-                    </p>
-                    <textarea
-                      value={smsMessage}
-                      onChange={(e) => setSmsMessage(e.target.value)}
-                      placeholder="Type your message..."
-                      rows={4}
-                      style={{ width: '100%', padding: '12px', background: '#0a0a0a', border: '1px solid #262626', borderRadius: '8px', color: '#fff', fontFamily: "'Montserrat', sans-serif", fontSize: '14px', outline: 'none', resize: 'vertical', boxSizing: 'border-box' }}
-                    />
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
-                      <button onClick={() => setShowSmsModal(false)} style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #262626', borderRadius: '6px', color: '#ababab', fontFamily: "'Oswald', sans-serif", fontSize: '13px', cursor: 'pointer' }}>Cancel</button>
-                      <button onClick={sendCustomSms} disabled={sendingSms || !smsMessage.trim()} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 20px', background: '#e80200', border: 'none', borderRadius: '6px', color: '#fff', fontFamily: "'Oswald', sans-serif", fontSize: '13px', cursor: 'pointer', opacity: sendingSms || !smsMessage.trim() ? 0.5 : 1 }}>
-                        {sendingSms ? <Loader2 size={14} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={14} />}
-                        Send
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       )}
 
@@ -1744,6 +1721,35 @@ const styles = {
     fontFamily: "'Montserrat', sans-serif",
     cursor: 'pointer',
     transition: 'all 0.2s',
+  },
+  detailCard: {
+    background: '#111111',
+    border: '1px solid #262626',
+    padding: '24px',
+  },
+  detailCardTitle: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 700,
+    color: '#e80200',
+    margin: '0 0 16px 0',
+    letterSpacing: '1px',
+    textTransform: 'uppercase',
+  },
+  detailRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '8px 0',
+    borderBottom: '1px solid #1a1a1a',
+  },
+  detailText: {
+    fontSize: '14px',
+    color: '#fff',
+    fontFamily: "'Montserrat', sans-serif",
   },
   emptyState: {
     display: 'flex',
