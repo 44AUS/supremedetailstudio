@@ -11,7 +11,7 @@ const getToken = () => localStorage.getItem('adminToken');
 const TABS = [
   { key: 'conversations', label: 'Conversations', icon: MessageSquare },
   { key: 'mass', label: 'Mass Text', icon: Users },
-  { key: 'email_compose', label: 'Email', icon: Mail },
+  { key: 'email_conversations', label: 'Emails', icon: Mail },
   { key: 'mass_email', label: 'Mass Email', icon: AtSign },
   { key: 'templates', label: 'SMS Templates', icon: FileText },
   { key: 'email_templates', label: 'Email Templates', icon: FileText },
@@ -51,6 +51,15 @@ export default function AdminSMS() {
   });
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [settingsSuccess, setSettingsSuccess] = useState('');
+
+  // Email conversations state
+  const [emailConversations, setEmailConversations] = useState([]);
+  const [selectedEmailConvo, setSelectedEmailConvo] = useState(null);
+  const [emailMessages, setEmailMessages] = useState([]);
+  const [emailConvoSearch, setEmailConvoSearch] = useState('');
+  const [showEmailCompose, setShowEmailCompose] = useState(false);
+  const [viewingEmail, setViewingEmail] = useState(null);
+  const emailMessagesEndRef = useRef(null);
 
   // Email compose state
   const [emailTo, setEmailTo] = useState('');
@@ -342,6 +351,73 @@ export default function AdminSMS() {
     }
   };
 
+  // Email conversations
+  const fetchEmailConversations = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/email/conversations`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setEmailConversations(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch email conversations:', err);
+    }
+  };
+
+  const fetchEmailThread = async (email) => {
+    try {
+      const res = await fetch(`${API_URL}/api/email/logs?email=${encodeURIComponent(email)}&limit=100`, {
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setEmailMessages(data.reverse());
+      }
+    } catch (err) {
+      console.error('Failed to fetch email thread:', err);
+    }
+  };
+
+  const selectEmailConversation = async (convo) => {
+    setSelectedEmailConvo(convo);
+    setViewingEmail(null);
+    await fetchEmailThread(convo.email);
+  };
+
+  const handleSendEmailFromThread = async () => {
+    if (!emailSubject.trim() || !emailBody.trim() || !selectedEmailConvo) return;
+    setEmailSending(true);
+    setEmailResult(null);
+    try {
+      const res = await fetch(`${API_URL}/api/email/send`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+        body: JSON.stringify({
+          to_email: selectedEmailConvo.email,
+          subject: emailSubject,
+          body_html: emailBody,
+          customer_id: selectedEmailConvo.customer_id,
+        }),
+      });
+      if (res.ok) {
+        setEmailSubject('');
+        setEmailBody('');
+        setShowEmailCompose(false);
+        await fetchEmailThread(selectedEmailConvo.email);
+        fetchEmailConversations();
+      } else {
+        const data = await res.json();
+        setEmailResult(`Error: ${data.detail || 'Failed to send'}`);
+      }
+    } catch (err) {
+      setEmailResult('Error: Failed to send email');
+    } finally {
+      setEmailSending(false);
+    }
+  };
+
   // Mass email
   const fetchEmailCustomerCount = async () => {
     const params = new URLSearchParams();
@@ -485,6 +561,7 @@ export default function AdminSMS() {
     fetchEmailTemplates();
     fetchEmailSettings();
     fetchEmailLogs();
+    fetchEmailConversations();
   }, []);
 
   useEffect(() => {
@@ -496,6 +573,10 @@ export default function AdminSMS() {
     if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(() => {
+    if (emailMessagesEndRef.current) emailMessagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+  }, [emailMessages]);
+
   // Poll conversations every 15s
   useEffect(() => {
     const interval = setInterval(fetchConversations, 15000);
@@ -506,6 +587,12 @@ export default function AdminSMS() {
     if (!convoSearch) return true;
     const q = convoSearch.toLowerCase();
     return (c.customer_name || '').toLowerCase().includes(q) || (c.phone || '').includes(q);
+  });
+
+  const filteredEmailConversations = emailConversations.filter(c => {
+    if (!emailConvoSearch) return true;
+    const q = emailConvoSearch.toLowerCase();
+    return (c.customer_name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q);
   });
 
   const formatTime = (ts) => {
@@ -866,86 +953,317 @@ export default function AdminSMS() {
         </div>
       )}
 
-      {activeTab === 'email_compose' && (
-        <div style={styles.section}>
-          <h2 style={styles.sectionTitle}>Send Email</h2>
-          <p style={styles.sectionDesc}>Compose and send an email to a customer.</p>
-
-          <div style={{ maxWidth: '700px' }}>
-            <div style={styles.formGroup}>
-              <label style={styles.formLabel}>To (Email Address)</label>
+      {activeTab === 'email_conversations' && (
+        <div style={styles.conversationLayout}>
+          {/* Email Conversation List */}
+          <div style={{ ...styles.convoList, ...(selectedEmailConvo && isMobile ? { display: 'none' } : {}) }}>
+            <div style={styles.convoSearchWrap}>
+              <Search size={16} style={{ color: '#525252' }} />
               <input
-                value={emailTo}
-                onChange={(e) => setEmailTo(e.target.value)}
-                placeholder="customer@example.com"
-                style={styles.formInput}
-                type="email"
+                placeholder="Search emails..."
+                value={emailConvoSearch}
+                onChange={(e) => setEmailConvoSearch(e.target.value)}
+                style={styles.convoSearchInput}
               />
+              <button
+                onClick={() => {
+                  setSelectedEmailConvo(null);
+                  setEmailTo('');
+                  setEmailSubject('');
+                  setEmailBody('');
+                  setEmailResult(null);
+                  setShowEmailCompose(true);
+                }}
+                style={{ background: '#e80200', border: 'none', color: '#fff', padding: '6px 12px', cursor: 'pointer', fontFamily: "'Oswald', sans-serif", fontSize: '11px', fontWeight: 600, letterSpacing: '0.5px', display: 'flex', alignItems: 'center', gap: '4px', flexShrink: 0 }}
+                title="Compose new email"
+              >
+                <Edit2 size={12} /> NEW
+              </button>
             </div>
-            <div style={styles.formGroup}>
-              <label style={styles.formLabel}>Subject</label>
-              <input
-                value={emailSubject}
-                onChange={(e) => setEmailSubject(e.target.value)}
-                placeholder="Enter email subject..."
-                style={styles.formInput}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label style={styles.formLabel}>Message Body</label>
-              <textarea
-                value={emailBody}
-                onChange={(e) => setEmailBody(e.target.value)}
-                placeholder="Type your email message here... (HTML supported)"
-                style={styles.massTextarea}
-                rows={8}
-              />
-              <div style={styles.charCount}>Tip: Use HTML for formatting. E.g. &lt;b&gt;bold&lt;/b&gt;, &lt;br&gt; for line break</div>
-            </div>
-
-            {emailResult && (
-              <div style={{
-                ...styles.successBanner,
-                ...(emailResult.startsWith('Error') ? { background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)', color: '#ef4444' } : {}),
-              }}>
-                {emailResult.startsWith('Error') ? <AlertCircle size={16} /> : <CheckCircle size={16} />} {emailResult}
+            {filteredEmailConversations.length === 0 ? (
+              <div style={styles.emptyState}>
+                <Mail size={32} style={{ color: '#525252' }} />
+                <span style={{ color: '#525252', fontSize: '14px' }}>No emails sent yet</span>
               </div>
+            ) : (
+              filteredEmailConversations.map((convo) => (
+                <button
+                  key={convo.email}
+                  onClick={() => { setShowEmailCompose(false); selectEmailConversation(convo); }}
+                  style={{
+                    ...styles.convoItem,
+                    ...(selectedEmailConvo?.email === convo.email && !showEmailCompose ? styles.convoItemActive : {}),
+                  }}
+                >
+                  <div style={{ ...styles.convoAvatar, background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' }}>
+                    {(convo.customer_name || convo.email || '?')[0].toUpperCase()}
+                  </div>
+                  <div style={styles.convoInfo}>
+                    <div style={styles.convoNameRow}>
+                      <span style={styles.convoName}>{convo.customer_name || convo.email}</span>
+                      <span style={styles.convoTime}>{formatTime(convo.last_timestamp)}</span>
+                    </div>
+                    <div style={styles.convoPreviewRow}>
+                      <span style={styles.convoPreview}>
+                        {(convo.last_subject || '').substring(0, 50)}
+                        {(convo.last_subject || '').length > 50 ? '...' : ''}
+                      </span>
+                      <span style={{ ...styles.emailCountBadge }}>
+                        {convo.total_emails}
+                      </span>
+                    </div>
+                  </div>
+                </button>
+              ))
             )}
-
-            <button
-              onClick={handleSendEmail}
-              disabled={emailSending || !emailTo.trim() || !emailSubject.trim() || !emailBody.trim()}
-              style={{ ...styles.primaryBtn, opacity: emailSending || !emailTo.trim() || !emailSubject.trim() || !emailBody.trim() ? 0.5 : 1 }}
-            >
-              {emailSending ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={16} />}
-              Send Email
-            </button>
           </div>
 
-          {/* Recent Email Logs */}
-          {emailLogs.length > 0 && (
-            <div style={{ marginTop: '40px' }}>
-              <h3 style={{ ...styles.sectionTitle, fontSize: '18px', marginBottom: '16px' }}>Recent Emails</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {emailLogs.slice(0, 20).map((log) => (
-                  <div key={log.id} style={styles.emailLogItem}>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={styles.emailLogTo}>{log.to_email}</div>
-                      <div style={styles.emailLogSubject}>{log.subject}</div>
-                    </div>
-                    <span style={{
-                      ...styles.activeBadge,
-                      background: log.status === 'sent' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                      color: log.status === 'sent' ? '#10b981' : '#ef4444',
-                    }}>
-                      {log.status}
-                    </span>
-                    <span style={styles.emailLogTime}>{formatTime(log.created_at)}</span>
+          {/* Email Thread Panel */}
+          <div style={{ ...styles.messagePanel, ...((!selectedEmailConvo && !showEmailCompose && isMobile) ? { display: 'none' } : {}) }}>
+            {showEmailCompose ? (
+              /* New Email Compose */
+              <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+                <div style={styles.messagePanelHeader}>
+                  {isMobile && (
+                    <button onClick={() => setShowEmailCompose(false)} style={styles.backBtn}>
+                      <X size={18} />
+                    </button>
+                  )}
+                  <Mail size={20} style={{ color: '#3b82f6' }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={styles.headerName}>New Email</div>
+                    <div style={styles.headerPhone}>Compose and send</div>
                   </div>
-                ))}
+                </div>
+                <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>To</label>
+                    <input
+                      value={emailTo}
+                      onChange={(e) => setEmailTo(e.target.value)}
+                      placeholder="customer@example.com"
+                      style={styles.formInput}
+                      type="email"
+                    />
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Subject</label>
+                    <input
+                      value={emailSubject}
+                      onChange={(e) => setEmailSubject(e.target.value)}
+                      placeholder="Enter subject..."
+                      style={styles.formInput}
+                    />
+                  </div>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>Body</label>
+                    <textarea
+                      value={emailBody}
+                      onChange={(e) => setEmailBody(e.target.value)}
+                      placeholder="Type your email message here..."
+                      style={styles.massTextarea}
+                      rows={8}
+                    />
+                  </div>
+                  {emailResult && (
+                    <div style={{
+                      ...styles.successBanner,
+                      ...(emailResult.startsWith('Error') ? { background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)', color: '#ef4444' } : {}),
+                    }}>
+                      {emailResult.startsWith('Error') ? <AlertCircle size={16} /> : <CheckCircle size={16} />} {emailResult}
+                    </div>
+                  )}
+                </div>
+                <div style={styles.messageInputWrap}>
+                  <button
+                    onClick={async () => {
+                      if (!emailTo.trim() || !emailSubject.trim() || !emailBody.trim()) return;
+                      setEmailSending(true);
+                      setEmailResult(null);
+                      try {
+                        const res = await fetch(`${API_URL}/api/email/send`, {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+                          body: JSON.stringify({ to_email: emailTo, subject: emailSubject, body_html: emailBody }),
+                        });
+                        if (res.ok) {
+                          setEmailResult('Email sent successfully!');
+                          setEmailTo('');
+                          setEmailSubject('');
+                          setEmailBody('');
+                          fetchEmailConversations();
+                          setTimeout(() => { setEmailResult(null); }, 3000);
+                        } else {
+                          const data = await res.json();
+                          setEmailResult(`Error: ${data.detail || 'Failed to send'}`);
+                        }
+                      } catch (err) {
+                        setEmailResult('Error: Failed to send email');
+                      } finally {
+                        setEmailSending(false);
+                      }
+                    }}
+                    disabled={emailSending || !emailTo.trim() || !emailSubject.trim() || !emailBody.trim()}
+                    style={{ ...styles.primaryBtn, width: '100%', justifyContent: 'center', opacity: emailSending || !emailTo.trim() || !emailSubject.trim() || !emailBody.trim() ? 0.5 : 1, borderRadius: '6px' }}
+                  >
+                    {emailSending ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={16} />}
+                    Send Email
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            ) : selectedEmailConvo ? (
+              <>
+                <div style={styles.messagePanelHeader}>
+                  {isMobile && (
+                    <button onClick={() => setSelectedEmailConvo(null)} style={styles.backBtn}>
+                      <X size={18} />
+                    </button>
+                  )}
+                  <div style={{ ...styles.convoAvatar, background: 'rgba(59, 130, 246, 0.15)', color: '#3b82f6' }}>
+                    {(selectedEmailConvo.customer_name || selectedEmailConvo.email || '?')[0].toUpperCase()}
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={styles.headerName}>{selectedEmailConvo.customer_name || 'Unknown'}</div>
+                    <div style={styles.headerPhone}>{selectedEmailConvo.email}</div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setEmailTo('');
+                      setEmailSubject('');
+                      setEmailBody('');
+                      setEmailResult(null);
+                      setShowEmailCompose(false);
+                      setViewingEmail(null);
+                      // Open inline compose
+                      setShowEmailCompose(false);
+                      // We'll use a compose area at the bottom
+                      const el = document.getElementById('email-reply-area');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 14px', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)', color: '#3b82f6', fontFamily: "'Oswald', sans-serif", fontSize: '12px', fontWeight: 600, letterSpacing: '0.5px', cursor: 'pointer' }}
+                    title="Reply to this email"
+                  >
+                    <Send size={14} /> REPLY
+                  </button>
+                </div>
+
+                {/* Email view modal */}
+                {viewingEmail && (
+                  <div style={styles.modalOverlay} onClick={() => setViewingEmail(null)}>
+                    <div style={{ ...styles.modal, maxWidth: '700px' }} onClick={(e) => e.stopPropagation()}>
+                      <div style={styles.modalHeader}>
+                        <h3 style={styles.modalTitle}>{viewingEmail.subject || '(No subject)'}</h3>
+                        <button onClick={() => setViewingEmail(null)} style={styles.closeBtn}>
+                          <X size={20} />
+                        </button>
+                      </div>
+                      <div style={{ padding: '16px 24px', borderBottom: '1px solid #262626', display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', color: '#ababab' }}>
+                          To: <span style={{ color: '#fff' }}>{viewingEmail.to_email}</span>
+                        </span>
+                        <span style={{
+                          ...styles.activeBadge,
+                          background: viewingEmail.status === 'sent' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                          color: viewingEmail.status === 'sent' ? '#10b981' : '#ef4444',
+                        }}>
+                          {viewingEmail.status}
+                        </span>
+                        <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: '#525252', marginLeft: 'auto' }}>
+                          {viewingEmail.created_at ? new Date(viewingEmail.created_at).toLocaleString() : ''}
+                        </span>
+                      </div>
+                      <div style={{ padding: '24px', maxHeight: '400px', overflowY: 'auto' }}>
+                        {viewingEmail.template_key ? (
+                          <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: '#525252', marginBottom: '12px', padding: '6px 12px', background: '#0a0a0a', border: '1px solid #262626', borderRadius: '4px', display: 'inline-block' }}>
+                            Template: {viewingEmail.template_key}
+                          </div>
+                        ) : null}
+                        <div
+                          style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '14px', color: '#fff', lineHeight: 1.7 }}
+                          dangerouslySetInnerHTML={{ __html: viewingEmail.body_html || '<p style="color:#525252">No content</p>' }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Email Thread */}
+                <div style={styles.messageThread}>
+                  {emailMessages.map((msg) => (
+                    <button
+                      key={msg.id}
+                      onClick={() => setViewingEmail(msg)}
+                      style={styles.emailThreadItem}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '4px' }}>
+                        <span style={{
+                          ...styles.activeBadge,
+                          background: msg.status === 'sent' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                          color: msg.status === 'sent' ? '#10b981' : '#ef4444',
+                          fontSize: '10px',
+                          padding: '2px 8px',
+                        }}>
+                          {msg.status}
+                        </span>
+                        <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '13px', fontWeight: 600, color: '#fff', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>
+                          {msg.subject || '(No subject)'}
+                        </span>
+                        <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: '#525252', flexShrink: 0 }}>
+                          {formatTime(msg.created_at)}
+                        </span>
+                      </div>
+                      <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'left' }}>
+                        {msg.template_key ? `[${msg.template_key}] ` : ''}
+                        {(msg.body_html || '').replace(/<[^>]*>/g, '').substring(0, 80)}...
+                      </div>
+                    </button>
+                  ))}
+                  <div ref={emailMessagesEndRef} />
+                </div>
+
+                {/* Reply compose area */}
+                <div id="email-reply-area" style={{ borderTop: '1px solid #262626', padding: '16px 20px', background: '#0a0a0a' }}>
+                  <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+                    <input
+                      value={emailSubject}
+                      onChange={(e) => setEmailSubject(e.target.value)}
+                      placeholder="Subject..."
+                      style={{ ...styles.formInput, flex: 1, borderRadius: '6px', padding: '8px 12px', fontSize: '13px' }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <textarea
+                      value={emailBody}
+                      onChange={(e) => setEmailBody(e.target.value)}
+                      placeholder="Type your reply..."
+                      style={{ ...styles.formInput, flex: 1, borderRadius: '6px', padding: '8px 12px', fontSize: '13px', resize: 'none', minHeight: '40px', maxHeight: '120px', fontFamily: "'Montserrat', sans-serif" }}
+                      rows={2}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleSendEmailFromThread();
+                      }}
+                    />
+                    <button
+                      onClick={handleSendEmailFromThread}
+                      disabled={emailSending || !emailSubject.trim() || !emailBody.trim()}
+                      style={{ ...styles.sendBtn, opacity: emailSending || !emailSubject.trim() || !emailBody.trim() ? 0.5 : 1 }}
+                    >
+                      {emailSending ? <Loader2 size={18} style={{ animation: 'spin 1s linear infinite' }} /> : <Send size={18} />}
+                    </button>
+                  </div>
+                  {emailResult && (
+                    <div style={{ ...styles.successBanner, marginTop: '8px', marginBottom: 0, ...(emailResult.startsWith('Error') ? { background: 'rgba(239, 68, 68, 0.1)', borderColor: 'rgba(239, 68, 68, 0.3)', color: '#ef4444' } : {}) }}>
+                      {emailResult.startsWith('Error') ? <AlertCircle size={12} /> : <CheckCircle size={12} />} {emailResult}
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div style={styles.emptyState}>
+                <Mail size={48} style={{ color: '#262626' }} />
+                <span style={{ color: '#525252', fontSize: '15px' }}>Select a conversation or compose a new email</span>
+              </div>
+            )}
+          </div>
         </div>
       )}
 
@@ -2010,6 +2328,30 @@ const styles = {
     display: 'flex',
     justifyContent: 'flex-end',
     gap: '12px',
+  },
+  // Email thread
+  emailThreadItem: {
+    display: 'block',
+    width: '100%',
+    textAlign: 'left',
+    padding: '14px 16px',
+    background: '#0a0a0a',
+    border: '1px solid #262626',
+    borderRadius: '8px',
+    cursor: 'pointer',
+    transition: 'background 0.15s',
+    marginBottom: '0',
+  },
+  emailCountBadge: {
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '11px',
+    fontWeight: 600,
+    color: '#3b82f6',
+    background: 'rgba(59, 130, 246, 0.1)',
+    padding: '2px 8px',
+    borderRadius: '10px',
+    flexShrink: 0,
+    marginLeft: '8px',
   },
   // Email logs
   emailLogItem: {

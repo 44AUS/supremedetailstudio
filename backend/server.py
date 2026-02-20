@@ -2610,6 +2610,35 @@ async def mass_send_email(req: MassEmailRequest, background_tasks: BackgroundTas
     background_tasks.add_task(do_mass_email)
     return {"message": f"Mass email queued for {customer_count} recipients", "count": customer_count}
 
+@app.get("/api/email/conversations", dependencies=[Depends(verify_token)])
+async def get_email_conversations():
+    pipeline = [
+        {"$sort": {"created_at": -1}},
+        {"$group": {
+            "_id": "$to_email",
+            "customer_name": {"$first": "$customer_name"},
+            "customer_id": {"$first": "$customer_id"},
+            "last_subject": {"$first": "$subject"},
+            "last_status": {"$first": "$status"},
+            "last_timestamp": {"$first": "$created_at"},
+            "total_emails": {"$sum": 1}
+        }},
+        {"$sort": {"last_timestamp": -1}}
+    ]
+    conversations = []
+    async for conv in db.email_logs.aggregate(pipeline):
+        if conv["_id"]:
+            conversations.append({
+                "email": conv["_id"],
+                "customer_name": conv.get("customer_name", "Unknown"),
+                "customer_id": conv.get("customer_id"),
+                "last_subject": conv.get("last_subject", ""),
+                "last_status": conv.get("last_status", ""),
+                "last_timestamp": conv.get("last_timestamp", ""),
+                "total_emails": conv.get("total_emails", 0),
+            })
+    return conversations
+
 @app.get("/api/email/logs", dependencies=[Depends(verify_token)])
 async def get_email_logs(email: Optional[str] = None, limit: int = 100):
     query = {}
