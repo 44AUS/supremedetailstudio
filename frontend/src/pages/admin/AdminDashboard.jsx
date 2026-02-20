@@ -266,7 +266,7 @@ export default function AdminDashboard() {
         </div>
 
         <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flexDirection: 'column' }}>
-        <div style={{ ...styles.calendarContainer, width: '100%', maxWidth: '900px', flexShrink: 0, ...(isMobile && { padding: '14px', width: '100%', maxWidth: '100%' }) }}>
+        <div style={{ ...styles.calendarContainer, width: '100%', flexShrink: 0, ...(isMobile && { padding: '14px' }) }}>
           {/* Month Navigation */}
           <div style={styles.calendarNav}>
             <button onClick={prevMonth} style={styles.calendarNavBtn}>
@@ -327,12 +327,14 @@ export default function AdminDashboard() {
                         .slice(0, isMobile ? 2 : 3)
                         .map((b, idx) => {
                           const catColor = getCategoryColor(b);
+                          const isComplete = b.status === 'completed';
                           return (
                             <div
                               key={idx}
                               style={{
                                 ...styles.calBookingBar,
-                                borderLeft: `3px solid ${catColor}`,
+                                borderLeft: `3px solid ${isComplete ? '#22c55e' : catColor}`,
+                                background: isComplete ? 'rgba(34, 197, 94, 0.1)' : 'rgba(255,255,255,0.05)',
                               }}
                               title={`${b.booking_time} - ${b.customer_first_name} ${b.customer_last_name} - ${b.service_name}`}
                             >
@@ -431,7 +433,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Revenue Panel */}
-        <div style={{ ...styles.revenuePanel, width: '100%', maxWidth: '900px', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)' }}>
+        <div style={{ ...styles.revenuePanel, width: '100%', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)' }}>
           <div style={styles.revenueCard}>
             <div style={{ ...styles.revenueIconWrap, background: 'rgba(16, 185, 129, 0.15)' }}>
               <DollarSign size={20} color="#10b981" />
@@ -975,10 +977,10 @@ const styles = {
     gap: '3px',
   },
   dayEmpty: {
-    minHeight: '100px',
+    aspectRatio: '1',
   },
   dayCell: {
-    minHeight: '100px',
+    aspectRatio: '1',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'stretch',
@@ -990,6 +992,7 @@ const styles = {
     transition: 'all 0.15s ease',
     textAlign: 'left',
     verticalAlign: 'top',
+    overflow: 'hidden',
   },
   dayCellToday: {
     border: '1px solid rgba(232, 2, 0, 0.5)',
