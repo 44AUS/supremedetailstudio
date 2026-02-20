@@ -381,7 +381,17 @@ async def build_sms_context(booking: dict) -> dict:
     shop_phone = settings.get("shop_phone", "(502) 417-0690") if settings else "(502) 417-0690"
     shop_address = settings.get("shop_address", "") if settings else ""
     review_url = sms_settings.get("review_url", "") if sms_settings else ""
-    vehicle_info = f"{booking.get('vehicle_year', '')} {booking.get('vehicle_make', '')} {booking.get('vehicle_model', '')}".strip()
+    # Build vehicle info - list all vehicles comma-separated for multi-vehicle bookings
+    vehicles_list = booking.get("vehicles", [])
+    if vehicles_list and len(vehicles_list) > 0:
+        vehicle_parts = []
+        for v in vehicles_list:
+            part = f"{v.get('vehicle_year', '')} {v.get('vehicle_make', '')} {v.get('vehicle_model', '')}".strip()
+            if part:
+                vehicle_parts.append(part)
+        vehicle_info = ", ".join(vehicle_parts) if vehicle_parts else f"{booking.get('vehicle_year', '')} {booking.get('vehicle_make', '')} {booking.get('vehicle_model', '')}".strip()
+    else:
+        vehicle_info = f"{booking.get('vehicle_year', '')} {booking.get('vehicle_make', '')} {booking.get('vehicle_model', '')}".strip()
     date_str = booking.get("booking_date", "")
     time_str = booking.get("booking_time", "")
     try:
@@ -480,7 +490,17 @@ def build_booking_email_html(booking_data: dict, shop_name: str, shop_phone: str
     except Exception:
         formatted_dt = f"{date_str} {time_str}"
 
-    vehicle_info = f"{booking_data.get('vehicle_year', '')} {booking_data.get('vehicle_make', '')} {booking_data.get('vehicle_model', '')}".strip()
+    # Build vehicle info - list all vehicles comma-separated for multi-vehicle bookings
+    vehicles_list = booking_data.get("vehicles", [])
+    if vehicles_list and len(vehicles_list) > 0:
+        vehicle_parts = []
+        for v in vehicles_list:
+            part = f"{v.get('vehicle_year', '')} {v.get('vehicle_make', '')} {v.get('vehicle_model', '')}".strip()
+            if part:
+                vehicle_parts.append(part)
+        vehicle_info = ", ".join(vehicle_parts) if vehicle_parts else f"{booking_data.get('vehicle_year', '')} {booking_data.get('vehicle_make', '')} {booking_data.get('vehicle_model', '')}".strip()
+    else:
+        vehicle_info = f"{booking_data.get('vehicle_year', '')} {booking_data.get('vehicle_make', '')} {booking_data.get('vehicle_model', '')}".strip()
     service_name = booking_data.get("service_name", "")
     total_price = booking_data.get("total_price", 0)
     service_location = "In Shop" if booking_data.get("service_location") == "shop" else "Mobile Service"
@@ -661,7 +681,17 @@ async def build_email_context(booking_data: dict) -> dict:
     except Exception:
         formatted_dt = f"{date_str} {time_str}"
 
-    vehicle_info = f"{booking_data.get('vehicle_year', '')} {booking_data.get('vehicle_make', '')} {booking_data.get('vehicle_model', '')}".strip()
+    # Build vehicle info - list all vehicles comma-separated for multi-vehicle bookings
+    vehicles_list = booking_data.get("vehicles", [])
+    if vehicles_list and len(vehicles_list) > 0:
+        vehicle_parts = []
+        for v in vehicles_list:
+            part = f"{v.get('vehicle_year', '')} {v.get('vehicle_make', '')} {v.get('vehicle_model', '')}".strip()
+            if part:
+                vehicle_parts.append(part)
+        vehicle_info = ", ".join(vehicle_parts) if vehicle_parts else f"{booking_data.get('vehicle_year', '')} {booking_data.get('vehicle_make', '')} {booking_data.get('vehicle_model', '')}".strip()
+    else:
+        vehicle_info = f"{booking_data.get('vehicle_year', '')} {booking_data.get('vehicle_make', '')} {booking_data.get('vehicle_model', '')}".strip()
     customer_name = f"{booking_data.get('customer_first_name', '')} {booking_data.get('customer_last_name', '')}".strip()
 
     return {
