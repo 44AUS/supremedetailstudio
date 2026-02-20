@@ -13,9 +13,6 @@ import os
 import re
 import asyncio
 import httpx
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 from twilio.rest import Client as TwilioClient
 
@@ -57,12 +54,9 @@ TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN", "")
 TWILIO_PHONE_NUMBER = os.environ.get("TWILIO_PHONE_NUMBER", "")
 GOOGLE_MAPS_API_KEY = os.environ.get("GOOGLE_MAPS_API_KEY", "")
 
-# SMTP / Email Config
-SMTP_HOST = os.environ.get("SMTP_HOST", "")
-SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
-SMTP_USERNAME = os.environ.get("SMTP_USERNAME", "")
-SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
-SMTP_FROM_EMAIL = os.environ.get("SMTP_FROM_EMAIL", "")
+# Resend Email Config
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+RESEND_FROM_EMAIL = os.environ.get("RESEND_FROM_EMAIL", "onboarding@resend.dev")
 
 # ============== Models ==============
 
@@ -521,9 +515,9 @@ def build_booking_email_html(booking_data: dict, shop_name: str, shop_phone: str
 
 
 async def send_booking_email(booking_data: dict, booking_id: str):
-    """Send booking confirmation email via SMTP."""
-    if not SMTP_HOST or not SMTP_USERNAME or not SMTP_PASSWORD:
-        return {"success": False, "error": "SMTP not configured"}
+    """Send booking confirmation email via Resend API."""
+    if not RESEND_API_KEY:
+        return {"success": False, "error": "Resend API key not configured"}
 
     to_email = booking_data.get("customer_email", "")
     if not to_email:
@@ -536,43 +530,59 @@ async def send_booking_email(booking_data: dict, booking_id: str):
 
     customer_name = f"{booking_data.get('customer_first_name', '')} {booking_data.get('customer_last_name', '')}".strip()
     html_body = build_booking_email_html(booking_data, shop_name, shop_phone, shop_address)
-
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Booking Confirmation - {shop_name}"
-    msg["From"] = SMTP_FROM_EMAIL or SMTP_USERNAME
-    msg["To"] = to_email
-
-    plain_text = f"Hi {customer_name}, your appointment with {shop_name} on {booking_data.get('booking_date', '')} at {booking_data.get('booking_time', '')} has been confirmed. Call {shop_phone} to reschedule."
-    msg.attach(MIMEText(plain_text, "plain"))
-    msg.attach(MIMEText(html_body, "html"))
+    subject = f"Booking Confirmation - {shop_name}"
 
     try:
-        loop = asyncio.get_event_loop()
-        def _send():
-            with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
-                server.starttls()
-                server.login(SMTP_USERNAME, SMTP_PASSWORD)
-                server.send_message(msg)
-        await loop.run_in_executor(None, _send)
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.resend.com/emails",
+                headers={
+                    "Authorization": f"Bearer {RESEND_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "from": RESEND_FROM_EMAIL,
+                    "to": [to_email],
+                    "subject": subject,
+                    "html": html_body,
+                },
+            )
+            response_data = response.json()
 
-        await db.email_logs.insert_one({
-            "to_email": to_email,
-            "customer_name": customer_name,
-            "customer_id": booking_data.get("customer_id"),
-            "booking_id": booking_id,
-            "subject": msg["Subject"],
-            "status": "sent",
-            "template_key": "booking_confirmation",
-            "created_at": datetime.now(timezone.utc).isoformat()
-        })
-        return {"success": True}
+        if response.status_code in (200, 201):
+            await db.email_logs.insert_one({
+                "to_email": to_email,
+                "customer_name": customer_name,
+                "customer_id": booking_data.get("customer_id"),
+                "booking_id": booking_id,
+                "subject": subject,
+                "resend_id": response_data.get("id"),
+                "status": "sent",
+                "template_key": "booking_confirmation",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+            return {"success": True, "id": response_data.get("id")}
+        else:
+            error_msg = response_data.get("message", str(response_data))
+            await db.email_logs.insert_one({
+                "to_email": to_email,
+                "customer_name": customer_name,
+                "customer_id": booking_data.get("customer_id"),
+                "booking_id": booking_id,
+                "subject": subject,
+                "status": "failed",
+                "error": error_msg,
+                "template_key": "booking_confirmation",
+                "created_at": datetime.now(timezone.utc).isoformat()
+            })
+            return {"success": False, "error": error_msg}
     except Exception as e:
         await db.email_logs.insert_one({
             "to_email": to_email,
             "customer_name": customer_name,
             "customer_id": booking_data.get("customer_id"),
             "booking_id": booking_id,
-            "subject": msg["Subject"],
+            "subject": subject,
             "status": "failed",
             "error": str(e),
             "template_key": "booking_confirmation",
