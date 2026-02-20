@@ -1253,6 +1253,8 @@ export default function BookAppointment() {
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [smsConsent, setSmsConsent] = useState(false);
+  const [emailConsent, setEmailConsent] = useState(false);
   const [availableServices, setAvailableServices] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -1501,6 +1503,10 @@ export default function BookAppointment() {
       setSubmitError('Please fill in all required fields');
       return;
     }
+    if (!smsConsent && !emailConsent) {
+      setSubmitError('Please select at least one communication preference (text or email)');
+      return;
+    }
 
     setSubmitting(true);
     setSubmitError('');
@@ -1535,6 +1541,8 @@ export default function BookAppointment() {
           duration_minutes: service.duration_minutes || 60
         })),
         notes: notes,
+        sms_consent: smsConsent,
+        email_consent: emailConsent,
       };
 
       const response = await fetch(`${API_URL}/api/bookings`, {
@@ -2945,6 +2953,84 @@ export default function BookAppointment() {
                   style={{ ...styles.textarea, maxWidth: '100%', marginTop: isMobile ? '16px' : '24px' }}
                   data-testid="special-requests-textarea"
                 />
+
+                {/* Communication Consent */}
+                <div style={{
+                  marginTop: isMobile ? '16px' : '24px',
+                  padding: '20px',
+                  background: 'rgba(255,255,255,0.03)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: '14px',
+                  width: '100%',
+                  boxSizing: 'border-box',
+                }}>
+                  <div style={{
+                    fontSize: '13px',
+                    fontWeight: 600,
+                    color: 'rgba(255,255,255,0.7)',
+                    marginBottom: '14px',
+                    fontFamily: "'Oswald', sans-serif",
+                    letterSpacing: '1px',
+                    textTransform: 'uppercase',
+                  }}>
+                    Communication Preferences *
+                  </div>
+                  <div style={{
+                    fontSize: '12px',
+                    color: 'rgba(255,255,255,0.4)',
+                    marginBottom: '14px',
+                    fontFamily: "'Montserrat', sans-serif",
+                  }}>
+                    Please select at least one method for appointment reminders and confirmations.
+                  </div>
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                    cursor: 'pointer',
+                    marginBottom: '12px',
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: '13px',
+                    color: '#fff',
+                  }}>
+                    <input
+                      type="checkbox"
+                      checked={smsConsent}
+                      onChange={(e) => setSmsConsent(e.target.checked)}
+                      style={{ width: '18px', height: '18px', accentColor: '#dc2626', cursor: 'pointer', marginTop: '1px', flexShrink: 0 }}
+                      data-testid="sms-consent-checkbox"
+                    />
+                    <span>I agree to receive text messages from <strong style={{ color: '#dc2626' }}>{businessSettings?.shop_name || 'this business'}</strong> for appointment reminders, confirmations, and updates. Msg & data rates may apply.</span>
+                  </label>
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '10px',
+                    cursor: 'pointer',
+                    fontFamily: "'Montserrat', sans-serif",
+                    fontSize: '13px',
+                    color: '#fff',
+                  }}>
+                    <input
+                      type="checkbox"
+                      checked={emailConsent}
+                      onChange={(e) => setEmailConsent(e.target.checked)}
+                      style={{ width: '18px', height: '18px', accentColor: '#dc2626', cursor: 'pointer', marginTop: '1px', flexShrink: 0 }}
+                      data-testid="email-consent-checkbox"
+                    />
+                    <span>I agree to receive email notifications from <strong style={{ color: '#dc2626' }}>{businessSettings?.shop_name || 'this business'}</strong> for appointment reminders, confirmations, and updates.</span>
+                  </label>
+                  {!smsConsent && !emailConsent && (
+                    <div style={{
+                      marginTop: '10px',
+                      fontSize: '11px',
+                      color: '#ef4444',
+                      fontFamily: "'Montserrat', sans-serif",
+                    }}>
+                      * At least one option must be selected to complete your booking.
+                    </div>
+                  )}
+                </div>
               </div>
             </motion.div>
           )}
