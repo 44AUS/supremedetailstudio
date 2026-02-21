@@ -1088,10 +1088,19 @@ async def lookup_vehicle_type(make: str, model: str):
     return {"vehicle_type": "sedan"}
 
 @app.get("/api/vehicles/models/{make}")
-async def get_vehicle_models(make: str):
-    """Get models for a specific make"""
-    models = await db.vehicles.distinct("model", {"make": make, "is_active": True})
+async def get_vehicle_models(make: str, year: Optional[str] = None):
+    """Get models for a specific make, optionally filtered by year"""
+    query = {"make": make, "is_active": True}
+    if year:
+        query["year"] = year
+    models = await db.vehicles.distinct("model", query)
     return sorted(models)
+
+@app.get("/api/vehicles/years/{make}")
+async def get_vehicle_years_for_make(make: str):
+    """Get available years for a specific make"""
+    years = await db.vehicles.distinct("year", {"make": make, "is_active": True})
+    return sorted(years, reverse=True)
 
 @app.get("/api/vehicles/years/{make}/{model}")
 async def get_vehicle_years(make: str, model: str):

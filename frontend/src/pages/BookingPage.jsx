@@ -1263,6 +1263,7 @@ export default function BookAppointment() {
   const [serviceLocations, setServiceLocations] = useState(DEFAULT_SERVICE_LOCATIONS);
   const [businessSettings, setBusinessSettings] = useState(null);
   const [bufferMinutes, setBufferMinutes] = useState(60); // Buffer time between bookings
+  const [customVehicle, setCustomVehicle] = useState(false); // Manual entry mode
 
   // API data states
   const [years, setYears] = useState([]);
@@ -1270,6 +1271,7 @@ export default function BookAppointment() {
   const [models, setModels] = useState([]);
   const [loadingMakes, setLoadingMakes] = useState(false);
   const [loadingModels, setLoadingModels] = useState(false);
+  const [loadingYears, setLoadingYears] = useState(false);
 
   // Google Places Autocomplete ref
   const addressInputRef = useRef(null);
@@ -1567,63 +1569,50 @@ export default function BookAppointment() {
     }
   };
 
-  // Generate years (last 30 years)
+  // Fetch makes from backend on mount
   useEffect(() => {
-    const currentYear = new Date().getFullYear();
-    const yearList = [];
-    for (let y = currentYear + 1; y >= currentYear - 30; y--) {
-      yearList.push(y.toString());
-    }
-    setYears(yearList);
+    const fetchMakes = async () => {
+      setLoadingMakes(true);
+      try {
+        const response = await fetch(`${API_URL}/api/vehicles/makes`);
+        if (response.ok) {
+          const data = await response.json();
+          setMakes(data);
+        }
+      } catch (error) {
+        console.error('Error fetching makes:', error);
+      }
+      setLoadingMakes(false);
+    };
+    fetchMakes();
   }, []);
 
-  // Fetch makes when year is selected
-  const fetchMakes = useCallback(async (year) => {
-    if (!year) {
-      setMakes([]);
-      return;
-    }
-    setLoadingMakes(true);
+  // Fetch years when make is selected
+  const fetchYears = useCallback(async (make) => {
+    if (!make) { setYears([]); return; }
+    setLoadingYears(true);
     try {
-      const response = await fetch(
-        `https://vpic.nhtsa.dot.gov/api/vehicles/GetMakesForVehicleType/car?format=json`
-      );
-      const data = await response.json();
-      if (data.Results) {
-        // Get unique makes sorted alphabetically
-        const makeList = [...new Set(data.Results.map(m => m.MakeName))]
-          .filter(m => m)
-          .sort();
-        setMakes(makeList);
+      const response = await fetch(`${API_URL}/api/vehicles/years/${encodeURIComponent(make)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setYears(data);
       }
     } catch (error) {
-      console.error('Error fetching makes:', error);
-      // Fallback to common makes
-      setMakes(['Acura', 'Audi', 'BMW', 'Buick', 'Cadillac', 'Chevrolet', 'Chrysler', 'Dodge', 
-        'Ford', 'GMC', 'Honda', 'Hyundai', 'Infiniti', 'Jaguar', 'Jeep', 'Kia', 'Land Rover',
-        'Lexus', 'Lincoln', 'Mazda', 'Mercedes-Benz', 'Mitsubishi', 'Nissan', 'Porsche', 
-        'RAM', 'Subaru', 'Tesla', 'Toyota', 'Volkswagen', 'Volvo']);
+      console.error('Error fetching years:', error);
+      setYears([]);
     }
-    setLoadingMakes(false);
+    setLoadingYears(false);
   }, []);
 
-  // Fetch models when make is selected
-  const fetchModels = useCallback(async (year, make) => {
-    if (!year || !make) {
-      setModels([]);
-      return;
-    }
+  // Fetch models when make + year are selected
+  const fetchModels = useCallback(async (make, year) => {
+    if (!make || !year) { setModels([]); return; }
     setLoadingModels(true);
     try {
-      const response = await fetch(
-        `https://vpic.nhtsa.dot.gov/api/vehicles/GetModelsForMakeYear/make/${encodeURIComponent(make)}/modelyear/${year}?format=json`
-      );
-      const data = await response.json();
-      if (data.Results) {
-        const modelList = [...new Set(data.Results.map(m => m.Model_Name))]
-          .filter(m => m)
-          .sort();
-        setModels(modelList);
+      const response = await fetch(`${API_URL}/api/vehicles/models/${encodeURIComponent(make)}?year=${encodeURIComponent(year)}`);
+      if (response.ok) {
+        const data = await response.json();
+        setModels(data);
       }
     } catch (error) {
       console.error('Error fetching models:', error);
@@ -1632,24 +1621,43 @@ export default function BookAppointment() {
     setLoadingModels(false);
   }, []);
 
-  // Effect to fetch makes when year changes
-  useEffect(() => {
-    if (vehicle.year) {
-      fetchMakes(vehicle.year);
-      setVehicle(prev => ({ ...prev, make: '', model: '' }));
-      setModels([]);
-      setSelectedColor(null);
+  // Auto-select vehicle type based on make/model from backend
+  const autoSelectVehicleType = useCallback(async (make, model) => {
+    if (!make || !model) return;
+    try {
+      const response = await fetch(`${API_URL}/api/vehicles/lookup/${encodeURIComponent(make)}/${encodeURIComponent(model)}`);
+      if (response.ok) {
+        const data = await response.json();
+        const typeMap = { 'sedan': 'sedan', 'suv-2row': 'suv-2row', 'suv-3row': 'suv-3row', 'aircraft': 'sedan' };
+        const matchId = typeMap[data.vehicle_type] || 'sedan';
+        const matchType = VEHICLE_TYPES.find(t => t.id === matchId);
+        if (matchType) setVehicleType(matchType);
+      }
+    } catch (error) {
+      console.error('Error looking up vehicle type:', error);
     }
-  }, [vehicle.year, fetchMakes]);
+  }, []);
 
-  // Effect to fetch models when make changes
+  // Effect: when make changes, fetch years for that make
   useEffect(() => {
-    if (vehicle.year && vehicle.make) {
-      fetchModels(vehicle.year, vehicle.make);
-      setVehicle(prev => ({ ...prev, model: '' }));
-      setSelectedColor(null);
+    if (vehicle.make && !customVehicle) {
+      fetchYears(vehicle.make);
     }
-  }, [vehicle.make, vehicle.year, fetchModels]);
+  }, [vehicle.make, customVehicle, fetchYears]);
+
+  // Effect: when make + year are both set, fetch models
+  useEffect(() => {
+    if (vehicle.make && vehicle.year && !customVehicle) {
+      fetchModels(vehicle.make, vehicle.year);
+    }
+  }, [vehicle.year, vehicle.make, customVehicle, fetchModels]);
+
+  // Effect: when model is selected, auto-select vehicle type
+  useEffect(() => {
+    if (vehicle.make && vehicle.model && !customVehicle) {
+      autoSelectVehicleType(vehicle.make, vehicle.model);
+    }
+  }, [vehicle.model, vehicle.make, customVehicle, autoSelectVehicleType]);
 
   // Get paint colors for selected make
   const getPaintColors = () => {
@@ -2024,31 +2032,64 @@ export default function BookAppointment() {
             <Car size={20} style={{ color: '#ef4444', marginLeft: 'auto' }} />
           </div>
 
-          <div style={{ ...styles.formGrid(3), ...(isMobile && { gridTemplateColumns: '1fr' }) }}>
-            <SelectField
-              label="Year"
-              value={vehicle.year}
-              onChange={(v) => setVehicle({...vehicle, year: v})}
-              options={years}
-              placeholder="Select Year"
-            />
-            <SelectField
-              label="Make"
-              value={vehicle.make}
-              onChange={(v) => setVehicle({...vehicle, make: v})}
-              options={makes}
-              placeholder={loadingMakes ? "Loading..." : "Select Make"}
-              disabled={!vehicle.year || loadingMakes}
-            />
-            <SelectField
-              label="Model"
-              value={vehicle.model}
-              onChange={(v) => setVehicle({...vehicle, model: v})}
-              options={models}
-              placeholder={loadingModels ? "Loading..." : "Select Model"}
-              disabled={!vehicle.make || loadingModels}
-            />
-          </div>
+          {!customVehicle ? (
+            <div style={{ ...styles.formGrid(3), ...(isMobile && { gridTemplateColumns: '1fr' }) }}>
+              <SelectField
+                label="Make"
+                value={vehicle.make}
+                onChange={(v) => { setVehicle({...vehicle, make: v, year: '', model: ''}); setModels([]); setSelectedColor(null); setVehicleType(null); }}
+                options={makes}
+                placeholder={loadingMakes ? "Loading..." : "Select Make"}
+                disabled={loadingMakes}
+              />
+              <SelectField
+                label="Year"
+                value={vehicle.year}
+                onChange={(v) => { setVehicle({...vehicle, year: v, model: ''}); setSelectedColor(null); setVehicleType(null); }}
+                options={years}
+                placeholder={loadingYears ? "Loading..." : "Select Year"}
+                disabled={!vehicle.make || loadingYears}
+              />
+              <SelectField
+                label="Model"
+                value={vehicle.model}
+                onChange={(v) => setVehicle({...vehicle, model: v})}
+                options={models}
+                placeholder={loadingModels ? "Loading..." : "Select Model"}
+                disabled={!vehicle.year || loadingModels}
+              />
+            </div>
+          ) : (
+            <div style={{ ...styles.formGrid(3), ...(isMobile && { gridTemplateColumns: '1fr' }) }}>
+              <InputField label="Make" value={vehicle.make} onChange={(v) => setVehicle({...vehicle, make: v})} placeholder="e.g., Toyota" />
+              <InputField label="Year" value={vehicle.year} onChange={(v) => setVehicle({...vehicle, year: v})} placeholder="e.g., 2024" />
+              <InputField label="Model" value={vehicle.model} onChange={(v) => setVehicle({...vehicle, model: v})} placeholder="e.g., Camry" />
+            </div>
+          )}
+          <button
+            onClick={() => {
+              setCustomVehicle(!customVehicle);
+              setVehicle({ year: '', make: '', model: '' });
+              setYears([]);
+              setModels([]);
+              setSelectedColor(null);
+              setVehicleType(null);
+            }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#ef4444',
+              fontSize: '13px',
+              fontFamily: "'Montserrat', sans-serif",
+              cursor: 'pointer',
+              padding: '8px 0',
+              marginTop: '4px',
+              textDecoration: 'underline',
+              textUnderlineOffset: '3px',
+            }}
+          >
+            {customVehicle ? '← Back to vehicle list' : "Vehicle not listed? Enter manually"}
+          </button>
 
           {/* Vehicle Type Selection */}
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '14px', marginTop: '24px', marginBottom: '16px' }}>
