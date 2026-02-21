@@ -448,6 +448,45 @@ export default function AdminCustomers() {
                 </div>
               )}
 
+              {/* Vehicles */}
+              {selectedCustomer.vehicles?.length > 0 && (
+                <div style={styles.infoSection}>
+                  <h4 style={styles.sectionTitle}>Vehicles</h4>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {selectedCustomer.vehicles.map((v, i) => (
+                      <div key={i} style={{
+                        display: 'flex', alignItems: 'center', gap: '12px',
+                        padding: '10px 14px', background: '#0a0a0a', border: '1px solid #262626',
+                      }}>
+                        <Car size={16} style={{ color: '#e80200', flexShrink: 0 }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ color: '#fff', fontSize: '14px', fontFamily: "'Montserrat', sans-serif", fontWeight: 600 }}>
+                            {v.year} {v.make} {v.model}
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '2px' }}>
+                            {v.color && (
+                              <span style={{ fontSize: '12px', color: '#ababab', fontFamily: "'Montserrat', sans-serif" }}>
+                                {v.color}
+                              </span>
+                            )}
+                            {v.type && (
+                              <span style={{
+                                fontSize: '11px', padding: '1px 6px',
+                                background: v.type === 'sedan' ? 'rgba(59,130,246,0.2)' : v.type === 'suv-3row' ? 'rgba(249,115,22,0.2)' : 'rgba(16,185,129,0.2)',
+                                color: v.type === 'sedan' ? '#60a5fa' : v.type === 'suv-3row' ? '#fb923c' : '#34d399',
+                                fontFamily: "'Montserrat', sans-serif",
+                              }}>
+                                {v.type === 'sedan' ? 'Sedan' : v.type === 'suv-2row' ? '2-Row SUV' : v.type === 'suv-3row' ? '3-Row SUV' : v.type}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Booking History */}
               <div style={styles.infoSection}>
                 <h4 style={styles.sectionTitle}>Booking History</h4>

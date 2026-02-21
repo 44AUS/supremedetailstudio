@@ -1582,13 +1582,23 @@ async def create_booking(booking: BookingCreate, background_tasks: BackgroundTas
     except Exception:
         pass  # Allow booking if availability check fails
 
+    # Build vehicle info for customer profile
+    booking_vehicle = {
+        "year": booking.vehicle_year,
+        "make": booking.vehicle_make,
+        "model": booking.vehicle_model,
+        "type": booking.vehicle_type,
+        "color": booking.vehicle_color or ""
+    }
+
     # Find or create customer
     customer_id = await find_or_create_customer(
         email=booking.customer_email,
         phone=booking.customer_phone,
         first_name=booking.customer_first_name,
         last_name=booking.customer_last_name,
-        address=booking.customer_address
+        address=booking.customer_address,
+        vehicle=booking_vehicle
     )
 
     booking_dict = booking.model_dump()
@@ -1731,13 +1741,23 @@ async def update_booking(booking_id: str, booking_update: BookingUpdate):
 @app.post("/api/bookings/admin", dependencies=[Depends(verify_token)])
 async def create_booking_admin(booking: BookingCreate, background_tasks: BackgroundTasks):
     """Create a booking from admin dashboard (for phone orders)"""
+    # Build vehicle info for customer profile
+    booking_vehicle = {
+        "year": booking.vehicle_year,
+        "make": booking.vehicle_make,
+        "model": booking.vehicle_model,
+        "type": booking.vehicle_type,
+        "color": booking.vehicle_color or ""
+    }
+
     # Find or create customer
     customer_id = await find_or_create_customer(
         email=booking.customer_email,
         phone=booking.customer_phone,
         first_name=booking.customer_first_name,
         last_name=booking.customer_last_name,
-        address=booking.customer_address
+        address=booking.customer_address,
+        vehicle=booking_vehicle
     )
 
     booking_dict = booking.model_dump()
@@ -1782,29 +1802,37 @@ async def resend_booking_email(booking_id: str, background_tasks: BackgroundTask
 
 # ============== Customer Helper ==============
 
-async def find_or_create_customer(email: str, phone: str, first_name: str, last_name: str, address: str = ""):
-    """Find existing customer by email AND phone, or create new one"""
+async def find_or_create_customer(email: str, phone: str, first_name: str, last_name: str, address: str = "", vehicle: dict = None):
+    """Find existing customer by email AND phone, or create new one. Optionally link a vehicle."""
     # Normalize email and phone
     email_normalized = email.lower().strip()
     phone_normalized = phone.strip().replace("-", "").replace(" ", "").replace("(", "").replace(")", "")
-    
+
     # Try to find existing customer by email AND phone
     customer = await db.customers.find_one({
         "email_normalized": email_normalized,
         "phone_normalized": phone_normalized
     })
-    
+
     if customer:
         # Update last seen and address if provided
         update_data = {"last_booking_date": datetime.now(timezone.utc).isoformat()}
         if address and not customer.get("address"):
             update_data["address"] = address
-        await db.customers.update_one(
-            {"_id": customer["_id"]},
-            {"$set": update_data, "$inc": {"total_bookings": 1}}
-        )
+        update_ops = {"$set": update_data, "$inc": {"total_bookings": 1}}
+        # Add vehicle if not already in list
+        if vehicle and vehicle.get("make") and vehicle.get("model"):
+            existing_vehicles = customer.get("vehicles", [])
+            vehicle_key = f"{vehicle.get('year','')}-{vehicle.get('make','')}-{vehicle.get('model','')}-{vehicle.get('color','')}".lower()
+            already_exists = any(
+                f"{v.get('year','')}-{v.get('make','')}-{v.get('model','')}-{v.get('color','')}".lower() == vehicle_key
+                for v in existing_vehicles
+            )
+            if not already_exists:
+                update_ops["$push"] = {"vehicles": vehicle}
+        await db.customers.update_one({"_id": customer["_id"]}, update_ops)
         return str(customer["_id"])
-    
+
     # Create new customer
     new_customer = {
         "first_name": first_name,
@@ -1816,6 +1844,7 @@ async def find_or_create_customer(email: str, phone: str, first_name: str, last_
         "address": address,
         "notes": "",
         "tags": [],
+        "vehicles": [],
         "total_bookings": 1,
         "total_spent": 0.0,
         "first_booking_date": datetime.now(timezone.utc).isoformat(),
@@ -1823,6 +1852,9 @@ async def find_or_create_customer(email: str, phone: str, first_name: str, last_
         "created_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
+    # Add vehicle to new customer
+    if vehicle and vehicle.get("make") and vehicle.get("model"):
+        new_customer["vehicles"].append(vehicle)
     result = await db.customers.insert_one(new_customer)
     return str(result.inserted_id)
 
