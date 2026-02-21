@@ -48,7 +48,9 @@ export default function AdminSMS() {
   const [smsSettings, setSmsSettings] = useState({
     sms_enabled: false, reminder_enabled: true, reminder_hours_before: 24,
     review_request_enabled: true, review_delay_hours: 2, review_url: '', twilio_phone_number: '',
+    on_my_way_include_headshot: false,
   });
+  const [hasHeadshot, setHasHeadshot] = useState(false);
   const [settingsSaving, setSettingsSaving] = useState(false);
   const [settingsSuccess, setSettingsSuccess] = useState('');
 
@@ -295,6 +297,7 @@ export default function AdminSMS() {
           review_request_enabled: smsSettings.review_request_enabled,
           review_delay_hours: parseInt(smsSettings.review_delay_hours) || 2,
           review_url: smsSettings.review_url,
+          on_my_way_include_headshot: smsSettings.on_my_way_include_headshot,
         }),
       });
       if (res.ok) {
@@ -534,6 +537,7 @@ export default function AdminSMS() {
           review_request_enabled: smsSettings.review_request_enabled,
           review_delay_hours: parseInt(smsSettings.review_delay_hours) || 2,
           review_url: smsSettings.review_url,
+          on_my_way_include_headshot: smsSettings.on_my_way_include_headshot,
         }),
       });
       // Save Email settings
@@ -562,6 +566,10 @@ export default function AdminSMS() {
     fetchEmailSettings();
     fetchEmailLogs();
     fetchEmailConversations();
+    // Check if headshot exists
+    fetch(`${API_URL}/api/admin/headshot`, { method: 'HEAD' })
+      .then(r => setHasHeadshot(r.ok))
+      .catch(() => setHasHeadshot(false));
   }, []);
 
   useEffect(() => {
@@ -1566,6 +1574,24 @@ export default function AdminSMS() {
                 />
               </div>
             </div>
+
+            {/* On My Way Headshot */}
+            {hasHeadshot && (
+              <div style={styles.settingsCard}>
+                <div style={styles.settingsCardHeader}>
+                  <h3 style={styles.settingsCardTitle}>On My Way Photo</h3>
+                  <button
+                    onClick={() => setSmsSettings({ ...smsSettings, on_my_way_include_headshot: !smsSettings.on_my_way_include_headshot })}
+                    style={styles.toggleBtn}
+                  >
+                    {smsSettings.on_my_way_include_headshot
+                      ? <ToggleRight size={28} color="#10b981" />
+                      : <ToggleLeft size={28} color="#525252" />}
+                  </button>
+                </div>
+                <p style={styles.settingsCardDesc}>Include your headshot photo in On My Way messages so customers know who to expect. Sends as MMS.</p>
+              </div>
+            )}
           </div>
 
           {/* Email Settings Section */}

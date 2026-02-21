@@ -221,10 +221,21 @@ export default function AdminBookings() {
   const sendOnMyWay = async (bookingId) => {
     setSendingOnMyWay(true);
     try {
+      // Check if headshot should be included
+      let includeHeadshot = false;
+      try {
+        const settingsRes = await fetch(`${API_URL}/api/settings/sms`, {
+          headers: { Authorization: `Bearer ${getToken()}` },
+        });
+        if (settingsRes.ok) {
+          const settings = await settingsRes.json();
+          includeHeadshot = settings.on_my_way_include_headshot || false;
+        }
+      } catch (e) { /* proceed without headshot */ }
       const response = await fetch(`${API_URL}/api/sms/on-my-way`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
-        body: JSON.stringify({ booking_id: bookingId }),
+        body: JSON.stringify({ booking_id: bookingId, include_headshot: includeHeadshot }),
       });
       if (!response.ok) throw new Error('Failed to send');
       const data = await response.json();

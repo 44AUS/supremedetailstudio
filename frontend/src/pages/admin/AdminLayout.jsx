@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Settings, Calendar, ClipboardList,
   LogOut, Menu, X, ChevronRight, Users, Mail, Lock, Save, Loader2, AlertCircle, CheckCircle,
-  Bell, Clock, User, FileText, MessageSquare, Tag, Car
+  Bell, Clock, User, FileText, MessageSquare, Tag, Car, Camera, Trash2
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
@@ -31,6 +31,9 @@ export default function AdminLayout() {
   const [usernameError, setUsernameError] = useState('');
   const [usernameSuccess, setUsernameSuccess] = useState('');
   const [adminUsername, setAdminUsername] = useState('');
+  const [headshotUrl, setHeadshotUrl] = useState(null);
+  const [headshotHover, setHeadshotHover] = useState(false);
+  const headshotInputRef = useRef(null);
 
   useEffect(() => {
     // Verify auth on mount
@@ -197,6 +200,58 @@ export default function AdminLayout() {
     fetchAdminUsername();
   }, []);
 
+  // Fetch admin headshot
+  useEffect(() => {
+    const checkHeadshot = async () => {
+      try {
+        const resp = await fetch(`${API_URL}/api/admin/headshot`, { method: 'HEAD' });
+        if (resp.ok) {
+          setHeadshotUrl(`${API_URL}/api/admin/headshot?t=${Date.now()}`);
+        }
+      } catch (err) { /* no headshot */ }
+    };
+    checkHeadshot();
+  }, []);
+
+  const handleHeadshotUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const resp = await fetch(`${API_URL}/api/admin/headshot`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (resp.ok) {
+        setHeadshotUrl(`${API_URL}/api/admin/headshot?t=${Date.now()}`);
+      } else {
+        const data = await resp.json();
+        alert(data.detail || 'Failed to upload headshot');
+      }
+    } catch (err) {
+      alert('Failed to upload headshot');
+    }
+    e.target.value = '';
+  };
+
+  const handleHeadshotDelete = async (e) => {
+    e.stopPropagation();
+    if (!window.confirm('Remove your headshot?')) return;
+    try {
+      const token = localStorage.getItem('adminToken');
+      await fetch(`${API_URL}/api/admin/headshot`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setHeadshotUrl(null);
+    } catch (err) {
+      alert('Failed to remove headshot');
+    }
+  };
+
   const handleChangePassword = async () => {
     setPasswordError('');
     setPasswordSuccess('');
@@ -324,6 +379,55 @@ export default function AdminLayout() {
             <span style={styles.badge}>ADMIN</span>
             {adminUsername && <span style={styles.usernameLabel}>{adminUsername}</span>}
           </div>
+        </div>
+
+        {/* Headshot Avatar */}
+        <div style={styles.avatarSection}>
+          <input
+            ref={headshotInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            style={{ display: 'none' }}
+            onChange={handleHeadshotUpload}
+          />
+          <div
+            style={{
+              ...styles.avatarCircle,
+              border: headshotHover ? '2px solid #e80200' : '2px solid #333',
+            }}
+            onClick={() => headshotInputRef.current?.click()}
+            onMouseEnter={() => setHeadshotHover(true)}
+            onMouseLeave={() => setHeadshotHover(false)}
+          >
+            {headshotUrl ? (
+              <>
+                <img src={headshotUrl} alt="Admin" style={styles.avatarImg} />
+                {headshotHover && (
+                  <div style={styles.avatarOverlay}>
+                    <Camera size={16} color="#fff" />
+                    <span style={styles.avatarOverlayText}>Change</span>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div style={styles.avatarPlaceholder}>
+                <Camera size={20} color={headshotHover ? '#e80200' : '#525252'} />
+                <span style={{ ...styles.avatarPlaceholderText, color: headshotHover ? '#e80200' : '#525252' }}>Add Photo</span>
+              </div>
+            )}
+          </div>
+          {headshotUrl && (
+            <button
+              onClick={handleHeadshotDelete}
+              onMouseEnter={(e) => { e.currentTarget.style.color = '#e80200'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = '#525252'; }}
+              style={styles.removeHeadshotBtn}
+              title="Remove headshot"
+            >
+              <Trash2 size={12} />
+              <span>Remove</span>
+            </button>
+          )}
         </div>
 
         <nav className="admin-nav" style={styles.nav}>
@@ -668,6 +772,73 @@ const styles = {
     fontSize: '12px',
     color: '#ababab',
     fontWeight: 500,
+  },
+  avatarSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '16px 12px 8px',
+    borderBottom: '1px solid #262626',
+  },
+  avatarCircle: {
+    width: '80px',
+    height: '80px',
+    borderRadius: '50%',
+    overflow: 'hidden',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: '#1a1a1a',
+    position: 'relative',
+    transition: 'border-color 0.2s',
+  },
+  avatarImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  avatarOverlay: {
+    position: 'absolute',
+    inset: 0,
+    background: 'rgba(0,0,0,0.6)',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '2px',
+  },
+  avatarOverlayText: {
+    fontSize: '10px',
+    color: '#fff',
+    fontFamily: "'Montserrat', sans-serif",
+    fontWeight: 600,
+  },
+  avatarPlaceholder: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '4px',
+  },
+  avatarPlaceholderText: {
+    fontSize: '10px',
+    fontFamily: "'Montserrat', sans-serif",
+    fontWeight: 600,
+    transition: 'color 0.2s',
+  },
+  removeHeadshotBtn: {
+    marginTop: '6px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    background: 'none',
+    border: 'none',
+    color: '#525252',
+    fontSize: '11px',
+    fontFamily: "'Montserrat', sans-serif",
+    cursor: 'pointer',
+    padding: '2px 6px',
+    transition: 'color 0.2s',
   },
   nav: {
     flex: 1,

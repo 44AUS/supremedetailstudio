@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, status, BackgroundTasks, Request
+from fastapi import FastAPI, HTTPException, Depends, status, BackgroundTasks, Request, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.responses import Response
@@ -12,6 +12,7 @@ from passlib.context import CryptContext
 import os
 import re
 import asyncio
+import base64
 import httpx
 from dotenv import load_dotenv
 from twilio.rest import Client as TwilioClient
@@ -301,6 +302,7 @@ class SMSSettings(BaseModel):
     review_request_enabled: bool = True
     review_delay_hours: int = 2
     review_url: str = ""
+    on_my_way_include_headshot: bool = False
 
 class SMSTemplateUpdate(BaseModel):
     name: Optional[str] = None
@@ -322,6 +324,7 @@ class MassTextRequest(BaseModel):
 class OnMyWayRequest(BaseModel):
     booking_id: str
     custom_eta: Optional[str] = None
+    include_headshot: bool = False
 
 # ============== Email Models ==============
 
@@ -426,7 +429,7 @@ async def render_sms_template(template_key: str, context: dict) -> Optional[str]
 
 async def send_sms(to_phone: str, body: str, customer_name: str = "",
                    customer_id: str = None, booking_id: str = None,
-                   template_key: str = None) -> dict:
+                   template_key: str = None, media_url: str = None) -> dict:
     sms_settings = await db.settings.find_one({"type": "sms"})
     if not sms_settings or not sms_settings.get("sms_enabled", False):
         return {"success": False, "error": "SMS is disabled"}
@@ -436,9 +439,10 @@ async def send_sms(to_phone: str, body: str, customer_name: str = "",
     try:
         loop = asyncio.get_event_loop()
         twilio_client = TwilioClient(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-        message = await loop.run_in_executor(None, lambda: twilio_client.messages.create(
-            body=body, from_=TWILIO_PHONE_NUMBER, to=to_formatted
-        ))
+        create_kwargs = {"body": body, "from_": TWILIO_PHONE_NUMBER, "to": to_formatted}
+        if media_url:
+            create_kwargs["media_url"] = [media_url]
+        message = await loop.run_in_executor(None, lambda: twilio_client.messages.create(**create_kwargs))
         await db.sms_logs.insert_one({
             "customer_phone": to_formatted,
             "customer_name": customer_name,
@@ -923,6 +927,47 @@ async def get_admin_info():
     """Get current admin username."""
     admin = await get_admin_credentials()
     return {"username": admin["username"]}
+
+# ============== Admin Headshot Routes ==============
+
+ALLOWED_IMAGE_TYPES = {"image/jpeg", "image/png", "image/webp"}
+MAX_IMAGE_SIZE = 5 * 1024 * 1024  # 5MB
+
+@app.post("/api/admin/headshot", dependencies=[Depends(verify_token)])
+async def upload_headshot(file: UploadFile = File(...)):
+    """Upload admin headshot photo."""
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(status_code=400, detail="Only JPEG, PNG, and WebP images are allowed")
+    contents = await file.read()
+    if len(contents) > MAX_IMAGE_SIZE:
+        raise HTTPException(status_code=400, detail="Image must be under 5MB")
+    encoded = base64.b64encode(contents).decode("utf-8")
+    await db.settings.update_one(
+        {"type": "admin_headshot"},
+        {"$set": {
+            "type": "admin_headshot",
+            "data": encoded,
+            "content_type": file.content_type,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    return {"message": "Headshot uploaded successfully"}
+
+@app.get("/api/admin/headshot")
+async def get_headshot():
+    """Serve admin headshot image (public for Twilio MMS)."""
+    doc = await db.settings.find_one({"type": "admin_headshot"})
+    if not doc or not doc.get("data"):
+        raise HTTPException(status_code=404, detail="No headshot uploaded")
+    image_bytes = base64.b64decode(doc["data"])
+    return Response(content=image_bytes, media_type=doc.get("content_type", "image/jpeg"))
+
+@app.delete("/api/admin/headshot", dependencies=[Depends(verify_token)])
+async def delete_headshot():
+    """Remove admin headshot."""
+    await db.settings.delete_one({"type": "admin_headshot"})
+    return {"message": "Headshot removed"}
 
 # ============== Categories Routes ==============
 
@@ -2410,6 +2455,7 @@ async def get_sms_settings():
         "review_delay_hours": 2,
         "review_url": "",
         "twilio_phone_number": TWILIO_PHONE_NUMBER,
+        "on_my_way_include_headshot": False,
     }
     settings = await db.settings.find_one({"type": "sms"})
     if not settings:
@@ -2509,7 +2555,7 @@ async def mass_send_sms(req: MassTextRequest, background_tasks: BackgroundTasks)
     return {"message": f"Mass text queued for {customer_count} recipients", "count": customer_count}
 
 @app.post("/api/sms/on-my-way", dependencies=[Depends(verify_token)])
-async def send_on_my_way(req: OnMyWayRequest):
+async def send_on_my_way(req: OnMyWayRequest, request: Request):
     booking = await db.bookings.find_one({"_id": ObjectId(req.booking_id)})
     if not booking:
         raise HTTPException(status_code=404, detail="Booking not found")
@@ -2523,10 +2569,16 @@ async def send_on_my_way(req: OnMyWayRequest):
     if not body:
         raise HTTPException(status_code=404, detail="On My Way template not found or disabled")
     customer_name = f"{booking.get('customer_first_name', '')} {booking.get('customer_last_name', '')}".strip()
+    headshot_url = None
+    if req.include_headshot:
+        headshot = await db.settings.find_one({"type": "admin_headshot"})
+        if headshot and headshot.get("data"):
+            headshot_url = f"{request.base_url}api/admin/headshot"
     result = await send_sms(
         to_phone=booking["customer_phone"], body=body,
         customer_name=customer_name, customer_id=booking.get("customer_id"),
-        booking_id=req.booking_id, template_key="on_my_way"
+        booking_id=req.booking_id, template_key="on_my_way",
+        media_url=headshot_url
     )
     if not result["success"]:
         raise HTTPException(status_code=500, detail=result.get("error", "SMS failed"))
