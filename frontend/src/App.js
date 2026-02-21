@@ -63,6 +63,7 @@ import AdminSMS from './pages/admin/AdminSMS';
 import AdminBusinessSettings from './pages/admin/AdminBusinessSettings';
 import AdminCategories from './pages/admin/AdminCategories';
 import AdminVehicles from './pages/admin/AdminVehicles';
+import AdminProfile from './pages/admin/AdminProfile';
 import StarlightHeadlinerPage from './pages/StarlightHeadlinerPage';
 
 function MainApp() {
@@ -162,6 +163,7 @@ function AdminRoutes() {
         <Route path="quotes" element={<AdminQuotes />} />
         <Route path="sms" element={<AdminSMS />} />
         <Route path="contacts" element={<AdminContacts />} />
+        <Route path="profile" element={<AdminProfile />} />
       </Route>
     </Routes>
   );
