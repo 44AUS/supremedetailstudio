@@ -1042,11 +1042,22 @@ const styles = {
 // Add responsive styles
 const mediaQuery = `
   .admin-nav {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: #e80200 #1a1a1a;
   }
   .admin-nav::-webkit-scrollbar {
-    display: none;
+    width: 6px;
+  }
+  .admin-nav::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 3px;
+  }
+  .admin-nav::-webkit-scrollbar-thumb {
+    background: #e80200;
+    border-radius: 3px;
+  }
+  .admin-nav::-webkit-scrollbar-thumb:hover {
+    background: #ff1a18;
   }
   @media (max-width: 768px) {
     .admin-layout .mobile-header { display: flex !important; }
