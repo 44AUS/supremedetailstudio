@@ -267,12 +267,16 @@ class VehicleCreate(BaseModel):
     year: str
     make: str
     model: str
+    trim: Optional[str] = None
+    vehicle_type: str = "sedan"
     is_active: bool = True
 
 class VehicleUpdate(BaseModel):
     year: Optional[str] = None
     make: Optional[str] = None
     model: Optional[str] = None
+    trim: Optional[str] = None
+    vehicle_type: Optional[str] = None
     is_active: Optional[bool] = None
 
 # ============== Quote Request Model ==============
@@ -1048,19 +1052,40 @@ async def update_business_settings(settings: BusinessSettings):
 # ============== Vehicle Management Routes ==============
 
 @app.get("/api/vehicles")
-async def get_vehicles(active_only: bool = False):
-    """Get all vehicles or only active ones for booking page"""
-    query = {"is_active": True} if active_only else {}
-    vehicles = await db.vehicles.find(query).sort([("make", 1), ("model", 1), ("year", -1)]).to_list(500)
+async def get_vehicles(active_only: bool = False, make: Optional[str] = None, limit: int = 50000):
+    """Get vehicles with optional make filter"""
+    query = {}
+    if active_only:
+        query["is_active"] = True
+    if make:
+        query["make"] = make
+    vehicles = await db.vehicles.find(query).sort([("make", 1), ("model", 1), ("year", -1)]).to_list(min(limit, 50000))
     for v in vehicles:
         v["id"] = str(v.pop("_id"))
     return vehicles
+
+@app.get("/api/vehicles/count")
+async def get_vehicle_count():
+    """Get total vehicle count"""
+    count = await db.vehicles.count_documents({})
+    return {"count": count}
 
 @app.get("/api/vehicles/makes")
 async def get_vehicle_makes():
     """Get unique makes from vehicles collection"""
     makes = await db.vehicles.distinct("make", {"is_active": True})
     return sorted(makes)
+
+@app.get("/api/vehicles/lookup/{make}/{model}")
+async def lookup_vehicle_type(make: str, model: str):
+    """Look up the vehicle_type for a specific make/model"""
+    vehicle = await db.vehicles.find_one(
+        {"make": make, "model": model, "is_active": True},
+        {"vehicle_type": 1}
+    )
+    if vehicle:
+        return {"vehicle_type": vehicle.get("vehicle_type", "sedan")}
+    return {"vehicle_type": "sedan"}
 
 @app.get("/api/vehicles/models/{make}")
 async def get_vehicle_models(make: str):
