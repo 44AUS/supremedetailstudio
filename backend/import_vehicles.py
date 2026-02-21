@@ -238,22 +238,26 @@ AIRCRAFT = [
 ]
 
 # Semaphore for concurrent requests
-MAX_CONCURRENT = 5
-RATE_LIMIT_DELAY = 0.1  # 100ms between requests
+MAX_CONCURRENT = 3
+RATE_LIMIT_DELAY = 0.2  # 200ms between requests
 
 
 async def fetch_models(client: httpx.AsyncClient, make: str, year: int, nhtsa_type: str, semaphore: asyncio.Semaphore):
     """Fetch models from NHTSA API for a given make/year/vehicle type."""
     url = f"{NHTSA_BASE}/GetModelsForMakeYear/make/{make}/modelyear/{year}/vehicletype/{nhtsa_type}?format=json"
     async with semaphore:
-        try:
-            resp = await client.get(url, timeout=30.0)
-            if resp.status_code == 200:
-                data = resp.json()
-                return data.get("Results", [])
-        except Exception as e:
-            pass  # Silently skip failed requests
-        await asyncio.sleep(RATE_LIMIT_DELAY)
+        for attempt in range(3):
+            try:
+                await asyncio.sleep(RATE_LIMIT_DELAY)
+                resp = await client.get(url, timeout=30.0)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    return data.get("Results", [])
+                elif resp.status_code == 403:
+                    await asyncio.sleep(2.0 * (attempt + 1))
+                    continue
+            except Exception:
+                await asyncio.sleep(1.0)
     return []
 
 
@@ -270,6 +274,14 @@ async def main():
     MONGO_URL = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
     DB_NAME = os.environ.get("DB_NAME", "supreme_detail_studio")
 
+    # Support --only flag to import specific makes without wiping DB
+    only_makes = None
+    if "--only" in sys.argv:
+        idx = sys.argv.index("--only")
+        only_makes = [m.strip() for m in sys.argv[idx + 1].split(",")]
+
+    makes_to_import = only_makes if only_makes else US_MAKES
+
     mongo_client = AsyncIOMotorClient(MONGO_URL)
     db = mongo_client[DB_NAME]
 
@@ -278,14 +290,16 @@ async def main():
     semaphore = asyncio.Semaphore(MAX_CONCURRENT)
     start_time = time.time()
 
-    print(f"Starting NHTSA vehicle import ({len(US_MAKES)} makes, {YEAR_RANGE.start}-{YEAR_RANGE.stop - 1})")
+    print(f"Starting NHTSA vehicle import ({len(makes_to_import)} makes, {YEAR_RANGE.start}-{YEAR_RANGE.stop - 1})")
+    if only_makes:
+        print(f"Only importing: {', '.join(only_makes)}")
     print(f"MongoDB: {MONGO_URL} / {DB_NAME}")
     print("=" * 60)
 
     async with httpx.AsyncClient() as client:
-        for i, make in enumerate(US_MAKES):
+        for i, make in enumerate(makes_to_import):
             make_count = 0
-            sys.stdout.write(f"\r[{i+1}/{len(US_MAKES)}] {make}...")
+            sys.stdout.write(f"\r[{i+1}/{len(makes_to_import)}] {make}...")
             sys.stdout.flush()
 
             # Process all years for this make concurrently in batches
@@ -295,7 +309,7 @@ async def main():
                     tasks.append((year, nhtsa_type, fetch_models(client, make, year, nhtsa_type, semaphore)))
 
             # Run in batches to avoid overwhelming
-            batch_size = 30
+            batch_size = 15
             for batch_start in range(0, len(tasks), batch_size):
                 batch = tasks[batch_start:batch_start + batch_size]
                 results = await asyncio.gather(*[t[2] for t in batch])
@@ -344,7 +358,7 @@ async def main():
 
                 await asyncio.sleep(RATE_LIMIT_DELAY)
 
-            sys.stdout.write(f"\r[{i+1}/{len(US_MAKES)}] {make}: {make_count} vehicles\n")
+            sys.stdout.write(f"\r[{i+1}/{len(makes_to_import)}] {make}: {make_count} vehicles\n")
 
     # Add aircraft
     for aircraft in AIRCRAFT:
@@ -356,9 +370,13 @@ async def main():
     print("=" * 60)
     print(f"Fetched {len(all_vehicles)} total vehicles in {elapsed:.1f}s")
 
-    # Replace all vehicles in DB
-    print("Deleting existing vehicles...")
-    await db.vehicles.delete_many({})
+    # Replace vehicles in DB
+    if only_makes:
+        print(f"Deleting existing vehicles for: {', '.join(only_makes)}...")
+        await db.vehicles.delete_many({"make": {"$in": only_makes}})
+    else:
+        print("Deleting existing vehicles...")
+        await db.vehicles.delete_many({})
 
     # Insert in batches of 500
     print("Inserting new vehicles...")
