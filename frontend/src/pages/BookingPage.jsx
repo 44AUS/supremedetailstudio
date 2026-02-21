@@ -3263,6 +3263,7 @@ function CalendarPicker({ selected, onSelect }) {
   const [closedDates, setClosedDates] = useState([]);
   const [businessHours, setBusinessHours] = useState([]);
   const [minimumNoticeDays, setMinimumNoticeDays] = useState(1);
+  const [fullyBookedDates, setFullyBookedDates] = useState([]);
   const calMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -3312,6 +3313,22 @@ function CalendarPicker({ selected, onSelect }) {
     fetchBusinessSettings();
   }, []);
 
+  // Fetch fully-booked dates for the current view month
+  useEffect(() => {
+    const fetchFullyBooked = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/availability/month/${currentYear}/${viewMonth + 1}`);
+        if (response.ok) {
+          const data = await response.json();
+          setFullyBookedDates(data.fully_booked_dates || []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch fully booked dates:', err);
+      }
+    };
+    fetchFullyBooked();
+  }, [currentYear, viewMonth]);
+
   const handlePrevMonth = () => {
     setViewDate(new Date(currentYear, viewMonth - 1, 1));
   };
@@ -3330,6 +3347,11 @@ function CalendarPicker({ selected, onSelect }) {
   const isDateClosed = (day) => {
     const dateStr = `${currentYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
     return closedDates.some(cd => cd.date === dateStr);
+  };
+
+  const isDateFullyBooked = (day) => {
+    const dateStr = `${currentYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+    return fullyBookedDates.includes(dateStr);
   };
 
   const isDayOfWeekOpen = (dayOfWeek) => {
@@ -3382,7 +3404,8 @@ function CalendarPicker({ selected, onSelect }) {
           const isSelected = isDateSelected(day);
           const isClosed = isDateClosed(day);
           const isDayNotOpen = !isDayOfWeekOpen(dayOfWeek);
-          const isDisabled = isPast || isClosed || isDayNotOpen;
+          const isFullyBooked = isDateFullyBooked(day);
+          const isDisabled = isPast || isClosed || isDayNotOpen || isFullyBooked;
 
           // Determine tooltip message
           let tooltipMessage = '';
@@ -3390,6 +3413,8 @@ function CalendarPicker({ selected, onSelect }) {
             tooltipMessage = 'Closed';
           } else if (isDayNotOpen) {
             tooltipMessage = `Closed - ${weekDays[dayOfWeek]} not available`;
+          } else if (isFullyBooked) {
+            tooltipMessage = 'Fully booked';
           } else if (isPast && dateForDay >= today) {
             tooltipMessage = `Minimum ${minimumNoticeDays} day${minimumNoticeDays > 1 ? 's' : ''} notice required`;
           }
@@ -3401,7 +3426,7 @@ function CalendarPicker({ selected, onSelect }) {
               whileTap={!isDisabled ? { scale: 0.95 } : {}}
               onClick={() => !isDisabled && onSelect(new Date(currentYear, viewMonth, day))}
               disabled={isDisabled}
-              style={{ ...styles.calendarDay(isSelected, isToday, isPast, isClosed || isDayNotOpen), ...mobileCalStyles.day }}
+              style={{ ...styles.calendarDay(isSelected, isToday, isPast, isClosed || isDayNotOpen || isFullyBooked), ...mobileCalStyles.day }}
               data-testid={`calendar-day-${day}`}
               title={tooltipMessage}
             >

@@ -1396,11 +1396,115 @@ async def get_availability(date: str, service_id: Optional[str] = None, total_du
         current_time += timedelta(minutes=60)  # 1-hour intervals
     
     return {
-        "available": True, 
-        "slots": slots, 
+        "available": True,
+        "slots": slots,
         "business_hours": business_hours,
         "buffer_minutes": buffer_minutes
     }
+
+@app.get("/api/availability/month/{year}/{month}")
+async def get_month_availability(year: int, month: int):
+    """Return list of fully-booked dates for a given month (YYYY, M)"""
+    schedule = await db.schedule.find_one({"type": "settings"})
+    business_settings = await db.settings.find_one({"type": "business"})
+    buffer_minutes = business_settings.get("booking_buffer_minutes", 60) if business_settings else 60
+
+    # Determine days in month
+    if month == 12:
+        days_in_month = (datetime(year + 1, 1, 1) - datetime(year, month, 1)).days
+    else:
+        days_in_month = (datetime(year, month + 1, 1) - datetime(year, month, 1)).days
+
+    # Get closed dates set
+    closed_dates = set()
+    if schedule and "closed_dates" in schedule:
+        for closed in schedule.get("closed_dates", []):
+            closed_dates.add(closed.get("date"))
+
+    # Build business hours lookup by day name
+    hours_map = {}
+    if schedule and "business_hours" in schedule:
+        for hours in schedule.get("business_hours", []):
+            hours_map[hours.get("day")] = hours
+
+    # Get all bookings for this month
+    month_str = f"{year}-{str(month).zfill(2)}"
+    all_bookings = await db.bookings.find({
+        "booking_date": {"$regex": f"^{month_str}"},
+        "status": {"$ne": "cancelled"}
+    }).to_list(1000)
+
+    # Group bookings by date
+    bookings_by_date = {}
+    for b in all_bookings:
+        d = b.get("booking_date", "")
+        if d not in bookings_by_date:
+            bookings_by_date[d] = []
+        bookings_by_date[d].append(b)
+
+    fully_booked = []
+
+    for day in range(1, days_in_month + 1):
+        date_str = f"{year}-{str(month).zfill(2)}-{str(day).zfill(2)}"
+        date_obj = datetime(year, month, day)
+        day_name = date_obj.strftime("%A").lower()
+
+        # Skip closed dates and closed days of week
+        if date_str in closed_dates:
+            continue
+        bh = hours_map.get(day_name)
+        if not bh:
+            bh = {"is_open": True, "open_time": "09:00", "close_time": "18:00"}
+            if day_name == "sunday":
+                bh["is_open"] = False
+            elif day_name == "saturday":
+                bh = {"is_open": True, "open_time": "10:00", "close_time": "16:00"}
+        if not bh.get("is_open"):
+            continue
+
+        # Calculate total open slots (1-hour intervals)
+        try:
+            open_t = datetime.strptime(bh.get("open_time", "09:00"), "%H:%M")
+            close_t = datetime.strptime(bh.get("close_time", "18:00"), "%H:%M")
+        except Exception:
+            continue
+
+        day_bookings = bookings_by_date.get(date_str, [])
+        if not day_bookings:
+            continue
+
+        # Build blocked ranges
+        blocked_ranges = []
+        for booking in day_bookings:
+            booked_time_str = booking.get("booking_time")
+            booking_duration = booking.get("total_duration") or 60
+            try:
+                booked_time = datetime.strptime(booked_time_str, "%H:%M")
+                booking_end = booked_time + timedelta(minutes=booking_duration + buffer_minutes)
+                blocked_ranges.append({"start": booked_time, "end": booking_end})
+            except Exception:
+                continue
+        blocked_ranges.sort(key=lambda x: x["start"])
+
+        # Check each slot
+        all_blocked = True
+        current = open_t
+        while current < close_t:
+            slot_blocked = False
+            for br in blocked_ranges:
+                slot_end = current + timedelta(minutes=60)
+                if current < br["end"] and slot_end > br["start"]:
+                    slot_blocked = True
+                    break
+            if not slot_blocked:
+                all_blocked = False
+                break
+            current += timedelta(minutes=60)
+
+        if all_blocked:
+            fully_booked.append(date_str)
+
+    return {"fully_booked_dates": fully_booked}
 
 # ============== Bookings Routes ==============
 
