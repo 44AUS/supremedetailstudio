@@ -3425,7 +3425,6 @@ function VehicleTypeCard({ type, selected, onClick }) {
       {selected && (
         <CheckCircle2 size={20} style={styles.checkIcon} />
       )}
-      <div style={styles.vehicleIcon}>{type.icon}</div>
       <div style={styles.vehicleLabel}>{type.label}</div>
       {type.upcharge > 0 && (
         <div style={styles.vehicleUpcharge}>+${type.upcharge}</div>
