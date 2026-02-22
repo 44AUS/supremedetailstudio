@@ -1646,6 +1646,22 @@ async def create_booking(booking: BookingCreate, background_tasks: BackgroundTas
         vehicle=booking_vehicle
     )
 
+    # Link any additional vehicles from multi-vehicle booking to customer profile
+    for extra_vehicle in (booking.vehicles or []):
+        extra_v = {
+            "year": extra_vehicle.vehicle_year,
+            "make": extra_vehicle.vehicle_make,
+            "model": extra_vehicle.vehicle_model,
+            "type": extra_vehicle.vehicle_type,
+            "color": extra_vehicle.vehicle_color or "",
+        }
+        # Only link if different from the primary vehicle
+        if extra_v["make"] != booking.vehicle_make or extra_v["model"] != booking.vehicle_model:
+            await db.customers.update_one(
+                {"_id": ObjectId(customer_id)},
+                {"$addToSet": {"vehicles": extra_v}}
+            )
+
     booking_dict = booking.model_dump()
     booking_dict["customer_id"] = customer_id
     booking_dict["status"] = "pending"
@@ -1804,6 +1820,21 @@ async def create_booking_admin(booking: BookingCreate, background_tasks: Backgro
         address=booking.customer_address,
         vehicle=booking_vehicle
     )
+
+    # Link any additional vehicles from multi-vehicle booking to customer profile
+    for extra_vehicle in (booking.vehicles or []):
+        extra_v = {
+            "year": extra_vehicle.vehicle_year,
+            "make": extra_vehicle.vehicle_make,
+            "model": extra_vehicle.vehicle_model,
+            "type": extra_vehicle.vehicle_type,
+            "color": extra_vehicle.vehicle_color or "",
+        }
+        if extra_v["make"] != booking.vehicle_make or extra_v["model"] != booking.vehicle_model:
+            await db.customers.update_one(
+                {"_id": ObjectId(customer_id)},
+                {"$addToSet": {"vehicles": extra_v}}
+            )
 
     booking_dict = booking.model_dump()
     booking_dict["customer_id"] = customer_id

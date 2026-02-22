@@ -352,7 +352,7 @@ const styles = {
   gradientOverlay: {
     position: 'absolute',
     inset: 0,
-    background: 'linear-gradient(to bottom, rgba(220, 38, 38, 0.08), transparent 50%, transparent)',
+    background: 'linear-gradient(to bottom, rgba(220, 38, 38, 0.04), transparent 50%, transparent)',
     pointerEvents: 'none',
   },
   glowOrb1: {
@@ -361,7 +361,7 @@ const styles = {
     left: '25%',
     width: '400px',
     height: '400px',
-    background: 'radial-gradient(circle, rgba(220, 38, 38, 0.15), transparent 70%)',
+    background: 'radial-gradient(circle, rgba(220, 38, 38, 0.06), transparent 70%)',
     borderRadius: '50%',
     filter: 'blur(60px)',
     pointerEvents: 'none',
@@ -373,7 +373,7 @@ const styles = {
     right: '20%',
     width: '300px',
     height: '300px',
-    background: 'radial-gradient(circle, rgba(220, 38, 38, 0.08), transparent 70%)',
+    background: 'radial-gradient(circle, rgba(220, 38, 38, 0.03), transparent 70%)',
     borderRadius: '50%',
     filter: 'blur(60px)',
     pointerEvents: 'none',
@@ -1265,6 +1265,78 @@ export default function BookAppointment() {
   const [bufferMinutes, setBufferMinutes] = useState(60); // Buffer time between bookings
   const [customVehicle, setCustomVehicle] = useState(false); // Manual entry mode
 
+  // Extra vehicles for multi-vehicle bookings
+  const makeExtraVehicleEntry = () => ({
+    id: Date.now() + Math.random(),
+    vehicle: { make: '', year: '', model: '' },
+    vehicleType: null,
+    selectedColor: null,
+    customVehicle: false,
+    selectedServices: [],
+    years: [],
+    models: [],
+    loadingYears: false,
+    loadingModels: false,
+  });
+  const [extraVehicles, setExtraVehicles] = useState([]);
+
+  const updateExtraVehicle = (id, patch) =>
+    setExtraVehicles(prev => prev.map(e => e.id === id ? { ...e, ...patch } : e));
+
+  const addExtraVehicle = () => setExtraVehicles(prev => [...prev, makeExtraVehicleEntry()]);
+  const removeExtraVehicle = (id) => setExtraVehicles(prev => prev.filter(e => e.id !== id));
+
+  const fetchExtraVehicleYears = async (id, make) => {
+    if (!make) { updateExtraVehicle(id, { years: [], models: [], vehicle: { make, year: '', model: '' } }); return; }
+    updateExtraVehicle(id, { loadingYears: true });
+    try {
+      const resp = await fetch(`${API_URL}/api/vehicles/years/${encodeURIComponent(make)}`);
+      if (resp.ok) { const data = await resp.json(); updateExtraVehicle(id, { years: data, year: '', models: [] }); }
+    } catch (e) { /* ignore */ }
+    updateExtraVehicle(id, { loadingYears: false });
+  };
+
+  const fetchExtraVehicleModels = async (id, make, year) => {
+    if (!make || !year) { updateExtraVehicle(id, { models: [] }); return; }
+    updateExtraVehicle(id, { loadingModels: true });
+    try {
+      const resp = await fetch(`${API_URL}/api/vehicles/models/${encodeURIComponent(make)}?year=${encodeURIComponent(year)}`);
+      if (resp.ok) { const data = await resp.json(); updateExtraVehicle(id, { models: data }); }
+    } catch (e) { /* ignore */ }
+    updateExtraVehicle(id, { loadingModels: false });
+  };
+
+  const autoSelectExtraVehicleType = async (id, make, model) => {
+    if (!make || !model) return;
+    try {
+      const resp = await fetch(`${API_URL}/api/vehicles/lookup/${encodeURIComponent(make)}/${encodeURIComponent(model)}`);
+      if (resp.ok) {
+        const data = await resp.json();
+        const typeMap = { 'sedan': 'sedan', 'suv-2row': 'suv-2row', 'suv-3row': 'suv-3row', 'aircraft': 'sedan' };
+        const matchId = typeMap[data.vehicle_type] || 'sedan';
+        const matchType = VEHICLE_TYPES.find(t => t.id === matchId);
+        if (matchType) updateExtraVehicle(id, { vehicleType: matchType });
+      }
+    } catch (e) { /* ignore */ }
+  };
+
+  const toggleExtraVehicleService = (id, service) => {
+    setExtraVehicles(prev => prev.map(e => {
+      if (e.id !== id) return e;
+      const isSelected = e.selectedServices.some(s => s.id === service.id);
+      return { ...e, selectedServices: isSelected ? e.selectedServices.filter(s => s.id !== service.id) : [...e.selectedServices, service] };
+    }));
+  };
+
+  const getExtraPaintColors = (ev) => {
+    if (!ev.vehicle.make) return [];
+    const makeKey = Object.keys(PAINT_COLORS_BY_MAKE).find(
+      key => ev.vehicle.make.toLowerCase().includes(key.toLowerCase()) ||
+             key.toLowerCase().includes(ev.vehicle.make.toLowerCase())
+    );
+    return PAINT_COLORS_BY_MAKE[makeKey] || PAINT_COLORS_BY_MAKE['Default'];
+  };
+
   // API data states
   const [years, setYears] = useState([]);
   const [makes, setMakes] = useState([]);
@@ -1509,12 +1581,48 @@ export default function BookAppointment() {
       setSubmitError('Please select at least one communication preference (text or email)');
       return;
     }
+    // Validate extra vehicles
+    for (let i = 0; i < extraVehicles.length; i++) {
+      const ev = extraVehicles[i];
+      if (!ev.vehicle.make || !ev.vehicle.model) {
+        setSubmitError(`Vehicle ${i + 2}: please select or enter a make and model`);
+        return;
+      }
+      if (ev.selectedServices.length === 0) {
+        setSubmitError(`Vehicle ${i + 2} (${ev.vehicle.make} ${ev.vehicle.model}): please select at least one service`);
+        return;
+      }
+    }
 
     setSubmitting(true);
     setSubmitError('');
 
     try {
       const dateStr = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+
+      const allVehicles = [
+        {
+          vehicle_year: vehicle.year,
+          vehicle_make: vehicle.make,
+          vehicle_model: vehicle.model,
+          vehicle_type: vehicleType?.id || 'sedan',
+          vehicle_color: selectedColor?.name || '',
+          services: selectedServices.map(s => ({ service_id: s.id, service_name: s.name, base_price: s.base_price, duration_minutes: s.duration_minutes || 60 })),
+        },
+        ...extraVehicles.map(ev => ({
+          vehicle_year: ev.vehicle.year,
+          vehicle_make: ev.vehicle.make,
+          vehicle_model: ev.vehicle.model,
+          vehicle_type: ev.vehicleType?.id || 'sedan',
+          vehicle_color: ev.selectedColor?.name || '',
+          services: ev.selectedServices.map(s => ({ service_id: s.id, service_name: s.name, base_price: s.base_price, duration_minutes: s.duration_minutes || 60 })),
+        })),
+      ];
+
+      const serviceNameParts = [
+        `${vehicle.make} ${vehicle.model}: ${selectedServices.map(s => s.name).join(' + ')}`,
+        ...extraVehicles.map(ev => `${ev.vehicle.make} ${ev.vehicle.model}: ${ev.selectedServices.map(s => s.name).join(' + ')}`),
+      ];
 
       const bookingData = {
         customer_first_name: formData.firstName,
@@ -1531,7 +1639,7 @@ export default function BookAppointment() {
         vehicle_type: vehicleType?.id || 'sedan',
         vehicle_color: selectedColor?.name || '',
         service_id: selectedServices[0]?.id || '',
-        service_name: selectedServices.map(s => s.name).join(' + '),
+        service_name: serviceNameParts.join(' | '),
         booking_date: dateStr,
         booking_time: formatTime12to24(selectedTime),
         total_price: totalPrice,
@@ -1542,6 +1650,7 @@ export default function BookAppointment() {
           base_price: service.base_price,
           duration_minutes: service.duration_minutes || 60
         })),
+        vehicles: allVehicles,
         notes: notes,
         sms_consent: smsConsent,
         email_consent: emailConsent,
@@ -1694,11 +1803,16 @@ export default function BookAppointment() {
     pickupDeliveryCharge = pickupDistance === 'over15' ? 75 : 50;
   }
 
+  const extraVehiclesPrice = extraVehicles.reduce((sum, ev) =>
+    sum + ev.selectedServices.reduce((s, svc) => s + svc.base_price + getServiceVehicleUpcharge(svc, ev.vehicleType), 0), 0);
+
   const totalPrice = selectedServices.length > 0 && vehicleType
-    ? selectedServices.reduce((sum, service) => sum + service.base_price, 0) + vehicleUpcharge + locationUpcharge + pickupDeliveryCharge
+    ? selectedServices.reduce((sum, service) => sum + service.base_price, 0) + vehicleUpcharge + extraVehiclesPrice + locationUpcharge + pickupDeliveryCharge
     : null;
 
-  const totalDuration = selectedServices.reduce((sum, service) => sum + (service.duration_minutes || 60), 0);
+  const extraVehiclesDuration = extraVehicles.reduce((sum, ev) =>
+    sum + ev.selectedServices.reduce((s, svc) => s + (svc.duration_minutes || 60), 0), 0);
+  const totalDuration = selectedServices.reduce((sum, service) => sum + (service.duration_minutes || 60), 0) + extraVehiclesDuration;
 
   // Debug logging
   console.log('🔍 Booking Debug:', {
@@ -2543,6 +2657,130 @@ export default function BookAppointment() {
               </div>
             </div>
           )}
+          {/* Additional Vehicles Section */}
+          <div style={{ marginTop: '32px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '28px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: extraVehicles.length > 0 ? '20px' : '0' }}>
+              <Car size={18} style={{ color: '#e80200', flexShrink: 0 }} />
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '15px', fontWeight: 600, color: '#fff', letterSpacing: '1px', textTransform: 'uppercase' }}>
+                Additional Vehicles
+              </span>
+              <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>
+                — booking multiple vehicles at once?
+              </span>
+            </div>
+
+            {extraVehicles.map((ev, idx) => (
+              <div key={ev.id} style={{ marginBottom: '24px', padding: '20px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px' }}>
+                {/* Header */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: 'rgba(232,2,0,0.15)', border: '1px solid rgba(232,2,0,0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Oswald', sans-serif", fontSize: '13px', fontWeight: 700, color: '#e80200' }}>{idx + 2}</div>
+                    <span style={{ fontFamily: "'Oswald', sans-serif", fontSize: '14px', fontWeight: 600, color: '#fff', letterSpacing: '0.5px', textTransform: 'uppercase' }}>
+                      Vehicle {idx + 2}
+                      {ev.vehicle.make && ev.vehicle.model ? ` — ${ev.vehicle.make} ${ev.vehicle.model}` : ''}
+                    </span>
+                  </div>
+                  <button onClick={() => removeExtraVehicle(ev.id)} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.5)', width: '28px', height: '28px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '16px', lineHeight: 1 }}>×</button>
+                </div>
+
+                {/* Vehicle Picker */}
+                {!ev.customVehicle ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '12px', marginBottom: '12px' }}>
+                    <SelectField label="Make" value={ev.vehicle.make}
+                      onChange={(v) => { updateExtraVehicle(ev.id, { vehicle: { make: v, year: '', model: '' }, vehicleType: null, selectedColor: null, years: [], models: [] }); fetchExtraVehicleYears(ev.id, v); }}
+                      options={makes} placeholder={loadingMakes ? 'Loading...' : 'Select Make'} disabled={loadingMakes} />
+                    <SelectField label="Year" value={ev.vehicle.year}
+                      onChange={(v) => { updateExtraVehicle(ev.id, { vehicle: { ...ev.vehicle, year: v, model: '' }, vehicleType: null, models: [] }); fetchExtraVehicleModels(ev.id, ev.vehicle.make, v); }}
+                      options={ev.years} placeholder={ev.loadingYears ? 'Loading...' : 'Select Year'} disabled={!ev.vehicle.make || ev.loadingYears} />
+                    <SelectField label="Model" value={ev.vehicle.model}
+                      onChange={(v) => { updateExtraVehicle(ev.id, { vehicle: { ...ev.vehicle, model: v } }); autoSelectExtraVehicleType(ev.id, ev.vehicle.make, v); }}
+                      options={ev.models} placeholder={ev.loadingModels ? 'Loading...' : 'Select Model'} disabled={!ev.vehicle.year || ev.loadingModels} />
+                  </div>
+                ) : (
+                  <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '12px', marginBottom: '12px' }}>
+                    <InputField label="Make" value={ev.vehicle.make} onChange={(v) => updateExtraVehicle(ev.id, { vehicle: { ...ev.vehicle, make: v } })} placeholder="e.g., Toyota" />
+                    <InputField label="Year" value={ev.vehicle.year} onChange={(v) => updateExtraVehicle(ev.id, { vehicle: { ...ev.vehicle, year: v } })} placeholder="e.g., 2024" />
+                    <InputField label="Model" value={ev.vehicle.model} onChange={(v) => updateExtraVehicle(ev.id, { vehicle: { ...ev.vehicle, model: v } })} placeholder="e.g., Camry" />
+                  </div>
+                )}
+
+                <button onClick={() => updateExtraVehicle(ev.id, { customVehicle: !ev.customVehicle, vehicle: { make: '', year: '', model: '' }, years: [], models: [] })}
+                  style={{ background: 'none', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.5)', padding: '6px 14px', borderRadius: '8px', fontSize: '12px', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", marginBottom: '16px' }}>
+                  {ev.customVehicle ? '← Back to vehicle list' : 'Vehicle not listed? Enter manually'}
+                </button>
+
+                {/* Vehicle Type */}
+                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '12px', fontFamily: "'Montserrat', sans-serif" }}>Vehicle type:</p>
+                <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(4, 1fr)', gap: '8px', marginBottom: '16px' }}>
+                  {VEHICLE_TYPES.map(type => (
+                    <button key={type.id} onClick={() => updateExtraVehicle(ev.id, { vehicleType: type })}
+                      style={{ padding: '10px 8px', borderRadius: '10px', border: ev.vehicleType?.id === type.id ? '2px solid #e80200' : '1px solid rgba(255,255,255,0.1)', background: ev.vehicleType?.id === type.id ? 'rgba(232,2,0,0.12)' : 'rgba(255,255,255,0.03)', color: ev.vehicleType?.id === type.id ? '#fff' : 'rgba(255,255,255,0.5)', cursor: 'pointer', fontFamily: "'Oswald', sans-serif", fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                      {type.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Color (optional) */}
+                {ev.vehicle.make && getExtraPaintColors(ev).length > 0 && (
+                  <div style={{ marginBottom: '16px' }}>
+                    <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '10px', fontFamily: "'Montserrat', sans-serif" }}>Paint color (optional):</p>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                      {getExtraPaintColors(ev).map(color => (
+                        <button key={color.code} onClick={() => updateExtraVehicle(ev.id, { selectedColor: ev.selectedColor?.code === color.code ? null : color })}
+                          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '6px 10px', borderRadius: '8px', border: ev.selectedColor?.code === color.code ? '1px solid #e80200' : '1px solid rgba(255,255,255,0.1)', background: ev.selectedColor?.code === color.code ? 'rgba(232,2,0,0.1)' : 'rgba(255,255,255,0.03)', cursor: 'pointer' }}>
+                          <div style={{ width: '14px', height: '14px', borderRadius: '50%', background: color.hex, border: '1px solid rgba(255,255,255,0.2)', flexShrink: 0 }} />
+                          <span style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,0.7)' }}>{color.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Services for this vehicle */}
+                <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '13px', marginBottom: '12px', fontFamily: "'Montserrat', sans-serif" }}>
+                  Services for this vehicle
+                  {ev.selectedServices.length > 0 && <span style={{ color: '#e80200', fontWeight: 600 }}> ({ev.selectedServices.length} selected)</span>}:
+                </p>
+                {categories.filter(c => !c.is_addon).map(cat => {
+                  const catServices = availableServices.filter(s => s.category === cat.name);
+                  if (catServices.length === 0) return null;
+                  return (
+                    <div key={cat.name} style={{ marginBottom: '12px' }}>
+                      <p style={{ fontFamily: "'Oswald', sans-serif", fontSize: '12px', color: '#e80200', letterSpacing: '1px', textTransform: 'uppercase', marginBottom: '8px' }}>{cat.label}</p>
+                      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)', gap: '8px' }}>
+                        {catServices.map(svc => {
+                          const isSelected = ev.selectedServices.some(s => s.id === svc.id);
+                          const svcPrice = ev.vehicleType
+                            ? svc.base_price + getServiceVehicleUpcharge(svc, ev.vehicleType)
+                            : svc.base_price;
+                          return (
+                            <button key={svc.id} onClick={() => toggleExtraVehicleService(ev.id, svc)}
+                              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', borderRadius: '10px', border: isSelected ? '1px solid #e80200' : '1px solid rgba(255,255,255,0.08)', background: isSelected ? 'rgba(232,2,0,0.1)' : 'rgba(255,255,255,0.03)', cursor: 'pointer', textAlign: 'left', gap: '8px' }}>
+                              <div>
+                                <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: '13px', fontWeight: 600, color: isSelected ? '#fff' : 'rgba(255,255,255,0.7)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{svc.name}</div>
+                                {svc.duration_minutes && <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginTop: '2px' }}>{svc.duration_minutes} min</div>}
+                              </div>
+                              <div style={{ fontFamily: "'Oswald', sans-serif", fontSize: '14px', fontWeight: 700, color: isSelected ? '#e80200' : 'rgba(255,255,255,0.5)', whiteSpace: 'nowrap' }}>
+                                ${fmt(svcPrice)}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+
+            <button onClick={addExtraVehicle}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 20px', background: 'transparent', border: '1px dashed rgba(232,2,0,0.4)', borderRadius: '12px', color: 'rgba(232,2,0,0.8)', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontSize: '13px', fontWeight: 600, width: '100%', justifyContent: 'center', marginTop: extraVehicles.length > 0 ? '0' : '12px', transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(232,2,0,0.06)'; e.currentTarget.style.borderColor = 'rgba(232,2,0,0.7)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(232,2,0,0.4)'; }}>
+              <span style={{ fontSize: '18px', lineHeight: 1 }}>+</span>
+              Add Another Vehicle
+            </button>
+          </div>
         </motion.div>
 
         {/* STEP 3 – CUSTOMER INFO */}
