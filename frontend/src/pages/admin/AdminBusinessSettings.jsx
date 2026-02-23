@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Save, Loader2, Building2, Phone, Mail, MapPin, DollarSign, Clock, Car } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Save, Loader2, Building2, Phone, Mail, MapPin, DollarSign, Clock, Car, Image, Trash2 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -19,10 +19,59 @@ export default function AdminBusinessSettings() {
   });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [logoUrl, setLogoUrl] = useState(null);
+  const [logoHover, setLogoHover] = useState(false);
+  const logoInputRef = useRef(null);
+  const token = localStorage.getItem('adminToken');
 
   useEffect(() => {
     fetchSettings();
+    checkLogo();
   }, []);
+
+  const checkLogo = async () => {
+    try {
+      const resp = await fetch(`${API_URL}/api/admin/logo`, { method: 'HEAD' });
+      if (resp.ok) setLogoUrl(`${API_URL}/api/admin/logo?t=${Date.now()}`);
+      else setLogoUrl(null);
+    } catch (err) { setLogoUrl(null); }
+  };
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const resp = await fetch(`${API_URL}/api/admin/logo`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      });
+      if (resp.ok) {
+        setLogoUrl(`${API_URL}/api/admin/logo?t=${Date.now()}`);
+      } else {
+        const data = await resp.json();
+        setMessage({ type: 'error', text: data.detail || 'Failed to upload logo' });
+      }
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Failed to upload logo' });
+    }
+    e.target.value = '';
+  };
+
+  const handleLogoDelete = async () => {
+    if (!window.confirm('Remove the shop logo?')) return;
+    try {
+      await fetch(`${API_URL}/api/admin/logo`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setLogoUrl(null);
+    } catch (err) {
+      setMessage({ type: 'error', text: 'Failed to remove logo' });
+    }
+  };
 
   const fetchSettings = async () => {
     try {
@@ -80,6 +129,61 @@ export default function AdminBusinessSettings() {
       )}
 
       <div style={styles.grid}>
+        {/* Logo Upload */}
+        <div style={styles.card}>
+          <h2 style={styles.cardTitle}>
+            <Image size={20} />
+            Shop Logo
+          </h2>
+          <p style={styles.helpText}>Upload a logo to display in the admin sidebar. If no logo is uploaded, your shop name text will be shown instead.</p>
+          <input
+            ref={logoInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            style={{ display: 'none' }}
+            onChange={handleLogoUpload}
+          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '20px', marginTop: '16px' }}>
+            <div
+              style={{
+                width: '160px',
+                height: '72px',
+                border: logoHover ? '2px solid #e80200' : '2px dashed #333',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                background: '#0a0a0a',
+                overflow: 'hidden',
+                flexShrink: 0,
+                transition: 'border-color 0.2s',
+              }}
+              onClick={() => logoInputRef.current?.click()}
+              onMouseEnter={() => setLogoHover(true)}
+              onMouseLeave={() => setLogoHover(false)}
+            >
+              {logoUrl ? (
+                <img src={logoUrl} alt="Logo" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                  <Image size={20} color={logoHover ? '#e80200' : '#525252'} />
+                  <span style={{ fontSize: '11px', color: logoHover ? '#e80200' : '#525252', fontFamily: "'Montserrat', sans-serif" }}>Upload Logo</span>
+                </div>
+              )}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <button onClick={() => logoInputRef.current?.click()} style={styles.uploadBtn}>
+                {logoUrl ? 'Change Logo' : 'Upload Logo'}
+              </button>
+              {logoUrl && (
+                <button onClick={handleLogoDelete} style={styles.removeBtn}>
+                  <Trash2 size={14} /> Remove
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Shop Information */}
         <div style={styles.card}>
           <h2 style={styles.cardTitle}>
@@ -414,6 +518,31 @@ const styles = {
     marginTop: '12px',
     fontSize: '13px',
     color: '#ababab',
+    fontFamily: "'Montserrat', sans-serif",
+  },
+  uploadBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '10px 20px',
+    fontSize: '13px',
+    fontWeight: 600,
+    background: '#e80200',
+    color: '#fff',
+    border: 'none',
+    cursor: 'pointer',
+    fontFamily: "'Montserrat', sans-serif",
+  },
+  removeBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    padding: '8px 16px',
+    fontSize: '12px',
+    background: 'transparent',
+    border: '1px solid #333',
+    color: '#ababab',
+    cursor: 'pointer',
     fontFamily: "'Montserrat', sans-serif",
   },
   footer: {

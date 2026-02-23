@@ -22,6 +22,7 @@ export default function AdminLayout() {
   const [shopName, setShopName] = useState('');
   const [adminUsername, setAdminUsername] = useState('');
   const [headshotUrl, setHeadshotUrl] = useState(null);
+  const [logoUrl, setLogoUrl] = useState(null);
 
   useEffect(() => {
     // Verify auth on mount
@@ -168,6 +169,17 @@ export default function AdminLayout() {
     fetchShopName();
   }, []);
 
+  // Fetch logo
+  useEffect(() => {
+    const checkLogo = async () => {
+      try {
+        const resp = await fetch(`${API_URL}/api/admin/logo`, { method: 'HEAD' });
+        if (resp.ok) setLogoUrl(`${API_URL}/api/admin/logo?t=${Date.now()}`);
+      } catch (err) { /* no logo */ }
+    };
+    checkLogo();
+  }, []);
+
   // Fetch admin username
   useEffect(() => {
     const fetchAdminUsername = async () => {
@@ -242,7 +254,11 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside className={`sidebar${sidebarOpen ? ' open' : ''}`} style={styles.sidebar}>
         <div style={styles.sidebarHeader}>
-          <h2 style={styles.logo}>{shopName ? shopName.toUpperCase() : 'ADMIN PANEL'}</h2>
+          {logoUrl ? (
+            <img src={logoUrl} alt="Logo" style={styles.logoImg} />
+          ) : (
+            <h2 style={styles.logo}>{shopName ? shopName.toUpperCase() : 'ADMIN PANEL'}</h2>
+          )}
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={styles.badge}>ADMIN</span>
             {adminUsername && <span style={styles.usernameLabel}>{adminUsername}</span>}
@@ -288,9 +304,6 @@ export default function AdminLayout() {
         </nav>
 
         <div style={styles.sidebarFooter}>
-          <NavLink to="/" style={styles.backLink}>
-            ← Back to Website
-          </NavLink>
           <NavLink to="/admin/profile" style={styles.logoutBtn} onClick={() => setSidebarOpen(false)} data-testid="edit-profile-btn">
             <User size={18} />
             <span>Edit Profile</span>
@@ -459,6 +472,13 @@ const styles = {
     margin: '0 0 8px 0',
     letterSpacing: '2px',
   },
+  logoImg: {
+    maxWidth: '180px',
+    maxHeight: '56px',
+    objectFit: 'contain',
+    display: 'block',
+    marginBottom: '8px',
+  },
   badge: {
     display: 'inline-block',
     padding: '4px 10px',
@@ -535,13 +555,6 @@ const styles = {
     flexDirection: 'column',
     gap: '12px',
   },
-  backLink: {
-    color: '#ababab',
-    textDecoration: 'none',
-    fontFamily: "'Montserrat', sans-serif",
-    fontSize: '13px',
-    transition: 'color 0.2s ease',
-  },
   logoutBtn: {
     display: 'flex',
     alignItems: 'center',
@@ -554,6 +567,7 @@ const styles = {
     fontSize: '14px',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
+    textDecoration: 'none',
   },
   overlay: {
     position: 'fixed',

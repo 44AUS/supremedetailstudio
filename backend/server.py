@@ -331,6 +331,7 @@ class OnMyWayRequest(BaseModel):
 class EmailSettings(BaseModel):
     email_enabled: bool = False
     from_name: str = "Supreme Detail Studio"
+    email_review_request_enabled: bool = True
 
 class EmailTemplateUpdate(BaseModel):
     name: Optional[str] = None
@@ -837,6 +838,14 @@ async def schedule_review_request(booking_id: str):
         "created_at": datetime.now(timezone.utc).isoformat()
     })
 
+async def schedule_email_review_request(booking_id: str):
+    await db.email_scheduled.insert_one({
+        "booking_id": booking_id,
+        "template_key": "email_review_request",
+        "sent": False,
+        "created_at": datetime.now(timezone.utc).isoformat()
+    })
+
 async def calculate_eta(destination_address: str) -> Optional[str]:
     api_key = GOOGLE_MAPS_API_KEY
     if not api_key or not destination_address:
@@ -968,6 +977,42 @@ async def delete_headshot():
     """Remove admin headshot."""
     await db.settings.delete_one({"type": "admin_headshot"})
     return {"message": "Headshot removed"}
+
+@app.post("/api/admin/logo", dependencies=[Depends(verify_token)])
+async def upload_logo(file: UploadFile = File(...)):
+    """Upload shop logo."""
+    if file.content_type not in ALLOWED_IMAGE_TYPES:
+        raise HTTPException(status_code=400, detail="Only JPEG, PNG, and WebP images are allowed")
+    contents = await file.read()
+    if len(contents) > MAX_IMAGE_SIZE:
+        raise HTTPException(status_code=400, detail="Image must be under 5MB")
+    encoded = base64.b64encode(contents).decode("utf-8")
+    await db.settings.update_one(
+        {"type": "admin_logo"},
+        {"$set": {
+            "type": "admin_logo",
+            "data": encoded,
+            "content_type": file.content_type,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    return {"message": "Logo uploaded successfully"}
+
+@app.get("/api/admin/logo")
+async def get_logo():
+    """Serve shop logo image."""
+    doc = await db.settings.find_one({"type": "admin_logo"})
+    if not doc or not doc.get("data"):
+        raise HTTPException(status_code=404, detail="No logo uploaded")
+    image_bytes = base64.b64decode(doc["data"])
+    return Response(content=image_bytes, media_type=doc.get("content_type", "image/png"))
+
+@app.delete("/api/admin/logo", dependencies=[Depends(verify_token)])
+async def delete_logo():
+    """Remove shop logo."""
+    await db.settings.delete_one({"type": "admin_logo"})
+    return {"message": "Logo removed"}
 
 # ============== Categories Routes ==============
 
@@ -1729,6 +1774,9 @@ async def update_booking_status(booking_id: str, status_update: BookingStatusUpd
             template_key = "job_complete_shop" if booking.get("service_location") == "shop" else "job_complete_mobile"
             background_tasks.add_task(trigger_booking_sms, booking, template_key, booking_id)
             background_tasks.add_task(schedule_review_request, booking_id)
+            # Schedule email review request
+            if booking.get("customer_email"):
+                background_tasks.add_task(schedule_email_review_request, booking_id)
             # Email trigger for completion
             if booking.get("customer_email"):
                 background_tasks.add_task(trigger_booking_email, booking, "email_job_complete", booking_id)
@@ -1875,6 +1923,42 @@ async def resend_booking_email(booking_id: str, background_tasks: BackgroundTask
         raise HTTPException(status_code=400, detail="No customer email on this booking")
     background_tasks.add_task(send_booking_email, booking, booking["id"])
     return {"message": "Confirmation email queued for resend"}
+
+@app.post("/api/bookings/{booking_id}/send-review-request", dependencies=[Depends(verify_token)])
+async def send_review_request_manual(booking_id: str, background_tasks: BackgroundTasks):
+    """Manually send a review request via SMS (if opted in) and/or email for a booking."""
+    booking = await db.bookings.find_one({"_id": ObjectId(booking_id)})
+    if not booking:
+        raise HTTPException(status_code=404, detail="Booking not found")
+    booking_id_str = str(booking["_id"])
+    booking["id"] = booking_id_str
+
+    sent = []
+
+    # SMS review request
+    if booking.get("sms_consent") and booking.get("customer_phone"):
+        async def _send_sms_review():
+            context = await build_sms_context(booking)
+            body = await render_sms_template("review_request", context)
+            if body:
+                customer_name = f"{booking.get('customer_first_name', '')} {booking.get('customer_last_name', '')}".strip()
+                await send_sms(
+                    to_phone=booking["customer_phone"], body=body,
+                    customer_name=customer_name, customer_id=booking.get("customer_id"),
+                    booking_id=booking_id_str, template_key="review_request"
+                )
+        background_tasks.add_task(_send_sms_review)
+        sent.append("SMS")
+
+    # Email review request
+    if booking.get("customer_email"):
+        background_tasks.add_task(trigger_booking_email, booking, "email_review_request", booking_id_str)
+        sent.append("email")
+
+    if not sent:
+        raise HTTPException(status_code=400, detail="No contact method available (no SMS consent or email)")
+
+    return {"message": f"Review request queued via: {', '.join(sent)}"}
 
 # ============== Customer Helper ==============
 
@@ -2751,6 +2835,7 @@ async def get_email_settings():
         "email_enabled": False,
         "from_name": "Supreme Detail Studio",
         "from_email": RESEND_FROM_EMAIL,
+        "email_review_request_enabled": True,
     }
     settings = await db.settings.find_one({"type": "email"})
     if not settings:
@@ -2987,10 +3072,40 @@ async def review_request_checker_loop():
             pass
         await asyncio.sleep(900)
 
+async def email_review_request_checker_loop():
+    while True:
+        try:
+            email_settings = await db.settings.find_one({"type": "email"})
+            sms_settings = await db.settings.find_one({"type": "sms"})
+            if email_settings and email_settings.get("email_enabled") and email_settings.get("email_review_request_enabled", True):
+                delay_hours = sms_settings.get("review_delay_hours", 2) if sms_settings else 2
+                now = datetime.now(timezone.utc)
+                async for scheduled in db.email_scheduled.find({"template_key": "email_review_request", "sent": False}):
+                    try:
+                        created = datetime.fromisoformat(scheduled["created_at"])
+                        if created.tzinfo is None:
+                            created = created.replace(tzinfo=timezone.utc)
+                        send_after = created + timedelta(hours=delay_hours)
+                        if now >= send_after:
+                            booking = await db.bookings.find_one({"_id": ObjectId(scheduled["booking_id"])})
+                            if booking and booking.get("status") == "complete" and booking.get("customer_email"):
+                                booking["id"] = str(booking["_id"])
+                                await trigger_booking_email(booking, "email_review_request", scheduled["booking_id"])
+                        await db.email_scheduled.update_one(
+                            {"_id": scheduled["_id"]},
+                            {"$set": {"sent": True, "sent_at": now.isoformat()}}
+                        )
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+        await asyncio.sleep(900)
+
 @app.on_event("startup")
 async def start_background_tasks():
     asyncio.create_task(reminder_checker_loop())
     asyncio.create_task(review_request_checker_loop())
+    asyncio.create_task(email_review_request_checker_loop())
 
 # ============== Health Check ==============
 

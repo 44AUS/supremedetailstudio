@@ -8,7 +8,11 @@
       "Bash(powershell:*)",
       "Bash(\"c:\\\\Users\\\\austi\\\\Desktop\\\\supremedetailstudio\\\\remove-target-blank.ps1\" << 'PSEOF'\n$files = Get-ChildItem -Path 'frontend\\\\src' -Recurse -Include *.jsx,*.js\nforeach \\($f in $files\\) {\n    $c = Get-Content $f.FullName -Raw\n    if \\($c -match 'target=\"_blank\"'\\) {\n        $c = $c -creplace ' target=\"_blank\"', ''\n        $c = $c -creplace 'target=\"_blank\" ', ''\n        $c = $c -creplace 'target=\"_blank\"', ''\n        Set-Content -Path $f.FullName -Value $c -NoNewline\n        Write-Host \"Removed target=_blank from: $\\($f.Name\\)\"\n    }\n}\nPSEOF)",
       "Bash(python:*)",
-      "Bash(MONGO_URL=\"mongodb://mongo:zqkUTvYXRGrtOfawmdRmIUzmJZBadgeN@metro.proxy.rlwy.net:58053\" python:*)"
+      "Bash(MONGO_URL=\"mongodb://mongo:zqkUTvYXRGrtOfawmdRmIUzmJZBadgeN@metro.proxy.rlwy.net:58053\" python:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npx react-scripts build:*)"
     ]
   }
 }

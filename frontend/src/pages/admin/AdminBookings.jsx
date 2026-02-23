@@ -3,7 +3,7 @@ import {
   Search, Filter, Eye, CheckCircle, Clock, AlertCircle,
   XCircle, Loader2, ChevronDown, Calendar, User, Car,
   MapPin, Phone, Mail, Plus, Edit2, Save, X, Trash2,
-  DollarSign, Navigation, MessageSquare, Send, ScanLine
+  DollarSign, Navigation, MessageSquare, Send, ScanLine, Star
 } from 'lucide-react';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'https://supremedetailstudio-production.up.railway.app';
@@ -78,6 +78,7 @@ export default function AdminBookings() {
   const [smsMessage, setSmsMessage] = useState('');
   const [sendingSms, setSendingSms] = useState(false);
   const [resendingEmail, setResendingEmail] = useState(false);
+  const [sendingReviewRequest, setSendingReviewRequest] = useState(false);
   const addressInputRef = useRef(null);
   const autocompleteRef = useRef(null);
 
@@ -289,6 +290,23 @@ export default function AdminBookings() {
       alert(err.message || 'Failed to resend email. Check SMTP settings.');
     } finally {
       setResendingEmail(false);
+    }
+  };
+
+  const sendReviewRequest = async (bookingId) => {
+    setSendingReviewRequest(true);
+    try {
+      const response = await fetch(`${API_URL}/api/bookings/${bookingId}/send-review-request`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${getToken()}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || 'Failed to send');
+      alert(data.message || 'Review request sent!');
+    } catch (err) {
+      alert(err.message || 'Failed to send review request.');
+    } finally {
+      setSendingReviewRequest(false);
     }
   };
 
@@ -737,6 +755,10 @@ export default function AdminBookings() {
             <button onClick={() => resendEmail(selectedBooking.id)} disabled={resendingEmail} style={styles.resendEmailBtn}>
               {resendingEmail ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Mail size={16} />}
               Resend Email
+            </button>
+            <button onClick={() => sendReviewRequest(selectedBooking.id)} disabled={sendingReviewRequest} style={styles.reviewRequestBtn}>
+              {sendingReviewRequest ? <Loader2 size={16} style={{ animation: 'spin 1s linear infinite' }} /> : <Star size={16} />}
+              Send Review Request
             </button>
             <button onClick={() => openEditBooking(selectedBooking)} style={styles.editBtn} data-testid="edit-booking-btn">
               <Edit2 size={16} /> Edit
@@ -2194,6 +2216,20 @@ const styles = {
     background: 'rgba(16, 185, 129, 0.1)',
     border: '1px solid rgba(16, 185, 129, 0.3)',
     color: '#10b981',
+    fontFamily: "'Oswald', sans-serif",
+    fontSize: '14px',
+    fontWeight: 600,
+    cursor: 'pointer',
+    letterSpacing: '0.5px',
+  },
+  reviewRequestBtn: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 20px',
+    background: 'rgba(234, 179, 8, 0.1)',
+    border: '1px solid rgba(234, 179, 8, 0.3)',
+    color: '#eab308',
     fontFamily: "'Oswald', sans-serif",
     fontSize: '14px',
     fontWeight: 600,

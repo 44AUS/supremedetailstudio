@@ -88,6 +88,7 @@ export default function AdminSMS() {
   // Email settings state
   const [emailSettings, setEmailSettings] = useState({
     email_enabled: false, from_name: 'Supreme Detail Studio', from_email: '',
+    email_review_request_enabled: true,
   });
 
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
@@ -547,6 +548,7 @@ export default function AdminSMS() {
         body: JSON.stringify({
           email_enabled: emailSettings.email_enabled,
           from_name: emailSettings.from_name,
+          email_review_request_enabled: emailSettings.email_review_request_enabled,
         }),
       });
       setSettingsSuccess('All settings saved successfully');
@@ -1637,6 +1639,22 @@ export default function AdminSMS() {
                   style={styles.formInput}
                 />
               </div>
+            </div>
+
+            {/* Email Review Requests */}
+            <div style={styles.settingsCard}>
+              <div style={styles.settingsCardHeader}>
+                <h3 style={styles.settingsCardTitle}>Review Request Emails</h3>
+                <button
+                  onClick={() => setEmailSettings({ ...emailSettings, email_review_request_enabled: !emailSettings.email_review_request_enabled })}
+                  style={styles.toggleBtn}
+                >
+                  {emailSettings.email_review_request_enabled
+                    ? <ToggleRight size={28} color="#10b981" />
+                    : <ToggleLeft size={28} color="#525252" />}
+                </button>
+              </div>
+              <p style={styles.settingsCardDesc}>Automatically send a review request email after a booking is marked complete. Uses the same delay as SMS review requests.</p>
             </div>
           </div>
 
